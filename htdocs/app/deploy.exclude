@@ -1,0 +1,10 @@
+.DS_Store
+app/num.rb
+app/msleep.so
+log/
+enclosures/*/20??/
+enclosures/app/tmp/
+podcasts/*/*/20??/
+podcasts/*.rss
+stations/*/20??/
+stations/m945

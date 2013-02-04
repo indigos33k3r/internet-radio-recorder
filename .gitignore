@@ -5,3 +5,5 @@
 */podcasts/*.rss
 */podcasts/*/b*/
 */stations/b?/20??/
+htdocs/app/base.url
+htdocs.old/

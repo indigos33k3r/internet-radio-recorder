@@ -1,0 +1,21 @@
+html {
+	background-color: lightgrey;
+}
+#image {
+	float:right;
+}
+fieldset {
+	border: 0 none;
+}
+input[type="submit"] {
+	font-size: 110%
+}
+@media screen and (max-width: 500px) {
+	.navigation {
+		line-height: 3.5ex;
+	}
+	#image {
+		width:50%;
+		height: auto;
+	}
+}

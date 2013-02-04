@@ -1,0 +1,3 @@
+t.b.d.
+
+Choose a license, prbly MIT (because of https://github.com/henix/slt2 )

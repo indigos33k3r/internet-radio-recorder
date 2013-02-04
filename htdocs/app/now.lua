@@ -1,0 +1,67 @@
+#!/usr/bin/env lua
+--[[
+-- Copyright (c) 2013 Marcus Rohrmoser, https://github.com/mro/br-recorder
+--
+-- Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+-- associated documentation files (the "Software"), to deal in the Software without restriction,
+-- including without limitation the rights to use, copy, modify, merge, publish, distribute,
+-- sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+-- furnished to do so, subject to the following conditions:
+--
+-- The above copyright notice and this permission notice shall be included in all copies or
+-- substantial portions of the Software.
+--
+-- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+-- NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+-- NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+-- OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+-- CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+--
+-- MIT License http://opensource.org/licenses/MIT
+]]
+
+
+-- ensure recorder.lua (next to this file) is found:
+package.path = arg[0]:gsub('/[^/]+/?$', '') .. '/?.lua;' .. package.path
+rec = require('recorder')
+rec.chdir2app_root( arg[0] )
+
+local function http_400_bad_request(...)
+	io.write('HTTP/1.1 400 Bad Request', '\n')
+	io.write('Content-Type: text/plain', '\n')
+	io.write('Server: Recorder 2013/lua', '\n')
+	io.write('\n', ...)
+	io.write('\n')
+	io.flush()
+	os.exit(0)
+end
+
+local function http_303_see_other(uri)
+	io.write('HTTP/1.1 303 See Other', '\n')
+	io.write('Content-Type: text/plain', '\n')
+	io.write('Server: Recorder 2013/lua', '\n')
+	io.write('Location: ', uri, '\n')
+	io.write('\n')
+	io.flush()
+end
+
+-- prepare, extract GET parameters:
+local params = {}
+local qs = os.getenv('QUERY_STRING')
+if qs then for k,v in qs:gmatch('([^?&=]+)=([^&]*)') do params[k] = v end end
+
+-- guess station from GET params or referer:
+local station_name = nil
+if not station_name and params.station then station_name = params.station end
+if not station_name and params.uri 	   then station_name = params.uri:match('stations/([^/]+)') end
+local ref = os.getenv('HTTP_REFERER')
+if not station_name and ref 		   then	station_name = ref:match('stations/([^/]+)') end
+
+if not station_name then http_400_bad_request('Cannot guess station. Give me either\n', '- GET param station=...\n', '- GET param uri=...\n', '- a referer\n\n') end
+
+local bc = rec.station_find_most_recent_before(station_name, os.time(), 'stations', 'html', false)
+if bc then
+	http_303_see_other('../' .. bc.file_html)
+else
+	http_400_bad_request('Ouch, cannot find current broadcat for station: \'', station_name, '\'')
+end

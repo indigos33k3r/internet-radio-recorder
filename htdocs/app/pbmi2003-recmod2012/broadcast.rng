@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar ns="http://www.w3.org/1999/xhtml" xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <start>
+    <a:documentation>Dublin Core PBMI http://dcpapers.dublincore.org/pubs/article/view/749
+not: Ontology for Media Resources 1.0 http://www.w3.org/TR/mediaont-10/
+not: EBU http://tech.ebu.ch/lang/en/MetadataEbuCore</a:documentation>
+    <element name="html">
+      <zeroOrMore>
+        <ref name="anyAttribute"/>
+      </zeroOrMore>
+      <element name="head">
+        <oneOrMore>
+          <ref name="anyElement"/>
+        </oneOrMore>
+        <group>
+          <ref name="meta.DC.scheme"/>
+          <ref name="meta.DC.language"/>
+          <ref name="meta.DC.title.series"/>
+          <optional>
+            <ref name="meta.DC.title.episode"/>
+          </optional>
+          <ref name="meta.DC.format.timestart"/>
+          <ref name="meta.DC.format.timeend"/>
+          <ref name="meta.DC.format.duration"/>
+          <optional>
+            <ref name="meta.DC.image"/>
+          </optional>
+          <optional>
+            <ref name="meta.DC.description"/>
+          </optional>
+          <ref name="meta.DC.publisher"/>
+          <ref name="meta.DC.creator"/>
+          <ref name="meta.DC.copyright"/>
+          <ref name="meta.DC.source"/>
+        </group>
+        <!-- , meta.DC.lastmodified -->
+      </element>
+      <element name="body">
+        <zeroOrMore>
+          <choice>
+            <ref name="anyAttribute"/>
+            <text/>
+            <ref name="anyElement"/>
+          </choice>
+        </zeroOrMore>
+      </element>
+    </element>
+  </start>
+  <define name="meta.DC.scheme">
+    <element name="meta">
+      <a:documentation>Dublin Core PBMI http://dcpapers.dublincore.org/pubs/article/view/749</a:documentation>
+      <attribute name="name">
+        <value>DC.scheme</value>
+      </attribute>
+      <attribute name="content">
+        <value>PBMI 2003/recmod2012</value>
+      </attribute>
+    </element>
+  </define>
+  <define name="meta.DC.language">
+    <element name="meta">
+      <attribute name="name">
+        <value>DC.language</value>
+      </attribute>
+      <attribute name="content">
+        <value>de</value>
+      </attribute>
+    </element>
+  </define>
+  <define name="meta.DC.title.series">
+    <element name="meta">
+      <attribute name="name">
+        <value>DC.title.series</value>
+      </attribute>
+      <attribute name="content"/>
+    </element>
+  </define>
+  <define name="meta.DC.title.episode">
+    <element name="meta">
+      <attribute name="name">
+        <value>DC.title.episode</value>
+      </attribute>
+      <attribute name="content"/>
+    </element>
+  </define>
+  <define name="meta.DC.lastmodified">
+    <element name="meta">
+      <attribute name="name">
+        <value>DC.lastmodified</value>
+      </attribute>
+      <attribute name="content">
+        <data type="dateTime">
+          <param name="pattern">\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+\-]\d{2}:\d{2}</param>
+          <a:documentation>compliant to atom feed timestamps, http://www.faqs.org/rfcs/rfc3339.html</a:documentation>
+        </data>
+      </attribute>
+    </element>
+  </define>
+  <define name="meta.DC.format.timestart">
+    <element name="meta">
+      <attribute name="name">
+        <value>DC.format.timestart</value>
+      </attribute>
+      <attribute name="content">
+        <data type="dateTime">
+          <param name="pattern">\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+\-]\d{2}:\d{2}</param>
+          <a:documentation>compliant to atom feed timestamps, http://www.faqs.org/rfcs/rfc3339.html</a:documentation>
+        </data>
+      </attribute>
+    </element>
+  </define>
+  <define name="meta.DC.format.timeend">
+    <element name="meta">
+      <attribute name="name">
+        <value>DC.format.timeend</value>
+      </attribute>
+      <attribute name="content">
+        <data type="dateTime">
+          <param name="pattern">\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+\-]\d{2}:\d{2}</param>
+          <a:documentation>compliant to atom feed timestamps, http://www.faqs.org/rfcs/rfc3339.html</a:documentation>
+        </data>
+      </attribute>
+    </element>
+  </define>
+  <define name="meta.DC.format.duration">
+    <element name="meta">
+      <attribute name="name">
+        <value>DC.format.duration</value>
+      </attribute>
+      <attribute name="content">
+        <data type="nonNegativeInteger"/>
+      </attribute>
+    </element>
+  </define>
+  <define name="meta.DC.image">
+    <element name="meta">
+      <attribute name="name">
+        <value>DC.image</value>
+      </attribute>
+      <attribute name="content">
+        <data type="anyURI"/>
+      </attribute>
+    </element>
+  </define>
+  <define name="meta.DC.description">
+    <element name="meta">
+      <attribute name="name">
+        <value>DC.description</value>
+      </attribute>
+      <attribute name="content"/>
+    </element>
+  </define>
+  <define name="meta.DC.publisher">
+    <element name="meta">
+      <attribute name="name">
+        <value>DC.publisher</value>
+      </attribute>
+      <attribute name="content"/>
+    </element>
+  </define>
+  <define name="meta.DC.creator">
+    <element name="meta">
+      <attribute name="name">
+        <value>DC.creator</value>
+      </attribute>
+      <attribute name="content"/>
+    </element>
+  </define>
+  <define name="meta.DC.copyright">
+    <element name="meta">
+      <attribute name="name">
+        <value>DC.copyright</value>
+      </attribute>
+      <attribute name="content"/>
+    </element>
+  </define>
+  <define name="meta.DC.source">
+    <element name="meta">
+      <attribute name="name">
+        <value>DC.source</value>
+      </attribute>
+      <attribute name="content">
+        <data type="anyURI"/>
+      </attribute>
+    </element>
+  </define>
+  <define name="anyElementButMeta">
+    <a:documentation>unused</a:documentation>
+    <element>
+      <anyName>
+        <except>
+          <name>meta</name>
+        </except>
+      </anyName>
+      <zeroOrMore>
+        <choice>
+          <ref name="anyAttribute"/>
+          <text/>
+          <ref name="anyElement"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="anyElement">
+    <a:documentation>https://www.oasis-open.org/committees/relax-ng/compact-20021121.html#syntax</a:documentation>
+    <element>
+      <anyName/>
+      <zeroOrMore>
+        <choice>
+          <ref name="anyAttribute"/>
+          <text/>
+          <ref name="anyElement"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="anyAttribute">
+    <attribute>
+      <anyName/>
+    </attribute>
+  </define>
+</grammar>

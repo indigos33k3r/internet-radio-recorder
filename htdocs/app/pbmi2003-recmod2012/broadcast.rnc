@@ -1,0 +1,128 @@
+default namespace = "http://www.w3.org/1999/xhtml"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
+
+
+## Dublin Core PBMI http://dcpapers.dublincore.org/pubs/article/view/749
+## not: Ontology for Media Resources 1.0 http://www.w3.org/TR/mediaont-10/
+## not: EBU http://tech.ebu.ch/lang/en/MetadataEbuCore
+start =
+  element html {
+    anyAttribute*,
+    element head {
+      anyElement+,
+      (meta.DC.scheme,
+       meta.DC.language,
+       meta.DC.title.series,
+       meta.DC.title.episode?,
+       meta.DC.format.timestart,
+       meta.DC.format.timeend,
+       meta.DC.format.duration,
+       meta.DC.image?,
+       meta.DC.description?,
+       meta.DC.publisher,
+       meta.DC.creator,
+       meta.DC.copyright,
+       meta.DC.source)
+      # unused , meta.DC.lastmodified
+      
+    },
+    element body { (anyAttribute | text | anyElement)* }
+  }
+meta.DC.scheme =
+  
+  ## Dublin Core PBMI http://dcpapers.dublincore.org/pubs/article/view/749
+  element meta {
+    attribute name { "DC.scheme" },
+    attribute content { "PBMI 2003/recmod2012" }
+  }
+meta.DC.language =
+  element meta {
+    attribute name { "DC.language" },
+    attribute content { "de" }
+  }
+meta.DC.title.series =
+  element meta {
+    attribute name { "DC.title.series" },
+    attribute content { text }
+  }
+meta.DC.title.episode =
+  element meta {
+    attribute name { "DC.title.episode" },
+    attribute content { text }
+  }
+meta.DC.lastmodified =
+  element meta {
+    attribute name { "DC.lastmodified" },
+    attribute content {
+      xsd:dateTime {
+        
+        ## compliant to atom feed timestamps, http://www.faqs.org/rfcs/rfc3339.html
+        pattern = "\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+\-]\d{2}:\d{2}"
+      }
+    }
+  }
+meta.DC.format.timestart =
+  element meta {
+    attribute name { "DC.format.timestart" },
+    attribute content {
+      xsd:dateTime {
+        
+        ## compliant to atom feed timestamps, http://www.faqs.org/rfcs/rfc3339.html
+        pattern = "\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+\-]\d{2}:\d{2}"
+      }
+    }
+  }
+meta.DC.format.timeend =
+  element meta {
+    attribute name { "DC.format.timeend" },
+    attribute content {
+      xsd:dateTime {
+        
+        ## compliant to atom feed timestamps, http://www.faqs.org/rfcs/rfc3339.html
+        pattern = "\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+\-]\d{2}:\d{2}"
+      }
+    }
+  }
+meta.DC.format.duration =
+  element meta {
+    attribute name { "DC.format.duration" },
+    attribute content { xsd:nonNegativeInteger }
+  }
+meta.DC.image =
+  element meta {
+    attribute name { "DC.image" },
+    attribute content { xsd:anyURI }
+  }
+meta.DC.description =
+  element meta {
+    attribute name { "DC.description" },
+    attribute content { text }
+  }
+meta.DC.publisher =
+  element meta {
+    attribute name { "DC.publisher" },
+    attribute content { text }
+  }
+meta.DC.creator =
+  element meta {
+    attribute name { "DC.creator" },
+    attribute content { text }
+  }
+meta.DC.copyright =
+  element meta {
+    attribute name { "DC.copyright" },
+    attribute content { text }
+  }
+meta.DC.source =
+  element meta {
+    attribute name { "DC.source" },
+    attribute content { xsd:anyURI }
+  }
+
+## unused
+anyElementButMeta =
+  element * - meta { (anyAttribute | text | anyElement)* }
+
+## https://www.oasis-open.org/committees/relax-ng/compact-20021121.html#syntax
+anyElement = element * { (anyAttribute | text | anyElement)* }
+anyAttribute = attribute * { text }

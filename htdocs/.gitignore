@@ -1,0 +1,15 @@
+stations/b?/20??/
+stations/on3/20??/
+stations/b?/daily.ics
+podcasts/*.rss
+podcasts/*/*.url.txt
+index.html
+app/doc/*.pdf
+app/doc/*.svg
+enclosures/b*/
+enclosures/on3/
+podcasts/*/b*/
+podcasts/on3/
+log/
+app/msleep.so
+enclosures/app/tmp/
