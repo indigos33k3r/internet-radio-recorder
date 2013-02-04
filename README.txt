@@ -1,1 +1,1 @@
-wwwroot/README.txt
+htdocs/README.txt
