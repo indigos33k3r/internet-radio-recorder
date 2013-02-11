@@ -30,9 +30,10 @@ end
 
 require "luarocks.loader"	-- http://www.luarocks.org/en/Using_LuaRocks
 local lfs = require "lfs"	-- http://keplerproject.github.com/luafilesystem/examples.html
+-- local lpeg = require "lpeg" -- http://www.inf.puc-rio.br/~roberto/lpeg/
 
 --- Sorted pairs iterator.
--- 
+--
 -- http://www.lua.org/pil/19.3.html
 function pairsByKeys(t, f)
 	local a = {}
@@ -43,7 +44,7 @@ function pairsByKeys(t, f)
 		i = i + 1
 		if a[i] == nil then return nil
 		else return a[i], t[a[i]]
-        end
+		end
 	end
 	return iter
 end
@@ -86,19 +87,19 @@ local function file_write_if_changed(file, content, old)
 			created = true
 		end
 	end
-    if old == content then
-        io.stderr:write('unchang ', file, '\n')
-        return false,false
-    end
-    local dst,msg = io.open(file, 'w')
-    if not dst then
-        io.stderr:write('error  ', msg, '\n')
-        return false,false
-    end
-    dst:write(content)
-    dst:close()
-    io.stderr:write('written ', file, '\n')
-    return true,created
+	if old == content then
+		io.stderr:write('unchang ', file, '\n')
+		return false,false
+	end
+	local dst,msg = io.open(file, 'w')
+	if not dst then
+		io.stderr:write('error	', msg, '\n')
+		return false,false
+	end
+	dst:write(content)
+	dst:close()
+	io.stderr:write('written ', file, '\n')
+	return true,created
 end
 
 
@@ -132,7 +133,6 @@ end
 
 local recorder = {
 	stations = {}		-- cache (e.g. broadcast template per station)
---	podcasts = {}		-- cache (e.g. broadcast match function per podcast)
 }
 recorder.touch = touch_create
 
@@ -167,7 +167,7 @@ local function recorder_broadcasts_siblings(root_dir,t_start,t_end,suffix,all)
 	table.sort(years, comp)
 	local ret = {}
 	for _,year in ipairs(years) do
-		local t_year = os.time({	
+		local t_year = os.time({
 			year	= tonumber(year),
 			month	= 1,
 			day		= 1,
@@ -180,12 +180,12 @@ local function recorder_broadcasts_siblings(root_dir,t_start,t_end,suffix,all)
 			end
 			table.sort(months, comp)
 			for _,month in ipairs(months) do
-				local t_month = os.time({	
+				local t_month = os.time({
 					year	= tonumber(year),
 					month	= tonumber(month),
 					day		= 1,
 				})
-				if  (year > min.year or (year == min.year and month >= min.month))
+				if	(year > min.year or (year == min.year and month >= min.month))
 				and (year < max.year or (year == max.year and month <= max.month))
 				then
 					days = {}
@@ -195,12 +195,12 @@ local function recorder_broadcasts_siblings(root_dir,t_start,t_end,suffix,all)
 					end
 					table.sort(days, comp)
 					for _,day in ipairs(days) do
-						local t_day = os.time({	
+						local t_day = os.time({
 							year	= tonumber(year),
 							month	= tonumber(month),
 							day		= tonumber(day),
 						})
-						if  (year > min.year or (year == min.year and month > min.month) or (year == min.year and month == min.month and day >= min.day))
+						if	(year > min.year or (year == min.year and month > min.month) or (year == min.year and month == min.month and day >= min.day))
 						and (year < max.year or (year == max.year and month < max.month) or (year == max.year and month == max.month and day <= max.day))
 						then
 							times = {}
@@ -210,7 +210,7 @@ local function recorder_broadcasts_siblings(root_dir,t_start,t_end,suffix,all)
 							end
 							table.sort(times, comp)
 							for _,time in ipairs(times) do
-								local t_time = os.time({	
+								local t_time = os.time({
 									year	= tonumber(year),
 									month	= tonumber(month),
 									day		= tonumber(day),
@@ -252,37 +252,40 @@ end
 
 -- http://lua-users.org/wiki/StringRecipes
 function recorder.unescape_url(str)
-  str = string.gsub(str, "+", " ")
-  str = string.gsub(str, "%%(%x%x)",
-      function(h) return string.char(tonumber(h,16)) end)
-  str = string.gsub(str, "\r\n", "\n")
-  return str
+  str = str:gsub('+', ' ')
+  str = str:gsub('%%(%x%x)', function(h) return string.char(tonumber(h,16)) end)
+  return str:gsub("\r\n", "\n")
 end
 
 function recorder.unescape_xml_text(str)
-  str = string.gsub(str, "&amp;", "&")
-  str = string.gsub(str, "&lt;", "<")
-  str = string.gsub(str, "&gt;", ">")
-  str = string.gsub(str, "&apos;", "'")
-  str = string.gsub(str, "&quot;", '"')
-  str = string.gsub(str, "&#10;", "\n")
-  str = string.gsub(str, "&#(%x%x);", function(h) return string.char(tonumber(h,16)) end)
-  return str
+	-- http://www.w3.org/TR/2008/REC-xml-20081126/#sec-references
+	local entities = {
+		['&amp;']	= '&',
+		['&lt;']	= '<',
+		['&gt;']	= '>',
+		['&apos;']	= '\'',
+		['&quot;']	= '"',
+		['&#10;']	= "\n",
+	}
+	local subf = function(s)
+		return entities[s] or s:gsub('&#(%x%x);', function(h) return string.char(tonumber(h,16)) end)
+	end
+	return str:gsub('(&[^;]+;)', subf)
 end
 
 -- inspired by https://github.com/henix/slt2
 function recorder.escape_html_text(str)
 	if str == nil then return '' end
+	str = str:gsub('&', '&amp;')
 	local tt = {
 		['<'] = '&lt;',
 		['>'] = '&gt;',
 		['"'] = '&quot;',
 		["'"] = '&apos;',
 		["\n"] = '<br/>'
-    }
-    str = string.gsub(str, '&', '&amp;')
-    str = string.gsub(str, '[<>"\'\n]', tt)
-    return str
+	}
+	str = str:gsub('[<>"\'\n]', tt)
+	return str
 end
 
 
@@ -293,10 +296,10 @@ function recorder.escape_xml(str)
 		['>'] = '&gt;',
 		['"'] = '&quot;',
 		["'"] = '&apos;',
-    }
-    str = str:gsub('&', '&amp;')
-    str = str:gsub('[<>"\']', tt)
-    return str
+	}
+	str = str:gsub('&', '&amp;')
+	str = str:gsub('[<>"\']', tt)
+	return str
 end
 
 function recorder.escape_html_attribute(str)
@@ -307,8 +310,8 @@ function recorder.escape_html_attribute(str)
 		['"'] = '&quot;',
 		["'"] = '&apos;',
 		["\n"] = '&#10;'
-    }
-    return str:gsub('&', '&amp;'):gsub('[<>"\'\n]', tt)
+	}
+	return str:gsub('&', '&amp;'):gsub('[<>"\'\n]', tt)
 end
 
 function recorder.meta_key_to_html(meta_key)
@@ -330,14 +333,14 @@ slt2 = require('slt2')
 -- parse template only once per station and cache for later use.
 local function station_broadcast_template_html(station)
 	local tmpl = station.broadcast_template_html_
-    if tmpl == nil then
-        local html_template = table.concat{ 'stations', '/', station.name, '/app/broadcast.slt2.html'}
-        -- io.stderr:write("loading template '", html_template, "'\n")
-        tmpl = slt2.loadfile(html_template)
-        station.broadcast_template_html_ = tmpl
-        io.stderr:write("loaded template ", html_template, "\n")
-    end
-    return tmpl
+	if tmpl == nil then
+		local html_template = table.concat({ 'stations', station.name, 'app', 'broadcast.slt2.html'}, '/')
+		-- io.stderr:write("loading template '", html_template, "'\n")
+		tmpl = slt2.loadfile(html_template)
+		station.broadcast_template_html_ = tmpl
+		io.stderr:write("loaded template ", html_template, "\n")
+	end
+	return tmpl
 end
 
 
@@ -365,47 +368,66 @@ end
 
 -- return table w. <meta> plus html source
 -- TODO: sanity check found meta!
--- TODO: make a proper parser
 local function broadcast_meta_from_html(html_file)
-	local ret,html_old,file = {},nil,io.open(html_file, 'r')
+	local metas,html_old,file = {},nil,io.open(html_file, 'r')
 	if file == nil then return nil,nil end
 	local html_old = file:read('*a')
 	file:close()
-	local pos = 1
-	while true do
-		start0,stop0,content,name = html_old:find("<meta content=(%b'') name=(%b'') */>", pos)
-		if start0 ~= nil then
-			name,content = name:sub(2,-2), content:sub(2,-2)
-			if name:sub(1,3) == 'DC.' then
-				-- clean broken xml encoding:
-				-- content = content:gsub("(amp;)+", "amp;")
-				name,content = recorder.unescape_xml_text(name), recorder.unescape_xml_text(content)
-				name = recorder.meta_key_to_lua(name)
-				ret[name] = content
+	for v,k in html_old:gmatch('<meta%s+content=\'([^\']*)\'%s+name=\'(DC%.[^\']+)\'%s*/?>') do
+		local k,v = recorder.unescape_xml_text(k),recorder.unescape_xml_text(v)
+		metas[ recorder.meta_key_to_lua(k) ] = v
+	end
+	return metas,html_old
+end
+
+-- return table w. <meta> plus html source
+-- TODO: sanity check found meta!
+local function lpeg_broadcast_meta_from_html(html_file)
+	local html_old,file = nil,io.open(html_file, 'r')
+	if file == nil then return nil,nil end
+	local html_old = file:read('*a')
+	file:close()
+	local html_meta = nil
+	-- build LPEG to parse <meta/> from html:
+	do
+		-- re-assign consecutive key,val pairs from an array into a neat hash
+		local function collectAttributes(tag, ...)
+			local a = {...}
+			assert( table.getn(a) % 2 == 0)
+			local elem = {name=assert(tag), attributes={}}
+			for i = table.getn(a),2,-2 do
+				elem.attributes[ a[i-1]] = a[i]
 			end
+			return elem
 		end
-		start1,stop1,href,rel = html_old:find("<link href=(%b'') rel=(%b'') */>", pos)
-		if start1 ~= nil then
-			if rel == "'prev'" or rel == "'next'" then
-				rel,href = rel:sub(2,-2), href:sub(2,-2)
-				-- clean broken xml encoding:
-				-- href = href:gsub("(amp;)+", "amp;")
-				rel,href = recorder.unescape_xml_text(rel), recorder.unescape_xml_text(href)
-				ret['link_' .. rel] = href
+		-- abbreviations
+		local P,C = lpeg.P,lpeg.C
+		-- partial html grammar (from w3v)
+		local S = lpeg.S' \t\n\r'								-- http://www.w3.org/TR/REC-xml/#NT-S
+		local Name = (1 - (S + P'=' + lpeg.S'&;<>\'"' ))^1		-- http://www.w3.org/TR/REC-xml/#NT-Name
+		local Eq = S^0 * P'=' * S^0								-- http://www.w3.org/TR/REC-xml/#NT-Eq
+		local apos = P'\''
+		local quot = P'"'
+		-- http://www.w3.org/TR/REC-xml/#NT-AttValue
+		local AttValue = (quot * C( (1 - quot)^0 ) * quot) + (apos * C( (1 - apos)^0 ) * apos)
+		local Attribute = C( Name ) * Eq * AttValue				-- http://www.w3.org/TR/REC-xml/#NT-Attribute
+		-- http://www.w3.org/TR/REC-xml/#NT-EmptyElemTag
+		local META = ( P'<' * C(P'meta') * (S^1 * Attribute)^0 * S^-1 * P'/>' ) / collectAttributes
+		local NOT_META = (1 - META)^0
+		html_meta = lpeg.Ct( (NOT_META * META)^0 )
+		-- lpeg.print(html_meta)
+	end
+
+	local metas = {}
+	for _,elem in ipairs( html_meta:match(html_old) ) do
+		if elem.name and elem.name == 'meta' then
+			if elem.attributes.name and elem.attributes.name:match('^DC%.') then
+				local k,v = recorder.unescape_xml_text(elem.attributes.name),recorder.unescape_xml_text(elem.attributes.content)
+				metas[ recorder.meta_key_to_lua(k) ] = v
 			end
-		end
-		if stop0 == nil and stop1 == nil then
-			break
-		end
-		if stop0 ~= nil and stop1 ~= nil then
-			if stop0 < stop1 then pos = stop0 else pos = stop1 end
-		elseif stop0 ~= nil then
-			pos = stop0
-		else
-			pos = stop1
 		end
 	end
-	return ret, html_old
+	return metas,html_old
 end
 
 local function broadcast_read_meta(self)
@@ -416,7 +438,7 @@ local function broadcast_remove(self)
 	if self:is_past() then
 		return false,'mustn\'t be past'
 	end
-	io.stderr:write('remove  ', self.file_html, "\n")
+	io.stderr:write('remove	 ', self.file_html, "\n")
 	for _,pc_name in ipairs(self:podcast_names()) do
 		self:podcast_remove(pc_name)
 	end
@@ -440,19 +462,19 @@ local function broadcast_to_html(self, meta, html_old)
 	meta.link_next = '../../../../../' .. 'app/next.lua'
 
 	local tmpl = assert(self.station:broadcast_template_html())
-    local html_new = slt2.render(tmpl, {broadcast=self})
-    mkdir_recursive(self.dir_html)
-    -- TODO: remove all other files during this time interval (html, podcast, enclosure - recreate if ad_hoc?)
-    local t0,t1 = os.time(self),parse_iso8601(self.meta.DC_format_timeend)
-    for f in lfs.dir(self.dir_html) do
-    	local bc = recorder.broadcast_from_file(table.concat({self.dir_html, f}, '/'))
-    	if bc then
-    		local bc_t = os.time(bc)
-    		if t0 <= bc_t and bc_t < t1 and nil == self.file_html:find(bc.file_html,1,true) then
-    			bc:remove()
-    		end
-    	end
-    end
+	local html_new = slt2.render(tmpl, {broadcast=self})
+	mkdir_recursive(self.dir_html)
+	-- TODO: remove all other files during this time interval (html, podcast, enclosure - recreate if ad_hoc?)
+	local t0,t1 = os.time(self),parse_iso8601(self.meta.DC_format_timeend)
+	for f in lfs.dir(self.dir_html) do
+		local bc = recorder.broadcast_from_file(table.concat({self.dir_html, f}, '/'))
+		if bc then
+			local bc_t = os.time(bc)
+			if t0 <= bc_t and bc_t < t1 and nil == self.file_html:find(bc.file_html,1,true) then
+				bc:remove()
+			end
+		end
+	end
 	return file_write_if_changed(html_file, html_new, html_old)
 end
 
@@ -461,9 +483,9 @@ end
 local function string_has_prefix(s, prefix)
 	if s == nil and prefix == nil	then return true end
 	if s == nil or prefix == nil	then return false end
-	local l = string.len(prefix)
-	if string.len(s) < l			then return false end
-	return string.sub(s,1,l) == prefix
+	local l = prefix:len()
+	if s:len() < l			then return false end
+	return s:sub(1,l) == prefix
 end
 
 local function recorder_broadcast_timeend(self)
@@ -621,7 +643,7 @@ function recorder.broadcast_from_file(bc_file, meta)
 		section = section,
 		station_name = sta,
 		station = station_by_name(sta),
-		day_dir	= table.concat{sta, '/', year, '/', month, '/', day},
+		day_dir = table.concat{sta, '/', year, '/', month, '/', day},
 		base	= table.concat{hour, min, ' ', title},
 		ext		= ext,
 		year	= tonumber(year),
@@ -632,7 +654,7 @@ function recorder.broadcast_from_file(bc_file, meta)
 		title	= title,
 		meta	= meta,
 		read_meta		= broadcast_read_meta,
-		enclosure_state	= recorder_broadcast_enclosure_state,
+		enclosure_state = recorder_broadcast_enclosure_state,
 		podcast_names	= recorder_broadcast_podcast_names,
 		podcast_add		= recorder_broadcast_podcast_add,
 		podcast_remove	= recorder_broadcast_podcast_remove,
@@ -682,20 +704,20 @@ end
 
 local function podcast_template_rss(self)
 	local tmpl = self.template_rss_
-    if not tmpl then
-        local file = table.concat({ 'podcasts', assert(self.name), 'app', 'podcast.slt2.rss'}, '/')
-        -- io.stderr:write('loading template \'', file, '\'\n')
-        tmpl = slt2.loadfile(file)
-        self.template_rss_ = tmpl
-        io.stderr:write('loaded template ', file, '\n')
-    end
-    return tmpl
+	if not tmpl then
+		local file = table.concat({ 'podcasts', assert(self.name), 'app', 'podcast.slt2.rss'}, '/')
+		-- io.stderr:write('loading template \'', file, '\'\n')
+		tmpl = slt2.loadfile(file)
+		self.template_rss_ = tmpl
+		io.stderr:write('loaded template ', file, '\n')
+	end
+	return tmpl
 end
 
 local function podcast_to_rss(self)
 	local rss_file = table.concat{'podcasts', '/', assert(self.name), '.rss'}
-    local rss_new = slt2.render(assert(self:template_rss()), {podcast=self})
-    return file_write_if_changed(rss_file, rss_new)
+	local rss_new = slt2.render(assert(self:template_rss()), {podcast=self})
+	return file_write_if_changed(rss_file, rss_new)
 end
 
 
