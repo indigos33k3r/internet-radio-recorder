@@ -15,26 +15,28 @@ exit
 ## Prerequisites
 
 ### lighttpd (or just any web server to serve static files + simple CGIs + some convenience redirects):
-    sudo apt-get install lighttpd lighttpd-doc
-    sudo lighty-enable-mod accesslog auth cgi dir-listing simple-vhost
-    # user/password database:
-    sudo apt-get install apache2-utils 
-    sudo htdigest -c /etc/lighttpd/lighttpd.user.htdigest 'Recorder br radio' rec-user
+	sudo apt-get install lighttpd lighttpd-doc
+	sudo lighty-enable-mod accesslog auth cgi dir-listing simple-vhost
+	# user/password database:
+	sudo apt-get install apache2-utils
+	sudo htdigest -c /etc/lighttpd/lighttpd.user.htdigest 'Recorder br radio' rec-user
 
 ### ruby + nokogiri (the scraper):
-    sudo apt-get install ruby ruby-dev libxml2-dev libxslt-dev
-    sudo gem install nokogiri
+	sudo apt-get install ruby ruby-dev libxml2-dev libxslt-dev
+	sudo gem install nokogiri
 
 ### lua, luarocks, lfs:
-    sudo apt-get install lua luarocks
-    sudo luarocks install luafilesystem
+	sudo apt-get install lua luarocks
+	sudo luarocks install luafilesystem
 
 ### streamripper:
-    sudo apt-get install streamripper
+	sudo apt-get install streamripper
 
 ### id3tags:
-    # https://bitbucket.org/jfsantos/ltaglib/overview
-    # https://github.com/fur-q/ltaglib/
+	sudo apt-get install libtag1-dev
+	sudo gem install taglib-ruby -v 0.4.0
+	# https://bitbucket.org/jfsantos/ltaglib/overview
+	# https://github.com/fur-q/ltaglib/
 
 ## Recorder application
 
@@ -56,9 +58,9 @@ exit
 	sudo -u www-data /bin/sh /srv/recorder.example.com/app/cron/daily.sh
 
 ## cronjobs
-    sudo -u www-data EDITOR=vi crontab -l
+	sudo -u www-data EDITOR=vi crontab -l
 	# RECORDER_BASE_DIR=/srv/recorder.example.com
-	# 12 05  * * * /bin/sh "$RECORDER_BASE_DIR/app/cron/daily.sh"
-	# 55  *  * * * /bin/sh "$RECORDER_BASE_DIR/app/cron/hourly.sh"
-	# *   *  * * * /bin/sh "$RECORDER_BASE_DIR/app/cron/minutely.sh"
+	# 12 05	 * * * /bin/sh "$RECORDER_BASE_DIR/app/cron/daily.sh"
+	# 55  *	 * * * /bin/sh "$RECORDER_BASE_DIR/app/cron/hourly.sh"
+	# *	  *	 * * * /bin/sh "$RECORDER_BASE_DIR/app/cron/minutely.sh"
 	# 10 */3 * * * /bin/sh "$RECORDER_BASE_DIR/app/cron/cleanup.sh"
