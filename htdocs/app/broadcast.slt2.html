@@ -1,19 +1,41 @@
 #{ -- <pre>
 
-function isodate2htmldatetime(date)
-    local t = parse_iso8601(date)
-    local d = os.date('*t', t)
-    local month_names = { 'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'}
-    local weekdays = { 'Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'}
-    return weekdays[d.wday] .. ", " .. d.day .. ". " .. month_names[d.month] .. " " .. os.date('%Y, %H:%M', t)
-end
-function isodate2htmltime(date)
-    return os.date('%H:%M', parse_iso8601(date))
-end
+	local month_names = { 'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'}
+	local weekdays = { 'Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'}
+	local function isodate2htmldatetime(date)
+		local t = parse_iso8601(date)
+		local d = os.date('*t', t)
+		return weekdays[d.wday] .. ", " .. d.day .. ". " .. month_names[d.month] .. " " .. os.date('%Y, %H:%M', t)
+	end
+	function isodate2htmltime(date)
+		return os.date('%H:%M', parse_iso8601(date))
+	end
+
+	local function A(s)	-- escape for attribute
+		return rec.escape_html_attribute( s )
+	end
+	local function T(s)	-- escape for text (\n -> <br />)
+		return rec.escape_html_text( s )
+	end
+
+	local function DC_meta(met)
+		local ret = {
+			'    <!-- Dublin Core PBMI http://dcpapers.dublincore.org/pubs/article/view/749 -->',
+			'    <!-- not: Ontology for Media Resources 1.0 http://www.w3.org/TR/mediaont-10/ -->',
+			'    <!-- not: EBU http://tech.ebu.ch/lang/en/MetadataEbuCore -->',
+		}
+		for _,k in ipairs({
+			'DC.scheme', 'DC.language', 'DC.title', 'DC.title.series', 'DC.title.episode',
+			'DC.format.timestart', 'DC.format.timeend', 'DC.format.duration', 'DC.image',
+			'DC.description', 'DC.publisher', 'DC.creator', 'DC.copyright', 'DC.source',
+		}) do
+			local row = {'    <meta content=\'', A(met[ rec.meta_key_to_lua(k) ]), '\' name=\'', k, '\'/>'}
+			table.insert( ret, table.concat(row) )
+		end
+		return table.concat(ret,"\n")
+	end
 
     local meta = broadcast.meta
-
-    -- TODO make a convenience function to write the header link+meta tags
 -- </pre>
  }<?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">
@@ -22,29 +44,13 @@ end
     <meta content='text/html; charset=utf-8' http-equiv='content-type'/>
     <meta name="viewport" content="width=device-width"/>
     <link href='../../../app/style.css' rel='stylesheet' type='text/css'/>
-    <title>#{= rec.escape_html_text(meta.DC_title) }</title>
-    <link href='#{= rec.escape_html_attribute(meta.link_prev) }' rel='prev'/>
-    <link href='#{= rec.escape_html_attribute(meta.link_next) }' rel='next'/>
+    <title>#{= T(meta.DC_title) }</title>
+    <link href='#{= A(meta.link_prev) }' rel='prev'/>
+    <link href='#{= A(meta.link_next) }' rel='next'/>
     <link href='index.html' rel='parent'/>
-    <link href='#{= rec.escape_html_attribute(meta.DC_source) }' rel='via'/>
-    <link href='../../../../../enclosures/app/schedule.lua?uri=referer' rel='edit-media'/>
-    <!-- Dublin Core PBMI http://dcpapers.dublincore.org/pubs/article/view/749 -->
-    <!-- not: Ontology for Media Resources 1.0 http://www.w3.org/TR/mediaont-10/ -->
-    <!-- not: EBU http://tech.ebu.ch/lang/en/MetadataEbuCore -->
-    <meta content='#{= rec.escape_html_attribute(meta.DC_scheme) }' name='DC.scheme'/>
-    <meta content='#{= rec.escape_html_attribute(meta.DC_language) }' name='DC.language'/>
-    <meta content='#{= rec.escape_html_attribute(meta.DC_title) }' name='DC.title'/>
-    <meta content='#{= rec.escape_html_attribute(meta.DC_title_series) }' name='DC.title.series'/>
-    <meta content='#{= rec.escape_html_attribute(meta.DC_title_episode) }' name='DC.title.episode'/>
-    <meta content='#{= rec.escape_html_attribute(meta.DC_format_timestart) }' name='DC.format.timestart'/>
-    <meta content='#{= rec.escape_html_attribute(meta.DC_format_timeend) }' name='DC.format.timeend'/>
-    <meta content='#{= rec.escape_html_attribute(meta.DC_format_duration) }' name='DC.format.duration'/>
-    <meta content='#{= rec.escape_html_attribute(meta.DC_image) }' name='DC.image'/>
-    <meta content='#{= rec.escape_html_attribute(meta.DC_description) }' name='DC.description'/>
-    <meta content='#{= rec.escape_html_attribute(meta.DC_publisher) }' name='DC.publisher'/>
-    <meta content='#{= rec.escape_html_attribute(meta.DC_creator) }' name='DC.creator'/>
-    <meta content='#{= rec.escape_html_attribute(meta.DC_copyright) }' name='DC.copyright'/>
-    <meta content='#{= rec.escape_html_attribute(meta.DC_source) }' name='DC.source'/>
+    <link href='#{= A(meta.DC_source) }' rel='via'/>
+    <!-- link href='../../../../../enclosures/app/schedule.lua?uri=referer' rel='edit-media'/ -->
+#{= DC_meta(meta) }
   </head>
   <body id='broadcast'>
     <ul class='navigation'>
@@ -53,17 +59,17 @@ end
       <li id='link_prev'><a href='#{= meta.link_prev }' rel='prev'>← vorige Sendung</a></li>
       <li id='link_next'><a href='#{= meta.link_next }' rel='next'>→ nächste Sendung</a></li>
     </ul>
-    <h2 id='series'>#{= rec.escape_html_text(meta.DC_title_series) }</h2>
-    <h1 id='title'>#{= rec.escape_html_text(meta.DC_title) }</h1>
-    <h2 id='summary'>#{= rec.escape_html_text(meta.DC_title_episode) }</h2>
-    <p class='via'><a href='#{= rec.escape_html_attribute(meta.DC_source) }' id='via' rel='via'>www.br.de</a></p>
+    <h2 id='series'>#{= T(meta.DC_title_series) }</h2>
+    <h1 id='title'>#{= T(meta.DC_title) }</h1>
+    <h2 id='summary'>#{= T(meta.DC_title_episode) }</h2>
+    <p class='via'><a href='#{= A(meta.DC_source) }' id='via' rel='via'>www.br.de</a></p>
     <p id='date'>
-      <span id='dtstart' title='#{= rec.escape_html_attribute(meta.DC_format_timestart) }'>#{= isodate2htmldatetime(meta.DC_format_timestart) }</span>
+      <span id='dtstart' title='#{= A(meta.DC_format_timestart) }'>#{= isodate2htmldatetime(meta.DC_format_timestart) }</span>
        bis 
-      <span id='dtend' title='#{= rec.escape_html_attribute(meta.DC_format_timeend) }'>#{= isodate2htmltime(meta.DC_format_timeend) }</span>
+      <span id='dtend' title='#{= A(meta.DC_format_timeend) }'>#{= isodate2htmltime(meta.DC_format_timeend) }</span>
     </p>
-    <p class='image'><img alt='Bild zur Sendung' id='image' src='#{= rec.escape_html_attribute(meta.DC_image) }'/></p>
-    <div id='content'>#{= rec.escape_html_text(meta.DC_description) }</div>
+    <p class='image'><img alt='Bild zur Sendung' id='image' src='#{= A(meta.DC_image) }'/></p>
+    <div id='content'>#{= T(meta.DC_description) }</div>
     <h3>Podcast</h3>
     <p class="podcasts">#{
 local start = true

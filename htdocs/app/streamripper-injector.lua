@@ -32,9 +32,9 @@ end
 --
 -- inject fake title, album and artist into streamripper for a given interval of time.
 --
-package.cpath = arg[0]:gsub("/[^/]+/?", '') .. "/?.so;" .. package.cpath
+package.cpath = arg[0]:gsub('/[^/]+/?$', '') .. '/?.so;' .. package.cpath
 -- see msleep.c and http://www.troubleshooters.com/codecorn/lua/lua_lua_calls_c.htm#_Make_an_msleep_Function
-require("msleep")
+require('msleep')
 
 local t_start   = tonumber(arg[1])
 local t_end     = tonumber(arg[2])
