@@ -176,7 +176,7 @@ if arg[1] == '--due' then
 		os.exit(0)
 	end
 else
-	bc = assert(rec.broadcast_from_file(arg[1]), "couldn't use braodcast")
+	bc = assert(rec.broadcast_from_file(arg[1]), "couldn't use broadcast")
 end
 
 local tmp_dir = table.concat({'enclosures', bc.day_dir, bc.base}, '/')
@@ -187,7 +187,9 @@ assert( not enclosure_is_ripping(bc), "ripper '" ..  tmp_dir .. "' is already ru
 assert( enclosure_streamripper_run(bc, tmp_dir) )
 assert( enclosure_mp3_consolidate(bc, tmp_dir) )
 
--- id3tag it ?
+-- id3tag
+os.execute('nice app/enclosure-tag.rb \'' .. table.concat{'enclosures', '/', bc.day_dir, '/', bc.base, '.mp3'} .. '\'')
+
 -- re-render html ?
 
 -- re-render rss !

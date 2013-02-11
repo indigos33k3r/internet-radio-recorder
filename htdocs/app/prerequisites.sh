@@ -19,6 +19,8 @@
     sudo apt-get install streamripper
 
 ### id3tags:
+	sudo apt-get install libtag1-dev
+	sudo gem install taglib-ruby -v 0.4.0
     # https://bitbucket.org/jfsantos/ltaglib/overview
     # https://github.com/fur-q/ltaglib/
 
