@@ -3,10 +3,10 @@
 # Install script (t.b.d.)
 
 	# get sources, e.g. clone from github:
-	git clone git://github.com/mro/br-recorder.git
+	git clone git://github.com/mro/radio-pi.git
 
 	# run installer
-	sh br-recorder/install.sh
+	sh radio-pi/install.sh
 	
 exit
 
@@ -41,14 +41,14 @@ exit
 ## Recorder application
 
 	# get sources, e.g. clone from github:
-	git clone git://github.com/mro/br-recorder.git
+	git clone git://github.com/mro/radio-pi.git
 
 	# set baseurl (subdomain assumed, running in a subdir is a bit more complicated, see also server.conf)
-	echo "http://recorder.example.com" > br-recorder/htdocs/app/base.url
+	echo "http://recorder.example.com" > radio-pi/htdocs/app/base.url
 
 	# strip git repo and move to lighttpd vhost dir
-	rm -rf br-recorder/.git
-	sudo mv br-recorder /srv/recorder.example.com
+	rm -rf radio-pi/.git
+	sudo mv radio-pi /srv/recorder.example.com
 	sudo chown -R www-data:www-data /srv/recorder.example.com
 
 	# (re-)start lighttpd
