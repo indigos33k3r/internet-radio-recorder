@@ -40,7 +40,7 @@ Usage:
   $ broadcast-render.lua --stdin
 
   re-render multiple broadcasts
-  $ broadcast-render.lua a.html ...
+  $ broadcast-render.lua a.xml ...
 ]])
     os.exit(0)
 end
@@ -63,14 +63,14 @@ function recorder_process_podcast_all_matches(bc)
 	for _,podcast in pairs( rec.podcasts_all() ) do
 		podcast.broadcast_match = recorder_podcast_broadcast_match
 		if podcast:broadcast_match(bc) then
-			io.stderr:write('match! ', podcast.name, ' ', bc.file_html, '\n')
+			io.stderr:write('match! ', podcast.name, ' ', bc.file_xml, '\n')
 			bc:podcast_add(podcast.name)
 		end
 	end
 end
 
 
--- multiple html files to create/update
+-- multiple xml files to create/update
 if arg[1] == '--stdin' then
 	local metas,err = loadstring(table.concat{'return {', io.read('*a'), '}'})
     if metas == nil then
@@ -84,34 +84,36 @@ if arg[1] == '--stdin' then
     end
 	-- table.sort(metas, function(a,b) return a.DC_format_timestart < b.DC_format_timestart end)
     for _,meta in ipairs(metas) do
-    	-- fake file_html to avoid 2nd ctor:
+    	-- fake file_xml to avoid 2nd ctor:
     	local station_name = assert(meta.station, 'missing key \'station\'')
     	local dtstart = parse_iso8601(assert(meta.DC_format_timestart, 'missing key \'DC_format_timestart\''))
-		local file_html = table.concat{'stations', '/', station_name, '/', os.date('%Y/%m/%d/%H%M', dtstart), ' ', meta.title, '.html'}
+		local file_xml = table.concat{'stations', '/', station_name, '/', os.date('%Y/%m/%d/%H%M', dtstart), ' ', meta.title, '.xml'}
 		meta.title = nil
 		meta.t_download_start = nil
   		meta.t_scrape_start = nil
   		meta.t_scrape_end = nil
-		local bc = assert(rec.broadcast_from_file(file_html, meta))
+		local bc = assert(rec.broadcast_from_file(file_xml, meta))
 
 		bc.process_podcast_matches = recorder_process_podcast_all_matches
     	-- exchange nachtmix image? http://www.br.de/layout/img/programmfahne/nachtmix112~_v-image256_-a42a29b6703dc477fd0848bc845b8be5c48c1667.jpg?version=1314966146489
 		bc:process_podcast_matches()	-- move to lib recorder.lua?
 		assert('table' == type(assert(bc.meta, 'need meta')))
-    	bc:to_html()
+    	bc:to_xml()
+		bc:to_podcast_json()
     end
     os.exit(0)
 end
 
--- multiple html files to re-render
+-- multiple xml files to re-render
 for idx,bc_file in ipairs(arg) do
     if idx > 0 then
 		local bc = rec.broadcast_from_file(bc_file)
 		bc.process_podcast_matches = recorder_process_podcast_all_matches
-        local meta,html_old = bc:read_meta()
+        local meta,xml_old = bc:read_meta()
         bc.meta = meta
 		assert(bc.meta, 'need meta')
 		bc:process_podcast_matches()	-- move to lib recorder.lua?
-    	bc:to_html(meta, html_old)
+    	bc:to_xml(meta, xml_old)
+		bc:to_podcast_json()
     end
 end

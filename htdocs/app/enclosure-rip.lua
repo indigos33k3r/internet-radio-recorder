@@ -42,7 +42,7 @@ if arg[1] == nil or arg[1] == '-?' or arg[1] == '-h'or arg[1] == '--help' then
 
 Usage:
 	$ app/enclosure-rip.lua --due b2
-	$ app/enclosure-rip.lua enclosures/b2/2013/01/20/1405\ musikWelt.html
+	$ app/enclosure-rip.lua enclosures/b2/2013/01/20/1405\ musikWelt.xml
 
 ]])
 	os.exit(0)
@@ -172,7 +172,7 @@ if arg[1] == '--due' then
 		os.exit(0)
 	end
 	if enclosure_is_ripping(bc) then
-		io.write("already ripping '", bc.file_html, "'", "\n")
+		io.write("already ripping '", bc.file_xml, "'", "\n")
 		os.exit(0)
 	end
 else
@@ -181,7 +181,7 @@ end
 
 local tmp_dir = table.concat({'enclosures', bc.day_dir, bc.base}, '/')
 assert( 'pending' == bc:enclosure_state() or 'ripping' == bc:enclosure_state(), "enclosure '" ..  tmp_dir .. "' isn't pending not ripping.")
-bc.meta = assert( bc:read_meta(), "couldn't read meta for " .. bc.file_html)
+bc.meta = assert( bc:read_meta(), "couldn't read meta for " .. bc.file_xml)
 assert( not bc:is_past(), "broadcast '" ..  tmp_dir .. "' is already past.")
 assert( not enclosure_is_ripping(bc), "ripper '" ..  tmp_dir .. "' is already running.")
 assert( enclosure_streamripper_run(bc, tmp_dir) )
@@ -190,7 +190,7 @@ assert( enclosure_mp3_consolidate(bc, tmp_dir) )
 -- id3tag
 os.execute('nice app/enclosure-tag.rb \'' .. table.concat{'enclosures', '/', bc.day_dir, '/', bc.base, '.mp3'} .. '\'')
 
--- re-render html ?
+-- re-render xml ?
 
 -- re-render rss !
 for _,podcast_name in ipairs(bc:podcast_names()) do

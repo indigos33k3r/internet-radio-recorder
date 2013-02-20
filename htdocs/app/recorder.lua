@@ -241,7 +241,7 @@ local function recorder_broadcasts_sibling(self,next_)
 		-- start -1sec until -10 years
 		t_min,t_max = t_min - 1, t_max - 10*365*24*60*60
 	end
-	local ret = recorder_broadcasts_siblings(table.concat{'stations','/',self.station_name},t_min,t_max,'html',false)
+	local ret = recorder_broadcasts_siblings(table.concat{'stations','/',self.station_name},t_min,t_max,'xml',false)
 	if not ret or table.getn(ret) == 0 then return nil end
 	assert(table.getn(ret) == 1)
 	return recorder.broadcast_from_file(ret[1])
@@ -302,7 +302,7 @@ function recorder.escape_xml(str)
 	return str
 end
 
-function recorder.escape_html_attribute(str)
+function recorder.escape_xml_attribute(str)
 	if str == nil then return '' end
 	local tt = {
 		['<'] = '&lt;',
@@ -314,7 +314,7 @@ function recorder.escape_html_attribute(str)
 	return str:gsub('&', '&amp;'):gsub('[<>"\'\n]', tt)
 end
 
-function recorder.meta_key_to_html(meta_key)
+function recorder.meta_key_to_xml(meta_key)
 	return meta_key:gsub("_", ".")
 end
 
@@ -326,21 +326,6 @@ end
 
 function recorder.chdir2app_root( arg0 )
 	lfs.chdir( arg0:gsub("/[^/]+/?$", '') .. '/..' )
-end
-
-slt2 = require('slt2')
-
--- parse template only once per station and cache for later use.
-local function station_broadcast_template_html(station)
-	local tmpl = station.broadcast_template_html_
-	if tmpl == nil then
-		local html_template = table.concat({ 'stations', station.name, 'app', 'broadcast.slt2.html'}, '/')
-		-- io.stderr:write("loading template '", html_template, "'\n")
-		tmpl = slt2.loadfile(html_template)
-		station.broadcast_template_html_ = tmpl
-		io.stderr:write("loaded template ", html_template, "\n")
-	end
-	return tmpl
 end
 
 
@@ -358,7 +343,6 @@ local function station_by_name(name)
 		st = {
 			name = name,
 			on_air = station_on_air,
-			broadcast_template_html = station_broadcast_template_html,
 		}
 		for k,v in pairs(m) do st[k] = v end
 		recorder.stations[name] = st
@@ -366,116 +350,97 @@ local function station_by_name(name)
 	return st
 end
 
--- return table w. <meta> plus html source
+-- return table w. <meta> plus xml source
 -- TODO: sanity check found meta!
-local function broadcast_meta_from_html(html_file)
-	local metas,html_old,file = {},nil,io.open(html_file, 'r')
+local function broadcast_meta_from_xml(xml_file)
+	local metas,xml_old,file = {},nil,io.open(xml_file, 'r')
 	if file == nil then return nil,nil end
-	local html_old = file:read('*a')
+	local xml_old = file:read('*a')
 	file:close()
-	for v,k in html_old:gmatch('<meta%s+content=\'([^\']*)\'%s+name=\'(DC%.[^\']+)\'%s*/?>') do
+	for v,k in xml_old:gmatch('<meta%s+content=\'([^\']*)\'%s+name=\'(DC%.[^\']+)\'%s*/?>') do
 		local k,v = recorder.unescape_xml_text(k),recorder.unescape_xml_text(v)
 		metas[ recorder.meta_key_to_lua(k) ] = v
 	end
-	return metas,html_old
-end
-
--- return table w. <meta> plus html source
--- TODO: sanity check found meta!
-local function lpeg_broadcast_meta_from_html(html_file)
-	local html_old,file = nil,io.open(html_file, 'r')
-	if file == nil then return nil,nil end
-	local html_old = file:read('*a')
-	file:close()
-	local html_meta = nil
-	-- build LPEG to parse <meta/> from html:
-	do
-		-- re-assign consecutive key,val pairs from an array into a neat hash
-		local function collectAttributes(tag, ...)
-			local a = {...}
-			assert( table.getn(a) % 2 == 0)
-			local elem = {name=assert(tag), attributes={}}
-			for i = table.getn(a),2,-2 do
-				elem.attributes[ a[i-1]] = a[i]
-			end
-			return elem
-		end
-		-- abbreviations
-		local P,C = lpeg.P,lpeg.C
-		-- partial html grammar (from w3v)
-		local S = lpeg.S' \t\n\r'								-- http://www.w3.org/TR/REC-xml/#NT-S
-		local Name = (1 - (S + P'=' + lpeg.S'&;<>\'"' ))^1		-- http://www.w3.org/TR/REC-xml/#NT-Name
-		local Eq = S^0 * P'=' * S^0								-- http://www.w3.org/TR/REC-xml/#NT-Eq
-		local apos = P'\''
-		local quot = P'"'
-		-- http://www.w3.org/TR/REC-xml/#NT-AttValue
-		local AttValue = (quot * C( (1 - quot)^0 ) * quot) + (apos * C( (1 - apos)^0 ) * apos)
-		local Attribute = C( Name ) * Eq * AttValue				-- http://www.w3.org/TR/REC-xml/#NT-Attribute
-		-- http://www.w3.org/TR/REC-xml/#NT-EmptyElemTag
-		local META = ( P'<' * C(P'meta') * (S^1 * Attribute)^0 * S^-1 * P'/>' ) / collectAttributes
-		local NOT_META = (1 - META)^0
-		html_meta = lpeg.Ct( (NOT_META * META)^0 )
-		-- lpeg.print(html_meta)
-	end
-
-	local metas = {}
-	for _,elem in ipairs( html_meta:match(html_old) ) do
-		if elem.name and elem.name == 'meta' then
-			if elem.attributes.name and elem.attributes.name:match('^DC%.') then
-				local k,v = recorder.unescape_xml_text(elem.attributes.name),recorder.unescape_xml_text(elem.attributes.content)
-				metas[ recorder.meta_key_to_lua(k) ] = v
-			end
-		end
-	end
-	return metas,html_old
+	return metas,xml_old
 end
 
 local function broadcast_read_meta(self)
-	return broadcast_meta_from_html(assert(self.file_html, 'no html file set.'))
+	io.stderr:write('read meta: ', self.file_xml, "\n")
+	return broadcast_meta_from_xml(assert(self.file_xml, 'no xml file set.'))
 end
 
 local function broadcast_remove(self)
 	if self:is_past() then
 		return false,'mustn\'t be past'
 	end
-	io.stderr:write('remove	 ', self.file_html, "\n")
+	io.stderr:write('remove	 ', self.file_xml, "\n")
 	for _,pc_name in ipairs(self:podcast_names()) do
 		self:podcast_remove(pc_name)
 	end
-	os.remove(self.file_html)
+	os.remove(self.file_xml)
+	os.remove(self.file_podcast_json)
 end
 
-local function broadcast_to_html(self, meta, html_old)
+local function broadcast_to_xml(self, meta, xml_old)
 	assert(self)
 	assert(self.station)
 	assert(self.station.name)
 	assert(self.day_dir)
 	assert(self.base)
-	local html_file = self.file_html
+	local xml_file = self.file_xml
 	if meta == nil then meta = self.meta end
 	if meta ~= nil
-		then _,html_old = broadcast_meta_from_html(html_file)
-		else meta,html_old = broadcast_meta_from_html(html_file)
+		then _,xml_old = broadcast_meta_from_xml(xml_file)
+		else meta,xml_old = broadcast_meta_from_xml(xml_file)
 	end
 	assert(type(meta) == 'table')
-	meta.link_prev = '../../../../../' .. 'app/prev.lua'
-	meta.link_next = '../../../../../' .. 'app/next.lua'
 
-	local tmpl = assert(self.station:broadcast_template_html())
-	local html_new = slt2.render(tmpl, {broadcast=self})
-	mkdir_recursive(self.dir_html)
-	-- TODO: remove all other files during this time interval (html, podcast, enclosure - recreate if ad_hoc?)
+	local ret = {
+		'<?xml version="1.0" encoding="UTF-8"?>',
+		'<?xml-stylesheet type="text/xsl" href="../../../app/broadcast2html.xslt"?>',
+    	'<!-- Dublin Core PBMI http://dcpapers.dublincore.org/pubs/article/view/749 -->',
+		'<!-- not: Ontology for Media Resources 1.0 http://www.w3.org/TR/mediaont-10/ -->',
+		'<!-- not: EBU http://tech.ebu.ch/lang/en/MetadataEbuCore -->',
+		'<broadcast xmlns="https://raw.github.com/mro/radio-pi/develop/htdocs/app/pbmi2003-recmod2012/broadcast.rnc">',
+	}
+	for _,k in ipairs({
+		'DC.scheme', 'DC.language', 'DC.title', 'DC.title.series', 'DC.title.episode',
+		'DC.format.timestart', 'DC.format.timeend', 'DC.format.duration', 'DC.image',
+		'DC.description', 'DC.publisher', 'DC.creator', 'DC.copyright', 'DC.source',
+	}) do
+		local v = meta[ recorder.meta_key_to_lua(k) ]
+		local row = {'    <meta content=\'', recorder.escape_xml_attribute( v ), '\' name=\'', k, '\'/>'}
+		table.insert( ret, table.concat(row) )
+	end
+	table.insert( ret, '</broadcast>' )
+	local xml_new = table.concat(ret,"\n")
+
+	mkdir_recursive(self.dir_xml)
+	-- TODO: remove all other files during this time interval (xml, podcast, enclosure - recreate if ad_hoc?)
 	local t0,t1 = os.time(self),parse_iso8601(self.meta.DC_format_timeend)
-	for f in lfs.dir(self.dir_html) do
-		local bc = recorder.broadcast_from_file(table.concat({self.dir_html, f}, '/'))
+	for f in lfs.dir(self.dir_xml) do
+		local bc = recorder.broadcast_from_file(table.concat({self.dir_xml, f}, '/'))
 		if bc then
 			local bc_t = os.time(bc)
-			if t0 <= bc_t and bc_t < t1 and nil == self.file_html:find(bc.file_html,1,true) then
+			if t0 <= bc_t and bc_t < t1 and nil == self.file_xml:find(bc.file_xml,1,true) then
 				bc:remove()
 			end
 		end
 	end
-	return file_write_if_changed(html_file, html_new, html_old)
+	return file_write_if_changed(xml_file, xml_new, xml_old)
+end
+
+-- write podcast json like
+-- { "podcasts": [ "ad_hoc", "krimi" ] }
+local function broadcast_to_podcast_json(self)
+	-- io.stderr:write('to_podcast_json()', "\n")
+	local pcns = self:podcast_names()
+	if table.getn(pcns) > 0 then
+		local t = table.concat{'{ "podcasts":[{"name":"', table.concat(pcns,'"},{"name":"'), '"}] }'}
+		file_write_if_changed(self.file_podcast_json, t)
+	else
+		os.remove( self.file_podcast_json )
+	end
 end
 
 -- Enclosure stuff
@@ -544,7 +509,7 @@ local function recorder_broadcast_enclosure_schedule(self)
 	local scan_dir = table.concat{'enclosures', '/', self.day_dir}
 	local base_pending = table.concat{self.base, '.pending'}
 	if 'file' == lfs.attributes(table.concat{scan_dir, '/', base_pending}, 'mode') then
-		io.stderr:write('unchang ', 'enclosures', '/', self.day_dir, '/', self.base, '.html', "\n")
+		io.stderr:write('unchang ', 'enclosures', '/', self.day_dir, '/', self.base, '.xml', "\n")
 		return true,nil
 	end
 	if 'directory' == lfs.attributes(scan_dir, 'mode') then
@@ -558,7 +523,7 @@ local function recorder_broadcast_enclosure_schedule(self)
 	local file = table.concat{scan_dir, '/', base_pending}
 	touch_create(file)
 	self._enclosure_state = nil
-	io.stderr:write('schedld ', self.day_dir, '/', self.base, '.html', "\n")
+	io.stderr:write('schedld ', self.day_dir, '/', self.base, '.xml', "\n")
 	return true,nil
 end
 
@@ -602,13 +567,13 @@ local function recorder_broadcast_podcast_add(self, podcast_name)
 	if 'directory' ~= lfs.attributes( table.concat{'podcasts', '/', podcast_name}, 'mode' ) then
 		return false,'no such podcast'
 	end
-	touch_create( table.concat{'podcasts', '/', podcast_name, '/', self.day_dir, '/', self.base, '.html' } )
+	touch_create( table.concat{'podcasts', '/', podcast_name, '/', self.day_dir, '/', self.base, '.xml' } )
 	self._podcast_names = nil
 	return recorder_broadcast_enclosure_schedule(self)
 end
 
 local function recorder_broadcast_podcast_remove(self, podcast_name)
-	local pc_f = table.concat{'podcasts', '/', podcast_name, '/', self.day_dir, '/', self.base, '.html' }
+	local pc_f = table.concat{'podcasts', '/', podcast_name, '/', self.day_dir, '/', self.base, '.xml' }
 	if 'file' ~= lfs.attributes( pc_f, 'mode' ) then
 		return false,'no such podcast'
 	end
@@ -632,7 +597,7 @@ local function recorder_broadcast_next(self)
 end
 
 --- ctor
--- @param bc_file path to a html file, must include station name and the rest.
+-- @param bc_file path to a xml file, must include station name and the rest.
 -- @param meta optional
 function recorder.broadcast_from_file(bc_file, meta)
 	local section,sta,year,month,day,hour,min,title,ext = bc_file:match("([^/]+)/([^/]+)/(%d%d%d%d)/(%d%d)/(%d%d)/(%d%d)(%d%d) (.*)%.([^/%.]*)$")
@@ -660,13 +625,15 @@ function recorder.broadcast_from_file(bc_file, meta)
 		podcast_remove	= recorder_broadcast_podcast_remove,
 		is_past			= recorder_broadcast_is_past,
 		timeend			= recorder_broadcast_timeend,
-		to_html			= broadcast_to_html,
+		to_xml			= broadcast_to_xml,
+		to_podcast_json	= broadcast_to_podcast_json,
 		remove			= broadcast_remove,
 		prev_sibling	= recorder_broadcast_prev,
 		next_sibling	= recorder_broadcast_next,
 	}
-	t.dir_html = table.concat({'stations', t.day_dir}, '/')
-	t.file_html = table.concat{t.dir_html, '/', t.base, '.html'}
+	t.dir_xml = table.concat({'stations', t.day_dir}, '/')
+	t.file_xml = table.concat{t.dir_xml, '/', t.base, '.xml'}
+	t.file_podcast_json = table.concat{t.dir_xml, '/', t.base, '.json'}
 	return t
 end
 
@@ -701,6 +668,7 @@ function recorder.station_find_most_recent_before(station_name, time_max, sectio
 end
 
 -- podcasts
+local slt2 = require "slt2"	-- http://github.com/henix/slt2
 
 local function podcast_template_rss(self)
 	local tmpl = self.template_rss_
@@ -745,7 +713,7 @@ local function podcast_broadcasts(self, comp)
 									for bc_file in lfs.dir( day_dir ) do
 										local bc = recorder.broadcast_from_file( table.concat{day_dir, '/', bc_file} )
 										if bc then
-											-- io.stderr:write('found broadcast ', bc.file_html, '\n')
+											-- io.stderr:write('found broadcast ', bc.file_xml, '\n')
 											table.insert(tmp, bc)
 										end
 									end
@@ -758,7 +726,7 @@ local function podcast_broadcasts(self, comp)
 		end
 	end
 	if not comp then
-		comp = function(a,b) return a.file_html < b.file_html end
+		comp = function(a,b) return a.file_xml < b.file_xml end
 	end
 	table.sort(tmp, comp)
 	return tmp

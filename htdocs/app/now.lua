@@ -59,9 +59,9 @@ if not station_name and ref 		   then	station_name = ref:match('stations/([^/]+)
 
 if not station_name then http_400_bad_request('Cannot guess station. Give me either\n', '- GET param station=...\n', '- GET param uri=...\n', '- a referer\n\n') end
 
-local bc = rec.station_find_most_recent_before(station_name, os.time(), 'stations', 'html', false)
+local bc = rec.station_find_most_recent_before(station_name, os.time(), 'stations', 'xml', false)
 if bc then
-	http_303_see_other('../' .. bc.file_html)
+	http_303_see_other('../' .. bc.file_xml)
 else
-	http_400_bad_request('Ouch, cannot find current broadcat for station: \'', station_name, '\'')
+	http_400_bad_request('Ouch, cannot find current broadcast for station: \'', station_name, '\'')
 end

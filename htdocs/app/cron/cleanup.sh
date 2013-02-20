@@ -28,4 +28,3 @@ me="$(basename "$0")"
 /usr/bin/find . -depth -type d -empty -exec rmdir {} \; 1> log/"$me".stdout.log 2> log/"$me".stderr.log
 # fix access permissions
 /usr/bin/find . -type d -exec chmod 770 {} \; 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log
-

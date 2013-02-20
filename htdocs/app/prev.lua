@@ -57,7 +57,7 @@ if not bc then http_400_bad_request('No usable broadcast (HTTP_REFERER) set: \''
 
 local sib,msg = bc:prev_sibling()
 if sib then
-	http_303_see_other('../../../../../' .. sib.file_html)
+	http_303_see_other('../../../../../' .. sib.file_xml)
 else
-	http_303_see_other('../../../../../' .. bc.file_html)
+	http_303_see_other('../../../../../' .. bc.file_xml)
 end

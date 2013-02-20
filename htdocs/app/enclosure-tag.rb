@@ -39,10 +39,10 @@ require 'open-uri'
 require 'rubygems'
 require 'taglib'	# gem 'taglib-ruby', '= 0.4.0', :require => 'taglib'
 
-def html_for_mp3 mp3
+def xml_for_mp3 mp3
 	m = /([^\/]+\/\d{4}\/\d{2}\/\d{2}\/\d{4}\s.*)\.mp3$/.match mp3
 	raise "Ouch" if m.nil?
-	File.join 'stations', m[1] + ".html"
+	File.join 'stations', m[1] + ".xml"
 end
 
 require 'rexml/document'
@@ -52,9 +52,9 @@ def unescape_attr s
 	REXML::Text::unnormalize(s)
 end
 
-def meta_from_html html
+def meta_from_xml xml
 	ret = {}
-	File.open(html, 'r') do |f|
+	File.open(xml, 'r') do |f|
 		pat = /<meta content='([^']*)' name='(DC\.[^']*)'\s*\/?>/
 		f.each_line do |l|
 			m = pat.match l
@@ -114,9 +114,9 @@ Dir.chdir File.dirname(File.dirname(__FILE__))
 ARGV.each do |mp3|
 	begin
 		$stderr.puts "tagging #{mp3}"
-#		$stderr.puts "from    #{html_for_mp3(mp3)}"
-#		$stderr.puts "meta    #{meta_from_html(html_for_mp3(mp3))}"
-		tag_mp3 mp3, meta_from_html(html_for_mp3(mp3))
+#		$stderr.puts "from    #{xml_for_mp3(mp3)}"
+#		$stderr.puts "meta    #{meta_from_xml(xml_for_mp3(mp3))}"
+		tag_mp3 mp3, meta_from_xml(xml_for_mp3(mp3))
 	rescue Exception => e
 		$stderr.puts "error #{e}"
 	end
