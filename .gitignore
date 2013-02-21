@@ -1,12 +1,15 @@
+logs/
+*/log/
+
 */app/base.url
 
 */enclosures/
 !*/enclosures/app/
 
-*/*/podcasts/
-!*/*/podcasts/app/
+*/podcasts/
+!*/podcasts/app/
+!*/podcasts/*/app/
 
 */stations/
 !*/stations/app/
 
-*/log/
