@@ -124,7 +124,7 @@ module Recorder
 
 		def exists?
 			app_root = File.dirname(File.dirname(__FILE__))
-			pat = File.join(app_root, 'stations', station.name, '%04d' % dtstart.year, '%02d' % dtstart.month, '%02d' % dtstart.day, "#{dtstart.strftime '%H%M'} *.html")
+			pat = File.join(app_root, 'stations', station.name, '%04d' % dtstart.year, '%02d' % dtstart.month, '%02d' % dtstart.day, "#{dtstart.strftime '%H%M'} *.xml")
 			Dir.glob( pat ).length > 0
 		end
 
