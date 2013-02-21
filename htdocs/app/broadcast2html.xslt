@@ -92,17 +92,6 @@ function render_podcasts( data ) {
 		;
 	}
 }
-
-		$( '#dtstart' ).html( new Date( $("meta[name='DC.format.timestart']").attr("content") ).toLocaleString() );
-		$( '#dtend' ).html( new Date( $("meta[name='DC.format.timeend']").attr("content") ).toLocaleTimeString() );
-		var t = $("meta[name='DC.description']").attr("content");
-		t = $('<div/>').text(t).html(); // http://stackoverflow.com/a/6020820
-		try {
-			$( '#content' ).html( t.replace(/\n/g, "\n<br/>\n") );
-		} catch(e) {
-			$( '#content' ).html( 'Aua: "' + e + '": ' + t );
-		}
-
 		var podasts_json_url = window.location.pathname.replace(/^.*\//,'').replace(/\.xml$/,'.json');
 		$.ajax({
 			url: podasts_json_url,
@@ -110,6 +99,19 @@ function render_podcasts( data ) {
 			dataType: 'json',
 			success: render_podcasts
 		});
+
+		$( '#dtstart' ).html( new Date( $("meta[name='DC.format.timestart']").attr("content") ).toLocaleString() );
+		$( '#dtend' ).html( new Date( $("meta[name='DC.format.timeend']").attr("content") ).toLocaleTimeString() );
+		var t = $("meta[name='DC.description']").attr("content");
+		try {
+			t = t.replace(/&/g, "&amp;");
+			t = t.replace(/</g, "&lt;");
+			t = t.replace(/>/g, "&gt;");
+			t = t.replace(/\n/g, "\n<br/>\n");
+			$( '#content' ).html( t );
+		} catch(e) {
+			$( '#content' ).text( 'Aua: "' + e + '": ' + t );
+		}
   //]]>
   </script>
 	  </body>
