@@ -91,7 +91,11 @@ pkgs=""
     pkgs="$pkgs apache2-utils"
 
 ### ruby + nokogiri (the scraper):
-    pkgs="$pkgs ruby ruby-dev libxml2-dev libxslt-dev"
+	ruby -e puts > /dev/null
+	if [ $? -ne 0 ] ; then
+    	pkgs="$pkgs ruby ruby-dev"
+    fi
+    pkgs="$pkgs libxml2-dev libxslt-dev"
 
 ### lua, luarocks, lfs:
     pkgs="$pkgs lua5.1 luarocks"
