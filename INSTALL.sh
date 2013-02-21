@@ -1,7 +1,32 @@
 #!/bin/dash
+#
+# Copyright (c) 2013 Marcus Rohrmoser, https://github.com/mro/radio-pi
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+# associated documentation files (the "Software"), to deal in the Software without restriction,
+# including without limitation the rights to use, copy, modify, merge, publish, distribute,
+# sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all copies or
+# substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+# NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+# OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
+# MIT License http://opensource.org/licenses/MIT
+#
+#
+# INSTALLATION
+#
+#     $ curl https://raw.github.com/mro/radio-pi/master/INSTALL.sh > INSTALL.sh && dash INSTALL.sh
+#
 
 git_repo="git://github.com/mro/radio-pi.git"
-git_branch="develop"
+git_branch="master"
 www_base="/srv"
 
 me=$(basename "$0")
@@ -83,38 +108,38 @@ if [ $? -ne 0 ] ; then exit 6; fi
 
 echo "$echo_prefix Prerequisites - configuration.."
 
-### job scheduler cron + at:
-
-### lighttpd (or just any web server to serve static files + simple CGIs + some convenience redirects):
-    sudo lighty-enable-mod accesslog auth cgi dir-listing simple-vhost
-
-    read -p "$echo_prefix http user (for authenticated http://$RECORDER_DOMAIN/ mp3 access): " RECORDER_WWW_USER
-    if [ "" = "$RECORDER_WWW_USER" ] ; then
-        echo "$echo_prefix no username given, exiting..."
-        echo "$echo_prefix to rerun call"
-        echo "    $ $0 $1"
-        exit 7
-    fi
-    # user/password database:
-    sudo htdigest -c /etc/lighttpd/lighttpd.user.htdigest 'Radio Pi' "$RECORDER_WWW_USER"
-
 ### ruby + nokogiri (the scraper):
     sudo gem install nokogiri
+
+### id3tags:
+    sudo gem install taglib-ruby -v 0.4.0
 
 ### lua, luarocks, lfs:
     sudo luarocks install luafilesystem
 
 ### streamripper:
 
-### id3tags:
-    sudo gem install taglib-ruby -v 0.4.0
+### lighttpd (or just any web server to serve static files + simple CGIs + some convenience redirects):
+    sudo lighty-enable-mod accesslog auth cgi dir-listing simple-vhost
 
-sudo chown -R "www-data:www-data" "$recorder_base"
-if [ $? -ne 0 ] ; then exit 8; fi
+    read -p "$echo_prefix http user (for authenticated http://$RECORDER_DOMAIN/ mp3 access): " RECORDER_HTTP_USER
+    if [ "" = "$RECORDER_HTTP_USER" ] ; then
+        echo "$echo_prefix no username given, exiting..."
+        echo "$echo_prefix to rerun call"
+        echo "    $ $0 $1"
+        exit 7
+    fi
+    # user/password database:
+    sudo htdigest -c /etc/lighttpd/lighttpd.user.htdigest 'Radio Pi' "$RECORDER_HTTP_USER"
 
-echo "http://$RECORDER_DOMAIN" | sudo -u www-data tee "$recorder_base/htdocs/app/base.url"
+	sudo chown -R "www-data:www-data" "$recorder_base"
+	if [ $? -ne 0 ] ; then exit 8; fi
 
-sudo /etc/init.d/lighttpd force-reload
+	echo "http://$RECORDER_DOMAIN" | sudo -u www-data tee "$recorder_base/htdocs/app/base.url"
+
+	sudo /etc/init.d/lighttpd force-reload
+
+### job scheduler cron + at:
 
 sudo -u www-data crontab -ri
 sudo -u www-data crontab - <<END_OF_CRONTAB
@@ -130,3 +155,5 @@ sudo -u www-data crontab -l
 echo "######################################################"
 echo "Recorder install finished. For initial radio program website scrape, call"
 echo "    \$ sudo -u www-data $recorder_base/htdocs/app/cron/daily.sh"
+echo "Follow progress via"
+echo "    \$ tail -f $recorder_base/htdocs/log/*
