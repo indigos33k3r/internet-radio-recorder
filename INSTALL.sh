@@ -160,4 +160,4 @@ echo "######################################################"
 echo "Recorder install finished. For initial radio program website scrape, call"
 echo "    \$ sudo -u www-data $recorder_base/htdocs/app/cron/daily.sh"
 echo "Follow progress via"
-echo "    \$ tail -f $recorder_base/htdocs/log/*
+echo "    \$ tail -f $recorder_base/htdocs/log/*"
