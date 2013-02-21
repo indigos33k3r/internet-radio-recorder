@@ -1,66 +1,136 @@
-#!/bin/sh
+#!/bin/dash
 
-# Install script (t.b.d.)
+git_repo="git://github.com/mro/radio-pi.git"
+git_branch="develop"
+www_base="/srv"
 
-	# get sources, e.g. clone from github:
-	git clone git://github.com/mro/radio-pi.git
+me=$(basename "$0")
 
-	# run installer
-	sh radio-pi/install.sh
-	
-exit
+RECORDER_DOMAIN="$1"
 
-# Manual Install
+if [ "" = "$RECORDER_DOMAIN" ] ; then
+    echo "installing radio-pi from $git_repo to /srv/<recorder.example.com>"
+    read -p "Recorder domain (e.g. recorder.example.com): " RECORDER_DOMAIN
+    echo "$RECORDER_DOMAIN"
+    if [ "" = "$RECORDER_DOMAIN" ] ; then
+        echo "no domain given, exiting..."
+        exit 1
+    fi
 
-## Prerequisites
+    recorder_base="$www_base/$RECORDER_DOMAIN"
+
+    cd "$www_base"
+    if [ $? -ne 0 ] ; then exit 2; fi
+    echo "creating $recorder_base..."
+
+    echo "grabbing git repo $git_repo ..."
+    sudo apt-get install git-core
+    if [ $? -ne 0 ] ; then
+        echo "couldn't install git-core. Exiting..."
+        exit 3
+    fi
+
+    if [ -d "$RECORDER_DOMAIN/.git" ] ; then
+        echo "I'm not safe to be re-run for now. Exiting..."
+        exit 4
+        # cd "$RECORDER_DOMAIN"
+        # sudo git pull
+    else
+        sudo git clone "$git_repo" "$RECORDER_DOMAIN"
+        sudo chown -R "$USER:www-data" "$RECORDER_DOMAIN"
+        cd "$RECORDER_DOMAIN"
+        git checkout "$git_branch"
+    fi
+    if [ $? -ne 0 ] ; then
+        echo "couldn't fetch git-repo. Exiting..."
+        exit 5
+    fi
+
+    echo "handing over to $me from git..."
+    dash "$me" "$RECORDER_DOMAIN"
+    exit 0
+else
+    echo "Continue install for recorder domain '$RECORDER_DOMAIN'..."
+fi
+
+echo "Prerequisites - apt packages"
+pkgs=""
+
+### job scheduler cron + at:
+    pkgs="$pkgs cron at"
 
 ### lighttpd (or just any web server to serve static files + simple CGIs + some convenience redirects):
-	sudo apt-get install lighttpd lighttpd-doc
-	sudo lighty-enable-mod accesslog auth cgi dir-listing simple-vhost
-	# user/password database:
-	sudo apt-get install apache2-utils
-	sudo htdigest -c /etc/lighttpd/lighttpd.user.htdigest 'Recorder br radio' rec-user
+    pkgs="$pkgs lighttpd lighttpd-doc"
+    # user/password database:
+    pkgs="$pkgs apache2-utils"
 
 ### ruby + nokogiri (the scraper):
-	sudo apt-get install ruby ruby-dev libxml2-dev libxslt-dev
-	sudo gem install nokogiri
+    pkgs="$pkgs ruby ruby-dev libxml2-dev libxslt-dev"
 
 ### lua, luarocks, lfs:
-	sudo apt-get install lua luarocks
-	sudo luarocks install luafilesystem
+    pkgs="$pkgs lua5.1 luarocks"
 
 ### streamripper:
-	sudo apt-get install streamripper
+    pkgs="$pkgs streamripper"
 
 ### id3tags:
-	sudo apt-get install libtag1-dev
-	sudo gem install taglib-ruby -v 0.4.0
-	# https://bitbucket.org/jfsantos/ltaglib/overview
-	# https://github.com/fur-q/ltaglib/
+    pkgs="$pkgs libtag1-dev"
 
-## Recorder application
+echo "apt-get install $pkgs"
+sudo apt-get install $pkgs
+if [ $? -ne 0 ] ; then exit 6; fi
 
-	# get sources, e.g. clone from github:
-	git clone git://github.com/mro/radio-pi.git
+echo "prerequisites - configuration.."
 
-	# set baseurl (subdomain assumed, running in a subdir is a bit more complicated, see also server.conf)
-	echo "http://recorder.example.com" > radio-pi/htdocs/app/base.url
+read -p "Recorder username to create (for authenticated www mp3 access): " RECORDER_WWW_USER
+if [ "" = "$RECORDER_WWW_USER" ] ; then
+    echo "no username given, exiting..."
+    echo "to rerun call"
+    echo "    $ $0 $1"
+    exit 7
+fi
 
-	# strip git repo and move to lighttpd vhost dir
-	rm -rf radio-pi/.git
-	sudo mv radio-pi /srv/recorder.example.com
-	sudo chown -R www-data:www-data /srv/recorder.example.com
+### job scheduler cron + at:
 
-	# (re-)start lighttpd
-	sudo /etc/init.d/lighttpd force-reload
+### lighttpd (or just any web server to serve static files + simple CGIs + some convenience redirects):
+    sudo lighty-enable-mod accesslog auth cgi dir-listing simple-vhost
+    # user/password database:
+    sudo htdigest -c /etc/lighttpd/lighttpd.user.htdigest 'Recorder br radio' "$RECORDER_WWW_USER"
 
-	# initial launch (no need to wait until daily cronjob fires 1st time):
-	sudo -u www-data /bin/sh /srv/recorder.example.com/app/cron/daily.sh
+### ruby + nokogiri (the scraper):
+    sudo gem install nokogiri
 
-## cronjobs
-	sudo -u www-data EDITOR=vi crontab -l
-	# RECORDER_BASE_DIR=/srv/recorder.example.com
-	# 12 05	 * * * /bin/sh "$RECORDER_BASE_DIR/app/cron/daily.sh"
-	# 55  *	 * * * /bin/sh "$RECORDER_BASE_DIR/app/cron/hourly.sh"
-	# *	  *	 * * * /bin/sh "$RECORDER_BASE_DIR/app/cron/minutely.sh"
-	# 10 */3 * * * /bin/sh "$RECORDER_BASE_DIR/app/cron/cleanup.sh"
+### lua, luarocks, lfs:
+    sudo luarocks install luafilesystem
+
+### streamripper:
+
+### id3tags:
+    sudo gem install taglib-ruby -v 0.4.0
+
+sudo chown -R "www-data:www-data" "$www_base/$RECORDER_DOMAIN"
+if [ $? -ne 0 ] ; then exit 8; fi
+sudo chmod -R g+rw "$www_base/$RECORDER_DOMAIN"
+sudo adduser "$USER" "www-data"
+
+echo "http://$RECORDER_DOMAIN" > "$www_base/$RECORDER_DOMAIN/htdocs/app/base.url"
+# if [ $? -ne 0 ] ; then exit 9; fi
+# cd "$www_base/$RECORDER_DOMAIN"
+
+sudo /etc/init.d/lighttpd force-reload
+
+sudo -u www-data crontab -ri
+if [ $? -ne 0 ] ; then exit 10; fi
+sudo -u www-data crontab - <<END_OF_CRONTAB
+# crontab generated by $0 from $git_repo branch $git_branch
+RADIO_PI_CRON_DIR=$www_base/$RECORDER_DOMAIN/htdocs/app/cron
+12 05  * * * /bin/dash "\$RADIO_PI_CRON_DIR/daily.sh"
+55  *  * * * /bin/dash "\$RADIO_PI_CRON_DIR/hourly.sh"
+*   *  * * * /bin/dash "\$RADIO_PI_CRON_DIR/minutely.sh"
+10 */3 * * * /bin/dash "\$RADIO_PI_CRON_DIR/cleanup.sh"
+END_OF_CRONTAB
+sudo -u www-data crontab -l
+
+echo "######################################################"
+echo "Recorder install finished. For initial radio program website scrape call"
+echo "    \$ sudo -u www-data $www_base/$RECORDER_DOMAIN/htdocs/app/cron/daily.sh"
