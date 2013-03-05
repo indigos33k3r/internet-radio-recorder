@@ -29,11 +29,12 @@ if os.getenv('HTTP_HOST') then
 	os.exit(1)
 end
 
+require 'luarocks.loader'	-- http://www.luarocks.org/en/Using_LuaRocks
+
 --
 -- grab artist + title from http://www.br.de/on3/welle116~liveHeader.jsp
 --
 
-require 'luarocks.loader'	-- http://www.luarocks.org/en/Using_LuaRocks
 http = require 'socket.http'
 local function scrape_playlist_tracks(now)
 	local t0 = now or os.time()
@@ -70,9 +71,10 @@ local function scrape_playlist_tracks(now)
 	return play_list	
 end
 
-package.cpath = arg[0]:gsub('/[^/]+/?$', '') .. '/?.so;' .. package.cpath
--- see msleep.c and http://www.troubleshooters.com/codecorn/lua/lua_lua_calls_c.htm#_Make_an_msleep_Function
-require('msleep')
+local psx = require'posix'
+local function msleep(msecs)
+	psx.nanosleep(msecs / 1000, (msecs % 1000) * 1000)
+end
 
 local stream_delay_sec = 3
 local last_scraped	= 0

@@ -55,14 +55,14 @@ module Recorder
 		end
 
 		def update_broadcasts_between t_min, t_max, force
-			$stderr.puts "#{self.class}.update_index_between  #{t_min}  -  #{t_max}"
+			$stderr.puts "#{self.class}.update_index_between  #{t_min}	-  #{t_max}"
 			$stdout.puts "-- #{__FILE__}"
 
 			t_min_day = station.day_start_for_day t_min
 			t_max_day = station.day_start_for_day t_max
 
-			# $stderr.puts "t_min_day: #{t_min_day}    for   #{t_min}"
-			# $stderr.puts "t_max_day: #{t_max_day}    for   #{t_max}"
+			# $stderr.puts "t_min_day: #{t_min_day}	   for	 #{t_min}"
+			# $stderr.puts "t_max_day: #{t_max_day}	   for	 #{t_max}"
 
 			day_queue = Queue.new
 			bc_queue = Queue.new
@@ -169,7 +169,7 @@ module Recorder
 						raise 'Ouch' if @station.day_start.nil?
 						if time_str < @station.day_start
 							d = Date.new(year.to_i, month.to_i, day.to_i) + 1
-							day   = '%02d' % d.day
+							day	  = '%02d' % d.day
 							month = '%02d' % d.month
 							year  = '%04d' % d.year
 						end
@@ -248,7 +248,7 @@ end
 
 
 ###############################################################################
-##  the actual commandline script interface
+##	the actual commandline script interface
 ###############################################################################
 
 Recorder::ScraperBR.new.run_update_broadcast

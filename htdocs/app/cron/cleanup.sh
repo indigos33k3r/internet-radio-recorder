@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/dash
 #
 # Copyright (c) 2013 Marcus Rohrmoser, https://github.com/mro/radio-pi
 #

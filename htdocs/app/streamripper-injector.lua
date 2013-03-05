@@ -32,41 +32,45 @@ end
 --
 -- inject fake title, album and artist into streamripper for a given interval of time.
 --
-package.cpath = arg[0]:gsub('/[^/]+/?$', '') .. '/?.so;' .. package.cpath
--- see msleep.c and http://www.troubleshooters.com/codecorn/lua/lua_lua_calls_c.htm#_Make_an_msleep_Function
-require('msleep')
 
-local t_start   = tonumber(arg[1])
-local t_end     = tonumber(arg[2])
-data            = {ARTIST=arg[3], ALBUM=arg[4], TITLE=arg[5]}
+require 'luarocks.loader'	-- http://www.luarocks.org/en/Using_LuaRocks
+local psx = require'posix'
+
+local function msleep(msecs)
+	psx.nanosleep(msecs / 1000, (msecs % 1000) * 1000)
+end
+
+local t_start	= tonumber(arg[1])
+local t_end		= tonumber(arg[2])
+data			= {ARTIST=arg[3], ALBUM=arg[4], TITLE=arg[5]}
 local function echo_kv(idx)
-    io.write(idx, '=', data[idx], "\n")
+	io.write(idx, '=', data[idx], "\n")
 end
 
 -- endless loop
 while true do
-    local t = os.time()
-    if t < t_start then
-        -- don't write a prefix, just wait.
-    else
-        if t > t_end then
-            if data.TITLE ~= '' then
-                data.ARTIST = ''
-                data.ALBUM = ''
-                data.TITLE = ''
-            end
-        else
-            if data.ARTIST == nil or data.ARTIST == '' then data.ARTIST = 'artist' end
-            if data.ALBUM  == nil or data.ALBUM  == '' then data.ALBUM  = 'album'  end
-            if data.TITLE  == nil or data.TITLE  == '' then data.TITLE  = 'title'  end
-        end
-        table.foreach(data, echo_kv)
-        io.write(".\n")
-        io.flush()
-    end
-    local now = os.time()
-    local dt = os.difftime(t_start, now)            -- how long until start?
-    if dt < 0 then dt = os.difftime(t_end, now) end -- how long until end?
-    if dt < 0 then dt = 5 end                       -- past end
-    msleep( 1000 * math.max(0.01, math.min(0.1, dt) ) ) -- write every .1 second, but no more than every 1/100th sec
+	local t = os.time()
+	if t < t_start then
+		-- don't write a prefix, just wait.
+	else
+		if t > t_end then
+			if data.TITLE ~= '' then
+				data.ARTIST = ''
+				data.ALBUM = ''
+				data.TITLE = ''
+			end
+		else
+			if data.ARTIST == nil or data.ARTIST == '' then data.ARTIST = 'artist' end
+			if data.ALBUM  == nil or data.ALBUM	 == '' then data.ALBUM	= 'album'  end
+			if data.TITLE  == nil or data.TITLE	 == '' then data.TITLE	= 'title'  end
+		end
+		table.foreach(data, echo_kv)
+		io.write(".\n")
+		io.flush()
+	end
+	local now = os.time()
+	local dt = os.difftime(t_start, now)			-- how long until start?
+	if dt < 0 then dt = os.difftime(t_end, now) end -- how long until end?
+	if dt < 0 then dt = 5 end						-- past end
+	msleep( 1000 * math.max(0.1, math.min(0.9, dt) ) ) -- write every .9 second, but no more than every 1/10th sec
 end

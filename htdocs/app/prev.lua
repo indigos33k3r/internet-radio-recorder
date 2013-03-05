@@ -21,43 +21,23 @@
 ]]
 
 
--- ensure recorder.lua (next to this file) is found:
+-- ensure Recorder.lua (next to this file) is found:
 package.path = arg[0]:gsub('/[^/]+/?$', '') .. '/?.lua;' .. package.path
-rec = require('recorder')
-rec.chdir2app_root( arg[0] )
--- lfs.chdir( arg[0]:gsub('/[^/]+/?$', '') .. '/../..' )
+require('Recorder')
+Recorder.chdir2app_root( arg[0] )
 
-local function http_400_bad_request(...)
-	io.write('HTTP/1.1 400 Bad Request', '\n')
-	io.write('Content-Type: text/plain', '\n')
-	io.write('Server: Recorder 2013/lua', '\n')
-	io.write('\n', ...)
-	io.write('\n')
-	io.flush()
-	os.exit(0)
-end
-
-local function http_303_see_other(uri)
-	io.write('HTTP/1.1 303 See Other', '\n')
-	io.write('Content-Type: text/plain', '\n')
-	io.write('Server: Recorder 2013/lua', '\n')
-	io.write('Location: ', uri, '\n')
-	io.write('\n')
-	io.flush()
-end
-
-if 'GET' ~= os.getenv('REQUEST_METHOD') then http_400_bad_request('need POST.') end
+if 'GET' ~= os.getenv('REQUEST_METHOD') then http_400_bad_request('need GET.') end
 -- if 'referer' ~= value then http_400_bad_request('bad value') end
 
-local bc_http = os.getenv('HTTP_REFERER')
-if not bc_http then http_400_bad_request('Odd, no broadcast (HTTP_REFERER) set.') end
+local bc_xml = os.getenv('HTTP_REFERER')
+if not bc_xml then http_400_bad_request('Odd, no broadcast (HTTP_REFERER) set.') end
 
-local bc = rec.broadcast_from_file( rec.unescape_url(bc_http) )
-if not bc then http_400_bad_request('No usable broadcast (HTTP_REFERER) set: \'', bc_http, '\'') end
+local bc = Broadcast.from_file( bc_xml:unescape_url() )
+if not bc then http_400_bad_request('No usable broadcast (HTTP_REFERER) set: \'', bc_xml, '\'') end
 
 local sib,msg = bc:prev_sibling()
 if sib then
-	http_303_see_other('../../../../../' .. sib.file_xml)
+	http_303_see_other('../../../../../stations/' .. sib.id .. '.xml')
 else
-	http_303_see_other('../../../../../' .. bc.file_xml)
+	http_303_see_other('../../../../../stations/' .. bc.id .. '.xml')
 end

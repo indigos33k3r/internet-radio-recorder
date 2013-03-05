@@ -21,29 +21,10 @@
 ]]
 
 
--- ensure recorder.lua (next to this file) is found:
+-- ensure Recorder.lua (next to this file) is found:
 package.path = arg[0]:gsub('/[^/]+/?$', '') .. '/?.lua;' .. package.path
-rec = require('recorder')
-rec.chdir2app_root( arg[0] )
-
-local function http_400_bad_request(...)
-	io.write('HTTP/1.1 400 Bad Request', '\n')
-	io.write('Content-Type: text/plain', '\n')
-	io.write('Server: Recorder 2013/lua', '\n')
-	io.write('\n', ...)
-	io.write('\n')
-	io.flush()
-	os.exit(0)
-end
-
-local function http_303_see_other(uri)
-	io.write('HTTP/1.1 303 See Other', '\n')
-	io.write('Content-Type: text/plain', '\n')
-	io.write('Server: Recorder 2013/lua', '\n')
-	io.write('Location: ', uri, '\n')
-	io.write('\n')
-	io.flush()
-end
+require('Recorder')
+Recorder.chdir2app_root( arg[0] )
 
 -- prepare, extract GET parameters:
 local params = {}
@@ -53,15 +34,16 @@ if qs then for k,v in qs:gmatch('([^?&=]+)=([^&]*)') do params[k] = v end end
 -- guess station from GET params or referer:
 local station_name = nil
 if not station_name and params.station then station_name = params.station end
-if not station_name and params.uri 	   then station_name = params.uri:match('stations/([^/]+)') end
+if not station_name and params.uri	   then station_name = params.uri:match('stations/([^/]+)') end
 local ref = os.getenv('HTTP_REFERER')
-if not station_name and ref 		   then	station_name = ref:match('stations/([^/]+)') end
+if not station_name and ref			   then station_name = ref:match('stations/([^/]+)') end
 
-if not station_name then http_400_bad_request('Cannot guess station. Give me either\n', '- GET param station=...\n', '- GET param uri=...\n', '- a referer\n\n') end
+local st = Station.from_id( station_name )
+if not st then http_400_bad_request('Cannot guess station. Give me either\n', '- GET param station=...\n', '- GET param uri=...\n', '- a referer\n\n') end
 
-local bc = rec.station_find_most_recent_before(station_name, os.time(), 'stations', 'xml', false)
+local bc = st:broadcast_now(os.time(), true, true)
 if bc then
-	http_303_see_other('../' .. bc.file_xml)
+	http_303_see_other('../stations/' .. bc.id .. '.xml')
 else
 	http_400_bad_request('Ouch, cannot find current broadcast for station: \'', station_name, '\'')
 end

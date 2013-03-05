@@ -25,7 +25,7 @@ HELP_TEXT = <<END_OF_HELP
 Usage:
 	app/enclosure-tag.rb enclosure0.mp3 enclosure1.mp3 enclosure1.mp3
 
-tags the given file with meta data from stdin.
+tags the given enclosures with meta data from it's broadcast file (xml).
 
 END_OF_HELP
 
@@ -114,8 +114,6 @@ Dir.chdir File.dirname(File.dirname(__FILE__))
 ARGV.each do |mp3|
 	begin
 		$stderr.puts "tagging #{mp3}"
-#		$stderr.puts "from    #{xml_for_mp3(mp3)}"
-#		$stderr.puts "meta    #{meta_from_xml(xml_for_mp3(mp3))}"
 		tag_mp3 mp3, meta_from_xml(xml_for_mp3(mp3))
 	rescue Exception => e
 		$stderr.puts "error #{e}"

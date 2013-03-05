@@ -1,4 +1,3 @@
-#!/usr/bin/env lua
 --[[
 -- Copyright (c) 2013 Marcus Rohrmoser, https://github.com/mro/radio-pi
 --
@@ -20,24 +19,31 @@
 -- MIT License http://opensource.org/licenses/MIT
 ]]
 
+require'recorder-plumbing'
+require'Station'
+require'Broadcast'
+require'Podcast'
+require'Enclosure'
 
--- ensure Recorder.lua (next to this file) is found:
-package.path = arg[0]:gsub('/[^/]+/?$', '') .. '/?.lua;' .. package.path
-require('Recorder')
-Recorder.chdir2app_root( arg[0] )
+-- http://nova-fusion.com/2011/06/30/lua-metatables-tutorial/
+-- http://lua-users.org/wiki/LuaClassesWithMetatable
+Recorder = {}							-- methods table
+Recorder_mt = { __index = Recorder }		-- metatable
 
-if 'GET' ~= os.getenv('REQUEST_METHOD') then http_400_bad_request('need GET.') end
--- if 'referer' ~= value then http_400_bad_request('bad value') end
+function Recorder.chdir2app_root( arg0 )
+	lfs.chdir( arg0:gsub("/[^/]+/?$", '') .. '/..' )
+	Recorder.app_root = assert(lfs.currentdir())
+	-- io.stderr:write('app root: ', Recorder.app_root, "\n")
+end
 
-local bc_xml = os.getenv('HTTP_REFERER')
-if not bc_xml then http_400_bad_request('Odd, no broadcast (HTTP_REFERER) set.') end
-
-local bc = Broadcast.from_file( bc_xml:unescape_url() )
-if not bc then http_400_bad_request('No usable broadcast (HTTP_REFERER) set: \'', bc_xml, '\'') end
-
-local sib,msg = bc:next_sibling()
-if sib then
-	http_303_see_other('../../../../../stations/' .. sib.id .. '.xml')
-else
-	http_303_see_other('../../../../../stations/' .. bc.id .. '.xml')
+function Recorder.base_url()
+	if not Recorder._base_url then
+		local f = assert(io.open('app/base.url', 'r'), 'No file app/base.url found')
+		Recorder._base_url = f:read('*a'):gsub('%s', '')
+		if '/' ~= Recorder._base_url:sub(1,-1) then
+			Recorder._base_url = Recorder._base_url .. '/'
+		end
+		f:close()
+	end
+	return Recorder._base_url
 end

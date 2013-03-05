@@ -20,31 +20,13 @@
 -- MIT License http://opensource.org/licenses/MIT
 ]]
 
--- ensure recorder.lua (next to this file) is found:
+-- ensure Recorder.lua (next to this file) is found:
 package.path = arg[0]:gsub('/[^/]+/?$', '') .. '/../../app/?.lua;' .. package.path
-rec = require('recorder')
-rec.chdir2app_root( arg[0]:gsub('/[^/]+/?$', '') .. '/../../app/foo.lua' )
-
-local function http_400_bad_request(...)
-	io.write('HTTP/1.1 400 Bad Request', '\n')
-	io.write('Content-Type: text/plain', '\n')
-	io.write('Server: Recorder 2013/lua', '\n')
-	io.write('\n', ...)
-	io.write('\n')
-	io.flush()
-	os.exit(0)
-end
-
-local function http_303_see_other(uri)
-	io.write('HTTP/1.1 303 See Other', '\n')
-	io.write('Content-Type: text/plain', '\n')
-	io.write('Server: Recorder 2013/lua', '\n')
-	io.write('Location: ', uri, '\n')
-	io.write('\n')
-	io.flush()
-end
+require('Recorder')
+Recorder.chdir2app_root( arg[0]:gsub('/[^/]+/?$', '') .. '/../../app/foo.lua' )
 
 if 'POST' ~= os.getenv('REQUEST_METHOD') then http_400_bad_request('need POST.') end
+
 local len = tonumber(os.getenv('CONTENT_LENGTH'))
 local body = io.read(len)
 local key,value = body:match('^([^=]+)=(.*)$')
@@ -52,20 +34,29 @@ if 'referer' ~= value then http_400_bad_request('bad value') end
 
 local bc_http = os.getenv('HTTP_REFERER')
 if not bc_http then http_400_bad_request('Odd, no broadcast (HTTP_REFERER) set.') end
-local bc = rec.broadcast_from_file( rec.unescape_url(bc_http) )
+local bc = Broadcast.from_file( bc_http:unescape_url() )
 if not bc then http_400_bad_request('No usable broadcast (HTTP_REFERER) set: \'', bc_http, '\'') end
 
+-- clean up env and set PATH + LANG
+local psx = require('posix')
+for k,v in pairs(psx.getenv()) do
+	if k ~= 'PATH' and k ~= 'LANG' then psx.setenv(k,nil) end
+end
+if not psx.getenv('LANG') then assert(os.setlocale('en_US.UTF-8'), 'Ouch, cannot set locale en_US.UTF-8') end
+if not psx.getenv('LANG') then psx.setenv('LANG', 'en_US.UTF-8') end
+if not psx.getenv('PATH') then psx.setenv('PATH', '/bin:/usr/bin:/usr/local/bin') end
+
+local ad_hoc = assert(Podcast.from_id('ad_hoc'))
 
 if key == 'add' then --and 'none' == bc:enclosure_state() then
-	local ok,msg = bc:podcast_add('ad_hoc')
-	if not ok then http_400_bad_request(msg, ' ', bc_http) end
+	bc:add_podcast(ad_hoc)
 elseif key == 'remove' then -- and 'pending' == bc:enclosure_state() then
-	local ok,msg = bc:podcast_remove('ad_hoc')
-	if not ok then http_400_bad_request(msg, ' ', bc_http) end
+	bc:remove_podcast(ad_hoc)
 else
-	http_400_bad_request('Cannot modify broadcast \'', bc_http, '\' in state \'', bc:enclosure_state(), '\' with action \'', key, '\'')
+	http_400_bad_request('Cannot modify broadcast \'', bc_http, '\' in state \'', bc:enclosure().state, '\' with action \'', key, '\'')
 end
 
-bc.meta = bc:read_meta()
-bc:to_html()
+local ok,msg = bc:save()
+-- ok,msg = bc:save_podcast_json()
+if not ok then http_400_bad_request(msg, ' ', bc_http) end
 http_303_see_other(bc_http)

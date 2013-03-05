@@ -13,4 +13,3 @@ INSTALLATION
 CREDITS
     - https://github.com/henix/slt2 (MIT License)
     - https://github.com/jquery (MIT License)
-    - http://www.troubleshooters.com/codecorn/lua/lua_lua_calls_c.htm#_Make_an_msleep_Function
