@@ -26,12 +26,15 @@
 #
 
 git_repo="git://github.com/mro/radio-pi.git"
-git_branch="master"
-www_base="/srv"
+www_base="/srv"			# has to match simple-vhost.server-root from /etc/lighttpd/conf-available/10-simple-vhost.conf
 
 me=$(basename "$0")
 
-RECORDER_DOMAIN="$1"
+git_branch="$1"
+if [ "" = "$git_branch" ] ; then
+	git_branch="master"
+fi
+RECORDER_DOMAIN="$2"
 echo_prefix="RadioPi:"
 
 if [ "" = "$RECORDER_DOMAIN" ] ; then
@@ -72,11 +75,11 @@ if [ "" = "$RECORDER_DOMAIN" ] ; then
 	fi
 
 	echo "$echo_prefix handing over to $me from git..."
-	dash "$me" "$RECORDER_DOMAIN"
+	dash "$me" "$git_branch" "$RECORDER_DOMAIN"
 	exit 0
 else
 	recorder_base="$www_base/$RECORDER_DOMAIN"
-	echo "$echo_prefix Continue install for recorder domain '$RECORDER_DOMAIN'..."
+	echo "$echo_prefix Continue install for recorder domain '$RECORDER_DOMAIN' ($git_branch)..."
 fi
 
 echo "$echo_prefix Prerequisites - apt packages"
@@ -91,6 +94,7 @@ pkgs=""
 	pkgs="$pkgs apache2-utils"
 
 ### ruby + nokogiri (the scraper):
+	# avoid ruby reinstall for non-debian ruby, e.g. http://www.rubyenterpriseedition.com/
 	ruby -e puts > /dev/null
 	if [ $? -ne 0 ] ; then
 		pkgs="$pkgs ruby ruby-dev"
@@ -113,19 +117,34 @@ if [ $? -ne 0 ] ; then exit 6; fi
 echo "$echo_prefix Prerequisites - configuration.."
 
 ### ruby + nokogiri (the scraper):
-	sudo gem install nokogiri
+	gem list --installed "^nokogiri$" 1>/dev/null
+	if [ 0 -ne $? ] ; then
+		sudo gem install nokogiri
+	fi
 
 ### id3tags:
-	sudo gem install taglib-ruby -v 0.4.0
+	# had issues with more recent on OSX ( or was it debian amd_64?)
+	gem list --installed "^taglib-ruby$" 1>/dev/null
+	if [ 0 -ne $? ] ; then
+		sudo gem install taglib-ruby -v 0.4.0
+	fi
 
 ### lua, luarocks, lfs:
-	sudo luarocks install luafilesystem
-	sudo luarocks install luaposix 5.1.24-1
+	luarocks show luafilesystem 1>/dev/null
+	if [ 0 -ne $? ] ; then
+		sudo luarocks install luafilesystem
+	fi
+	luarocks show luaposix 1>/dev/null
+	if [ 0 -ne $? ] ; then
+		# had issues with 5.1.25-1 on debian amd_64
+		sudo luarocks install luaposix 5.1.24-1
+	fi
 
 ### streamripper:
 
 ### lighttpd (or just any web server to serve static files + simple CGIs + some convenience redirects):
-	sudo lighty-enable-mod accesslog auth cgi dir-listing simple-vhost
+	sudo cp "$recorder_base"/conf-available/20-* /etc/lighttpd/conf-available
+	sudo lighty-enable-mod accesslog auth cgi dir-listing simple-vhost per-vhost-config
 
 	read -p "$echo_prefix http user (for authenticated http://$RECORDER_DOMAIN/ mp3 access): " RECORDER_HTTP_USER
 	if [ "" = "$RECORDER_HTTP_USER" ] ; then
@@ -135,7 +154,7 @@ echo "$echo_prefix Prerequisites - configuration.."
 		exit 7
 	fi
 	# user/password database:
-	sudo htdigest -c /etc/lighttpd/lighttpd.user.htdigest 'Radio Pi' "$RECORDER_HTTP_USER"
+	sudo htdigest -c /etc/lighttpd/radio-pi.user.htdigest 'Radio Pi' "$RECORDER_HTTP_USER"
 
 	sudo chown -R "www-data:www-data" "$recorder_base"
 	if [ $? -ne 0 ] ; then exit 8; fi
