@@ -165,7 +165,7 @@ echo "$echo_prefix Prerequisites - configuration.."
 
 ### at & cron jobs
 
-echo "# git_repo\nwww-data" | sudo tee /etc/at.allow
+echo "# $git_repo\nwww-data" | sudo tee /etc/at.allow
 
 sudo -u www-data crontab -ri
 sudo -u www-data crontab - <<END_OF_CRONTAB
