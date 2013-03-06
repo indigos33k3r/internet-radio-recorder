@@ -47,12 +47,13 @@ function os.atq(jobnum)
 	if not jobn then
 		return nil
 	end
+	-- io.stderr:write('expected job #', tostring(jobnum), ' found #', tonumber(jobn), "\n")
+	-- assert( jobnum == tonumber(jobn) )
 	-- local month_names = {'Jan','Feb','Mar','Apr','Mai','Jun','Jul','Aug','Sep','Oct','Nov','Dec'}
 	-- local month2num = {}
 	-- for i,n in ipairs(month_names) do month2num[n] = i end
 	-- at seems to speak english no matter which locale is set. So we go with hardcoded month-names:
 	local month2num = {Jan=1,Feb=2,Mar=3,Apr=4,Mai=5,Jun=6,Jul=7,Aug=8,Sep=9,Oct=10,Nov=11,Dec=12}
-	assert( jobnum == tonumber(jobn) )
 	return jobnum,os.time({year=year, month=assert(month2num[month], month), day=day, hour=hour, min=min, second=second})
 end
 

@@ -70,7 +70,7 @@ end
 -- @return true/false
 function Enclosure:is_ripping_ps()
 	local ps = assert(io.popen('ps ux'), "Cannot call 'ps ux'")
-	local pat = table.concat{'/usr/bin/streamripper', ".* %-d '([^']*/", self.broadcast.id, ")' %-D '%.%./"}
+	local pat = table.concat{'/streamripper', ".* %-d '([^']*/", self.id, ")' %-D '%.%./"}
 	for line in ps:lines() do
 		local hit,_ = line:match(pat)
 		if nil ~= hit then return true end
@@ -82,7 +82,7 @@ end
 
 function Enclosure:is_ripping()
 	-- read pid from .ripping
-	local pidfile = io.open(table.concat{'enclosures', '/', self.broadcast.id, '.ripping'}, 'r')
+	local pidfile = io.open(self:filename('ripping'), 'r')
 	if not pidfile then return false end
 	local pid = pidfile:read('*a')
 	pidfile:close()
@@ -92,6 +92,11 @@ function Enclosure:is_ripping()
 	-- maybe check timestamp of ripping mp3?
 	-- look for streamripper child process?
 	return true
+end
+
+
+function Enclosure:dir_mp3_temp()
+	return self:filename()
 end
 
 
@@ -110,12 +115,12 @@ end
 -- @return true
 function Enclosure:run_streamripper(dry_run)
 	if not dry_run then
-		assert(mkdir_recursive(self.id), "couldn't create dir '" .. self.id .. "'")
+		assert(mkdir_recursive(self:dir_mp3_temp()), "couldn't create dir '" .. self:dir_mp3_temp() .. "'")
 	end
 	local t_start = assert(self.broadcast:dtstart())
 	local t_end = assert(self.broadcast:dtend())
 	local stream_url = assert(self.broadcast:station().stream_url, 'stream url not found')
-	local dir = assert(self.dir, 'dir not found')
+--	local dir = assert(self.dir, 'dir not found')
 	local _,_,file = self.id:find('/([^/]+)$')
 
 	local rip_tail = 15 -- add to mp3
@@ -123,13 +128,13 @@ function Enclosure:run_streamripper(dry_run)
 	while os.time() < t_end do
 		io.stderr:write("starting rip ", self.id, " until ", os.date('%Y-%m-%d %H:%M:%S', t_end + rip_tail), "\n")
 		local params_unsafe = {
-			'/usr/bin/streamripper',
+			'/usr/bin/env','streamripper',
 			stream_url,
 			'-t',
 			'-l', math.max(0, os.difftime(t_end, os.time()) + rip_tail + rip_post),
 			'-u', 'iTunes/11.0.1 (Macintosh; OS X 10.7.5) AppleWebKit/534.57.7',
 			'-s',							-- Don´t create a directory for each stream
-			'-d', self.id,					-- The destination directory
+			'-d', self:dir_mp3_temp(),		-- The destination directory
 			'-D', '../' .. assert(file),	-- file to create
 			'-o', 'version',
 			'-E', 'app/streamripper-injector.lua ' .. t_start .. ' ' .. t_end + rip_tail,
@@ -140,14 +145,15 @@ function Enclosure:run_streamripper(dry_run)
 		}
 		local params = escape_cmdline(params_unsafe)
 		table.insert(params, '1>>')
-		table.insert(params, (self.id .. '/stdout.log'):escape_cmdline() )
+		table.insert(params, (self:dir_mp3_temp() .. '/stdout.log'):escape_cmdline() )
 		table.insert(params, '2>>')
-		table.insert(params, (self.id .. '/stderr.log'):escape_cmdline() )
+		table.insert(params, (self:dir_mp3_temp() .. '/stderr.log'):escape_cmdline() )
 		if dry_run then
 			io.write('dry-run ', table.concat(params, ' '), "\n")
 			return true
 		else
-			io.stderr:write('streamripper result ', os.execute(table.concat(params, ' ')), "\n")
+			local ret = os.execute(table.concat(params, ' '))
+			io.stderr:write('streamripper result ', ret, "\n")
 		end
 	end
 	return true
@@ -162,10 +168,10 @@ end
 -- @return -
 function Enclosure:consolidate_mp3(dry_run)
 	if dry_run then
-		io.write('dry-run ', 'consolidate_mp3 ', self.id, "\n")
+		io.write('dry-run ', 'consolidate_mp3 ', self:dir_mp3_temp(), "\n")
 		return true
 	else
-		local tmp_dir = self.id
+		local tmp_dir = self:dir_mp3_temp()
 		-- pick up mp3 snippets (relative) file names into a unsorted table
 		local mp3s_unsorted = {}
 		local mp3_dir = table.concat({tmp_dir, 'incomplete'}, '/')
@@ -212,14 +218,14 @@ function Enclosure:consolidate_mp3(dry_run)
 		-- clean up 'incomplete' dir
 		assert( os.remove(mp3_dir) )
 		-- rename .ripping into .mp3
-		assert( os.rename(table.concat{self.id, '.ripping'}, table.concat{self.id, '.mp3'}) )
+		assert( os.rename(self:filename('ripping'), self:filename('mp3')) )
 		return true
 	end
 end
 
 
 function Enclosure:id3tag_mp3(dry_run)
-	local cmd = table.concat{'nice app/enclosure-tag.rb ', self.id:escape_cmdline(), '.mp3'}
+	local cmd = table.concat{'nice app/enclosure-tag.rb ', self:filename('mp3'):escape_cmdline()}
 	if dry_run then
 		io.write('dry-run ', cmd, "\n")
 		return true
@@ -244,17 +250,17 @@ if enc:is_ripping() then
 end
 if not enc:is_due() then
 	io.write("not due '", enc.id, "'", "\n")
-	os.exit(2)
+	if not dry_run then os.exit(2) end
 end
 
 assert( 'pending' == enc.state or 'ripping' == enc.state, "enclosure '" ..	enc.id .. "' isn't pending nor ripping.")
 assert( not enc:is_ripping(), "broadcast '" ..	enc.id .. "' is already recording.")
-assert( enc:is_due(), "broadcast '" ..	enc.id .. "' isn't due.")
+assert( dry_run or enc:is_due(), "broadcast '" ..	enc.id .. "' isn't due.")
 
 if not dry_run then
 	-- remove pending and write ripping with pid
-	io.write_if_changed(table.concat{enc.id, '.pending'}, nil)
-	assert(io.write_if_changed(table.concat{enc.id, '.ripping'}, psx.getpid('pid')))
+	io.write_if_changed(enc:filename('pending'), nil)
+	assert(io.write_if_changed(enc:filename('ripping'), psx.getpid('pid')))
 end
 assert( enc:run_streamripper(dry_run) )
 assert( enc:consolidate_mp3(dry_run) )

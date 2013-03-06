@@ -56,6 +56,7 @@ if key == 'add' and 'none' == bc:enclosure().state then
 elseif key == 'remove' and 'pending' == bc:enclosure().state then
 	bc:remove_podcast(ad_hoc)
 else
+	bc:save()	-- repair in case
 	http_400_bad_request('Cannot modify broadcast \'', bc_http, '\' in state \'', bc:enclosure().state, '\' with action \'', key, '\'')
 end
 

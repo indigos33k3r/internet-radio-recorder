@@ -60,6 +60,16 @@ function Podcast.from_id(id)
 end
 
 
+function Podcast:url(type_)
+	local t = {Recorder.base_url(), 'podcasts', '/', self.id}
+	if type_ then
+		table.insert(t, '.')
+		table.insert(t, type_)
+	end
+	return table.concat(t):escape_url()
+end
+
+
 function Podcast:contains_broadcast(bc)
 	return 'file' == lfs.attributes(table.concat{'podcasts', '/', self.id, '/', bc.id, '.xml'}, 'mode')
 end

@@ -109,7 +109,10 @@ end
 
 -- http://lua-users.org/wiki/StringRecipes
 function string:escape_url()
-  return self
+	return self:gsub("([^A-Za-z0-9_%./:-])", function(c)
+		-- iTunes bails at +. if c == ' ' then return '+' end
+		return string.format("%%%02x", string.byte(c))
+	end)
 end
 
 

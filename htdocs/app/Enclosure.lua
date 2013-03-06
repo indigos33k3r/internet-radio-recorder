@@ -29,16 +29,16 @@ Enclosure_mt = { __index = Enclosure }	-- metatable
 
 function Enclosure.from_broadcast(bc)
 	local tbl = {
-		broadcast = bc,
+		broadcast = assert(bc),
+		id = assert(bc.id),
 		states = {},
 		state = 'none',
 	}
-	tbl.id = table.concat{'enclosures', '/', assert(tbl.broadcast.id)}
-	tbl.dir = dir_name(tbl.id)
-	if 'directory' == lfs.attributes(tbl.dir, 'mode') then
+	local _dir = dir_name(tbl.id)
+	if 'directory' == lfs.attributes('enclosures/' .. _dir, 'mode') then
 		local states_available = {'pending', 'ripping', 'failed', 'mp3', 'purged'}
-		for f in lfs.dir(tbl.dir) do
-			local tmp = table.concat{tbl.dir, '/', f}
+		for f in lfs.dir('enclosures/' .. _dir) do
+			local tmp = table.concat{_dir, '/', f}
 			local state = nil
 			for _,stat in ipairs(states_available) do
 				if tmp == table.concat{tbl.id, '.', stat} then
@@ -55,18 +55,36 @@ function Enclosure.from_broadcast(bc)
 end
 
 
+function Enclosure:filename(state)
+	local t = {'enclosures', '/', self.id}
+	if state then
+		table.insert(t, '.')
+		table.insert(t, state)
+	end
+	return table.concat(t)
+end
+
+
+function Enclosure:url(type_)
+	return table.concat{Recorder.base_url(), self:filename(type_)}:escape_url()
+end
+
+
 -- internal helper
 function Enclosure:at_jobnum()
-	local pending = table.concat{self.id, '.', 'pending'}
+	local pending = self:filename('pending')
 	local f_pending = io.open(pending, 'r')
 	if not f_pending then
 		return nil,pending
 	end
 	local at_job = tonumber(f_pending:read('*a'))
 	f_pending:close()
+	local at_job_real = os.atq(at_job)
 	-- verify - query 'at' for mere EXISTENCE of such a job as a hint:
-	if at_job and not os.atq(at_job) then
-		return nil,pending
+	if at_job and not at_job_real then
+		io.stderr:write('warning ', 'inconsistent job numbers. Expected #', tonumber(at_job), ' found #', tonumber(at_job_real), '. repairing...', "\n")
+		io.write_if_changed(pending, at_job_real)
+		return at_job_real,pending
 	end
 	return at_job,pending
 end
@@ -80,7 +98,7 @@ function Enclosure:schedule()
 	end
 	local at_job,pending = self:at_jobnum()
 	if not at_job then
-		local params_unsafe = {assert(Recorder.app_root) .. '/app/enclosure-rip.lua', self.id .. '.xml'}
+		local params_unsafe = {assert(Recorder.app_root) .. '/app/enclosure-rip.lua', self:filename('xml')}
 		local cmd = table.concat(escape_cmdline(params_unsafe), ' ')
 		local at_time = math.max(self.broadcast:dtstart() - 90, os.time() + 2)
 		at_job = os.at(at_time, cmd)

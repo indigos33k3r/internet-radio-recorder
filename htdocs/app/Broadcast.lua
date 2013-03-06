@@ -173,7 +173,7 @@ function Broadcast:is_past(now)
 	if os.time(self) < now then
 		-- already started, but still running?
 		if self:dtend() < now then
-			-- io.stderr:write('I\'m past: ', 'enclosures', '/', self.day_dir, '/', self.base, "\n")
+			-- io.stderr:write('I\'m past: ', self.id, "\n")
 			return true
 		end
 	end
@@ -196,10 +196,24 @@ local function broadcast_meta_from_xml(xml_file)
 end
 
 
+function Broadcast:filename(state)
+	local t = {'stations', '/', self.id}
+	if state then
+		table.insert(t, '.')
+		table.insert(t, state)
+	end
+	return table.concat(t)
+end
+
+
+function Broadcast:url(type_)
+	return table.concat{Recorder.base_url(), self:filename(type_)}:escape_url()
+end
+
 -- accessor to Dublin Core PBMI http://dcpapers.dublincore.org/pubs/article/view/749
 function Broadcast:pbmi()
 	if not self._pbmi then
-		self._pbmi,_,file = broadcast_meta_from_xml(table.concat{'stations', '/', self.id, '.xml'})
+		self._pbmi,_,file = broadcast_meta_from_xml(self:filename('xml'))
 		assert(self._pbmi,'Couldn\'t load pbmi from ' .. file)
 	end
 	return assert(self._pbmi, 'lazy load failure.')
@@ -294,7 +308,7 @@ function Broadcast:save_xml()
 		table.insert( xml, table.concat(row) )
 	end
 	table.insert( xml, '</broadcast>' )
-	return io.write_if_changed(table.concat{'stations','/', self.id, '.xml'}, table.concat(xml,"\n"))
+	return io.write_if_changed(self:filename('xml'), table.concat(xml,"\n"))
 end
 
 
@@ -309,7 +323,7 @@ function Broadcast:save_podcast_json()
 	if table.getn(pc_ids) > 0 then
 		json = table.concat{'{ "podcasts":[{"name":"', table.concat(pc_ids,'"},{"name":"'), '"}] }'}
 	end
-	return io.write_if_changed(table.concat{'stations','/', self.id, '.json'}, json)
+	return io.write_if_changed(self:filename('json'), json)
 end
 
 
@@ -332,8 +346,6 @@ function Broadcast:save()
 	self:save_podcast_json()
 	-- schedule
 	local at_job,cmd = self:save_schedule()
-	if at_job then
-		io.stderr:write('at job  ', at_job, ' ', cmd, "\n")
-	end
+	-- if at_job then io.stderr:write('at job  ', at_job, ' ', cmd, "\n") end
 	return file,msg,err
 end
