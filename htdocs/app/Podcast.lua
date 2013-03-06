@@ -82,7 +82,7 @@ function Podcast:broadcasts(comparator)
 	for station_id in lfs.dir(base) do
 		local sta = table.concat{base, '/', station_id}
 		if 'directory' == lfs.attributes(sta, 'mode') then
-			lfs.files_between(sta, 0, 1000*365*24*60*60, callback, false)
+			lfs.files_between(sta, nil, nil, callback, true)
 		end
 	end
 	if not comparator then

@@ -41,7 +41,7 @@ if not station_name and ref			   then station_name = ref:match('stations/([^/]+)
 local st = Station.from_id( station_name )
 if not st then http_400_bad_request('Cannot guess station. Give me either\n', '- GET param station=...\n', '- GET param uri=...\n', '- a referer\n\n') end
 
-local bc = st:broadcast_now(os.time(), true, true)
+local bc = st:broadcast_now(os.time(), true, false)
 if bc then
 	http_303_see_other('../stations/' .. bc.id .. '.xml')
 else

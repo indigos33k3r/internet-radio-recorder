@@ -60,34 +60,47 @@ function lfs.dir_sorted(base,compare)
 end
 
 
-function lfs.files_between(base, tmin, tmax, callback, reverse)
+function lfs.files_between(base, tmin, tmax, callback, future)
+	if not tmin then tmin = 0 end
+	if not tmax then tmax = 100*365*24*60*60 end
 	local dmin = os.date('*t', tmin)
 	local dmax = os.date('*t', tmax)
 	local compare = nil
-	if reverse then
-		compare = function(a,b) return a > b end
+	if future then
+		compare = function(a,b) return a < b end -- natural order, ASC
+	else
+		compare = function(a,b) return a > b end -- DESC
 	end
+	-- io.stderr:write('tmin: ', os.date('%Y-%m-%d %H:%M', tmin), "\n")
+	-- io.stderr:write('tmax: ', os.date('%Y-%m-%d %H:%M', tmax), "\n")
+	-- io.stderr:write('futu: ', tostring(future), "\n")
 	for _,ys in lfs.dir_sorted(base,compare) do
 		local y = tonumber(ys)
+		-- io.stderr:write(ys, "\n")
 		if y and dmin.year <= y and y <= dmax.year then
 			for _,ms in lfs.dir_sorted(table.concat({base,ys},'/'),compare) do
+				-- io.stderr:write(ys, '-', ms, "\n")
 				local m = tonumber(ms)
-				if m == nil or (dmin.year == y and m < dmin.month) or (dmax.year == y and m > dmax.month) then
+				if not m or (dmin.year == y and m < dmin.month) or (dmax.year == y and m > dmax.month) then
 				else
 					for _,ds in lfs.dir_sorted(table.concat({base,ys,ms},'/'),compare) do
+						-- io.stderr:write(ys, '-', ms, '-', ds, "\n")
 						local d = tonumber(ds)
-						if d == nil or (dmin.year == y and dmin.month == m and d < dmin.day) or (dmax.year == y and dmax.month == m and d > dmax.day) then
+						if not d or (dmin.year == y and dmin.month == m and d < dmin.day) or (dmax.year == y and dmax.month == m and d > dmax.day) then
 						else
 							for _,f in lfs.dir_sorted(table.concat({base,ys,ms,ds},'/'),compare) do
+								-- io.stderr:write(ys, '-', ms, '-', ds, ' ', f)
 								local ok,_,hos,mis = f:find('^(%d%d)(%d%d) ')
 								if ok then
 									local t = os.time{year=y,month=m,day=d,hour=hos,min=mis}
 									if tmin <= t and t <= tmax then
+										-- io.stderr:write(' callback')
 										if callback(table.concat({base,ys,ms,ds,f},'/'),t) then
 											return
 										end
 									end
 								end
+								-- io.stderr:write("\n")
 							end
 						end
 					end
@@ -99,17 +112,19 @@ end
 
 
 -- find first one smaller or equal t
-function Station:broadcast_now(t)
+function Station:broadcast_now(t,onlyfirst,future)
 	if t == nil then t = os.time() end
+	local tmin,tmax = nil,t
+	if future then tmin,tmax = tmax,tmin end
 	local candidate = nil
-	lfs.files_between(table.concat({'stations',self.id},'/'), 0, t,
+	lfs.files_between(table.concat({'stations',self.id},'/'), tmin, tmax,
 		function(path)
 			if '.xml' == path:sub(-4) then
 				candidate = Broadcast.from_file( path )
 				return true
 			end
 		end,
-		true
+		future
 	)
 	return candidate
 end
