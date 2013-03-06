@@ -60,8 +60,8 @@
 		<p id="podcasts" class="podcasts">keiner</p>
 		<form id="ad_hoc" method="post" action="../../../../../enclosures/app/ad_hoc.lua">
 		  <fieldset>
-			<input type="hidden" name="add" value="referer"/>
-			<input type="submit" value="Aufnehmen"/>
+			<input id="ad_hoc_action" type="hidden" name="add" value="referer"/>
+			<input id="ad_hoc_submit" type="submit" value="Aufnehmen"/>
 		  </fieldset>
 		</form>
 		<p id="footer">
@@ -89,7 +89,10 @@ function render_podcasts( data ) {
 	if( names.length == 0 ) {
 		;
 	} else if( has_ad_hoc ) {
-		;
+		$( '#ad_hoc_action' ).attr('name', 'remove');
+		$( '#ad_hoc_submit' ).attr('value', 'Nicht Aufnehmen');
+	} else {
+		$( '#ad_hoc_submit' ).attr('style', 'display:none;visibility:hidden');
 	}
 }
 		var podasts_json_url = window.location.pathname.replace(/^.*\//,'').replace(/\.xml$/,'.json');
