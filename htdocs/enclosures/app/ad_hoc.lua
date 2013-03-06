@@ -43,7 +43,9 @@ local psx = require('posix')
 for k,v in pairs(psx.getenv()) do
 	if k ~= 'PATH' and k ~= 'LANG' then psx.setenv(k,nil) end
 end
-if not psx.getenv('LANG') then assert(os.setlocale('en_US.UTF-8'), 'Ouch, cannot set locale en_US.UTF-8') end
+if not psx.getenv('LANG') and not os.setlocale('en_US.UTF-8') and not os.setlocale('en_GB.UTF-8') and not os.setlocale('de_DE.UTF-8') then
+	http_400_bad_request('Cannot set locale')
+end
 if not psx.getenv('LANG') then psx.setenv('LANG', 'en_US.UTF-8') end
 if not psx.getenv('PATH') then psx.setenv('PATH', '/bin:/usr/bin:/usr/local/bin') end
 
