@@ -36,6 +36,7 @@ local bc_http = os.getenv('HTTP_REFERER')
 if not bc_http then http_400_bad_request('Odd, no broadcast (HTTP_REFERER) set.') end
 local bc = Broadcast.from_file( bc_http:unescape_url() )
 if not bc then http_400_bad_request('No usable broadcast (HTTP_REFERER) set: \'', bc_http, '\'') end
+if bc:is_past() then http_400_bad_request('broadcast already past: \'', bc_http, '\'') end
 
 -- clean up env and set PATH + LANG
 local psx = require('posix')
@@ -48,9 +49,9 @@ if not psx.getenv('PATH') then psx.setenv('PATH', '/bin:/usr/bin:/usr/local/bin'
 
 local ad_hoc = assert(Podcast.from_id('ad_hoc'))
 
-if key == 'add' then --and 'none' == bc:enclosure_state() then
+if key == 'add' and 'none' == bc:enclosure().state then
 	bc:add_podcast(ad_hoc)
-elseif key == 'remove' then -- and 'pending' == bc:enclosure_state() then
+elseif key == 'remove' and 'pending' == bc:enclosure().state then
 	bc:remove_podcast(ad_hoc)
 else
 	http_400_bad_request('Cannot modify broadcast \'', bc_http, '\' in state \'', bc:enclosure().state, '\' with action \'', key, '\'')
@@ -59,4 +60,4 @@ end
 local ok,msg = bc:save()
 -- ok,msg = bc:save_podcast_json()
 if not ok then http_400_bad_request(msg, ' ', bc_http) end
-http_303_see_other(bc_http)
+http_303_see_other(bc_http, 'Good choice, it\'s my pleasure to record that broadcast. Sending you back...')
