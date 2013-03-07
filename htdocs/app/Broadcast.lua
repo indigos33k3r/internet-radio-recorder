@@ -24,32 +24,33 @@
 -- date helpers ---------------------------------------------------------------
 -------------------------------------------------------------------------------
 
--- http://lua-users.org/lists/lua-l/2008-03/msg00051.html
--- Takes a time struct with a date and time in UTC and converts it into
--- seconds since Unix epoch (0:00 1 Jan 1970 UTC).
---
--- Trickier than you'd think because os.time assumes the struct is in local time.
-local function utc2local(t_secs)
---	local t_secs = os.time(t) -- get seconds if t was in local time.
-	t = os.date("*t", t_secs) -- find out if daylight savings was applied.
-	local t_UTC = os.date("!*t", t_secs) -- find out what UTC t was converted to.
-	t_UTC.isdst = t.isdst -- apply DST to this time if necessary.
-	local UTC_secs = os.time(t_UTC) -- find out the converted time in seconds.
-	-- The answer is our original answer plus the difference.
-	return t_secs + os.difftime(t_secs, UTC_secs)
-end
 
+--- Takes a timestamp in UTC and converts it to local time
+local function utc2local(t_utc)
+	local tzo = os.difftime(t_utc, os.time(os.date('!*t', t_utc)))
+	return t_utc + tzo
+end
 
 -- TODO: apply proper date/time parsing: http://stackoverflow.com/questions/7911322/lua-iso-8601-datetime-parsing-pattern
 local function parse_iso8601(iso)
-	local year,month,day,hour,minute,second,tzh,tzm = iso:gmatch("(%d%d%d%d)-(%d%d)-(%d%d)T?%s?(%d%d):(%d%d):(%d%d)([+-]%d%d):?(%d%d)")()
-	tzh = tonumber(tzh)
-	hour = tonumber(hour) - tzh
+	local year,month,day,hour,minute,second,tzh,tzm = iso:match("(%d%d%d%d)-?(%d%d)-?(%d%d)[T ]?(%d%d):?(%d%d):?(%d%d)([+-]%d%d):?(%d%d)")
+	tzh = tonumber(assert(tzh))
+	tzm = tonumber(tzm) or 0
 	local sign = 1
 	if tzh < 0 then sign = -1 end
-	minute = tonumber(minute) - sign * tonumber(tzm)
+	minute = tonumber(minute) - (tzh * 60 + sign * tzm)
+
+    local date = {
+        year    = tonumber(year),
+        month   = tonumber(month),
+        day     = tonumber(day),
+        hour    = tonumber(hour),
+        min     = minute,
+        sec     = tonumber(second),
+        isdst   = false,
+    }
 	-- normalise time to current local time:
-	return utc2local(os.time({year=tonumber(year), month=tonumber(month), day=tonumber(day), hour=hour, min=minute, sec=tonumber(second)}))
+	return utc2local(os.time(date))
 end
 
 
