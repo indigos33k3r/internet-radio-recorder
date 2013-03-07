@@ -20,40 +20,6 @@
 ]]
 
 
--------------------------------------------------------------------------------
--- date helpers ---------------------------------------------------------------
--------------------------------------------------------------------------------
-
-
---- Takes a timestamp in UTC and converts it to local time
-local function utc2local(t_utc)
-	local tzo = os.difftime(t_utc, os.time(os.date('!*t', t_utc)))
-	return t_utc + tzo
-end
-
--- TODO: apply proper date/time parsing: http://stackoverflow.com/questions/7911322/lua-iso-8601-datetime-parsing-pattern
-local function parse_iso8601(iso)
-	local year,month,day,hour,minute,second,tzh,tzm = iso:match("(%d%d%d%d)-?(%d%d)-?(%d%d)[T ]?(%d%d):?(%d%d):?(%d%d)([+-]%d%d):?(%d%d)")
-	tzh = tonumber(assert(tzh))
-	tzm = tonumber(tzm) or 0
-	local sign = 1
-	if tzh < 0 then sign = -1 end
-	minute = tonumber(minute) - (tzh * 60 + sign * tzm)
-
-    local date = {
-        year    = tonumber(year),
-        month   = tonumber(month),
-        day     = tonumber(day),
-        hour    = tonumber(hour),
-        min     = minute,
-        sec     = tonumber(second),
-        isdst   = false,
-    }
-	-- normalise time to current local time:
-	return utc2local(os.time(date))
-end
-
-
 local function meta_key_to_lua(k)
 	return k:gsub('%.', '_')
 end

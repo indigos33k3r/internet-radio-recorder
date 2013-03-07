@@ -82,6 +82,8 @@
 		<script type="text/javascript">
 //<![CDATA[
 
+		var dtstart = new Date( $("meta[name='DC.format.timestart']").attr("content") );
+		var dtend   = new Date( $("meta[name='DC.format.timeend']").attr("content") );
 function render_podcasts( data ) {
 	var has_ad_hoc = false;
 	var names = data.podcasts.map( function(pc) {
@@ -119,6 +121,14 @@ function render_podcasts( data ) {
 		} catch(e) {
 			$( '#content' ).text( 'Aua: "' + e + '": ' + t );
 		}
+
+		// add today/tomorrow links
+		var links = [ $( '#link_now' ).html() ];
+		var yesterday = new Date(dtstart.getTime() - 24*60*60*1000).toISOString().replace(/\.000Z/,'+00:00')
+		var tomorrow = new Date(dtstart.getTime() + 24*60*60*1000).toISOString().replace(/\.000Z/,'+00:00')
+		links.push( '<a href="../../../../../app/now.lua?t=' + yesterday + '">gestern</a>' );
+		links.push( '<a href="../../../../../app/now.lua?t=' + tomorrow + '">morgen</a>' );
+		$( '#link_now' ).html( links.join(', ') );
   //]]>
   </script>
 	  </body>
