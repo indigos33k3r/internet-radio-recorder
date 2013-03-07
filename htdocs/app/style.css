@@ -14,6 +14,13 @@ input[type="submit"] {
 	font-size:	8pt;
 	color:		darkgrey;
 }
+.has_podcast.is_future  #title:before { content:"* "; }
+.has_podcast.is_current #title:before { content:"♪ "; }
+.has_podcast.is_past    #title:before { content:"@ "; }
+
+/* disable recording button for past broadcasts */
+.is_past form#ad_hoc { display:none; }
+
 @media screen and (max-width: 500px) {
 	.navigation {
 		line-height: 3.5ex;

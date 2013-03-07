@@ -68,12 +68,14 @@
 		</form>
 		<hr/>
 		<p id="footer">
+		  <!--
 		  <a style="display:none" href="http://validator.w3.org/check?uri=referer">
 			<img alt="Valid XHTML 1.0 Strict" height="31" src="http://www.w3.org/Icons/valid-xhtml10-blue.png" width="88"/>
 		  </a>
 		  <a style="display:none" href="http://jigsaw.w3.org/css-validator/check/referer?profile=css3&amp;usermedium=screen&amp;warning=2&amp;vextwarning=false&amp;lang=de">
 			<img alt="CSS ist valide!" src="http://jigsaw.w3.org/css-validator/images/vcss-blue" style="border:0;width:88px;height:31px"/>
 		  </a>
+		  -->
 		  Powered by <a href="https://github.com/mro/radio-pi">github.com/mro/radio-pi</a>
 		</p>
 		<noscript>Script ist aus!</noscript>
@@ -84,21 +86,32 @@
 
 		var dtstart = new Date( $("meta[name='DC.format.timestart']").attr("content") );
 		var dtend   = new Date( $("meta[name='DC.format.timeend']").attr("content") );
+		var now = new Date();
+		if( now < dtstart )
+ 			$( 'html' ).addClass('is_future');
+ 		else if( now < dtend )
+ 			$( 'html' ).addClass('is_current');
+ 		else
+			$( 'html' ).addClass('is_past');
+
 function render_podcasts( data ) {
 	var has_ad_hoc = false;
 	var names = data.podcasts.map( function(pc) {
 		if( pc.name == 'ad_hoc' )
 			has_ad_hoc = true;
-		return pc.name;
+		return '<a href="../../../../../podcasts/">' + pc.name + '</a>';
 	} );
 	$( '#podcasts' ).html( names.join(', ') );
 	if( names.length == 0 ) {
 		;
-	} else if( has_ad_hoc ) {
-		$( '#ad_hoc_action' ).attr('name', 'remove');
-		$( '#ad_hoc_submit' ).attr('value', 'Nicht Aufnehmen');
 	} else {
-		$( '#ad_hoc_submit' ).attr('style', 'display:none;visibility:hidden');
+ 		$( 'html' ).addClass('has_podcast');
+		if( has_ad_hoc ) {
+			$( '#ad_hoc_action' ).attr('name', 'remove');
+			$( '#ad_hoc_submit' ).attr('value', 'Nicht Aufnehmen');
+		} else {
+			$( '#ad_hoc_submit' ).attr('style', 'display:none;visibility:hidden');
+		}
 	}
 }
 		var podasts_json_url = window.location.pathname.replace(/^.*\//,'').replace(/\.xml$/,'.json');
@@ -109,8 +122,11 @@ function render_podcasts( data ) {
 			success: render_podcasts
 		});
 
-		$( '#dtstart' ).html( new Date( $("meta[name='DC.format.timestart']").attr("content") ).toLocaleString() );
-		$( '#dtend' ).html( new Date( $("meta[name='DC.format.timeend']").attr("content") ).toLocaleTimeString() );
+		// make date time display human readable
+		$( '#dtstart' ).html( dtstart.toLocaleString() );
+		$( '#dtend' ).html( dtend.toLocaleTimeString() );
+
+		// add html linebreaks to description
 		var t = $("meta[name='DC.description']").attr("content");
 		try {
 			t = t.replace(/&/g, "&amp;");
