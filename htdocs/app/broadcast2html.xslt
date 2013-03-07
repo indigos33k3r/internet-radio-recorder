@@ -6,6 +6,8 @@
 	  <head>
 		<meta content="text/html; charset=utf-8" http-equiv="content-type"/>
 		<meta name="viewport" content="width=device-width"/>
+		<link href="../../../../../app/favicon-32x32.png" rel="shortcut icon" type="image/png" />
+		<link href="../../../../../app/favicon-512x512.png" rel="apple-touch-icon" type="image/png" />
 		<link href="../../../app/style.css" rel="stylesheet" type="text/css"/>
 		<title>
 		  <xsl:value-of select="rec:meta[@name='DC.title']/@content"/>
@@ -64,13 +66,15 @@
 			<input id="ad_hoc_submit" type="submit" value="Aufnehmen"/>
 		  </fieldset>
 		</form>
+		<hr/>
 		<p id="footer">
-		  <a href="http://validator.w3.org/check?uri=referer">
+		  <a style="display:none" href="http://validator.w3.org/check?uri=referer">
 			<img alt="Valid XHTML 1.0 Strict" height="31" src="http://www.w3.org/Icons/valid-xhtml10-blue.png" width="88"/>
 		  </a>
-		  <a href="http://jigsaw.w3.org/css-validator/check/referer?profile=css3&amp;usermedium=screen&amp;warning=2&amp;vextwarning=false&amp;lang=de">
+		  <a style="display:none" href="http://jigsaw.w3.org/css-validator/check/referer?profile=css3&amp;usermedium=screen&amp;warning=2&amp;vextwarning=false&amp;lang=de">
 			<img alt="CSS ist valide!" src="http://jigsaw.w3.org/css-validator/images/vcss-blue" style="border:0;width:88px;height:31px"/>
 		  </a>
+		  Powered by <a href="https://github.com/mro/radio-pi">github.com/mro/radio-pi</a>
 		</p>
 		<noscript>Script ist aus!</noscript>
 		<script type="text/javascript" src="../../../../../app/jquery-1.9.1.min.js"/>
