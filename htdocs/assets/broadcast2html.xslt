@@ -6,9 +6,9 @@
 	  <head>
 		<meta content="text/html; charset=utf-8" http-equiv="content-type"/>
 		<meta name="viewport" content="width=device-width"/>
-		<link href="../../../../../app/favicon-32x32.png" rel="shortcut icon" type="image/png" />
-		<link href="../../../../../app/favicon-512x512.png" rel="apple-touch-icon" type="image/png" />
-		<link href="../../../app/style.css" rel="stylesheet" type="text/css"/>
+		<link href="../../../../../assets/favicon-32x32.png" rel="shortcut icon" type="image/png" />
+		<link href="../../../../../assets/favicon-512x512.png" rel="apple-touch-icon" type="image/png" />
+		<link href="../../../assets/style.css" rel="stylesheet" type="text/css"/>
 		<title>
 		  <xsl:value-of select="rec:meta[@name='DC.title']/@content"/>
 		</title>
@@ -79,7 +79,7 @@
 		  Powered by <a href="https://github.com/mro/radio-pi">github.com/mro/radio-pi</a>
 		</p>
 		<noscript>Script ist aus!</noscript>
-		<script type="text/javascript" src="../../../../../app/jquery-1.9.1.min.js"/>
+		<script type="text/javascript" src="../../../../../assets/jquery-1.9.1.min.js"/>
 		<!-- script type="text/javascript" src="http://code.jquery.com/mobile/latest/jquery.mobile.min.js"/ -->
 		<script type="text/javascript">
 //<![CDATA[

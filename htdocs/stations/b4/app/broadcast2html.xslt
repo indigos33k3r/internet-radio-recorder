@@ -1,1 +1,1 @@
-../../../app/broadcast2html.xslt
+../../../assets/broadcast2html.xslt
