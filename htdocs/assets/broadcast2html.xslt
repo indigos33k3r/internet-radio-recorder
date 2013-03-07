@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Turn broadcast xml into html, used client-side, by the browser.
+
+	Supposed to be either linked to from or located in station/<name>/app/broadcast2html.xslt,
+	so each station could provide a custom skin.
+-->
 <xsl:stylesheet xmlns:rec="https://raw.github.com/mro/radio-pi/master/htdocs/app/pbmi2003-recmod2012/broadcast.rnc" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" version="1.0">
   <xsl:output method="xml" doctype-system="http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" doctype-public="-//W3C//DTD XHTML 1.1//EN"/>
   <xsl:template match="rec:broadcast">

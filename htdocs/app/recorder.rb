@@ -19,6 +19,16 @@
 #
 # MIT License http://opensource.org/licenses/MIT
 
+#
+# Station-agnostic part of the broadcast website scraper machine.
+#
+# Assumes run_update_broadcast is called from the station specific scraper
+# and calls back to update_broadcasts_between there.
+#
+# Writing the broadcast meta data to stdout (to_lua) is currently triggered in the
+# station-specific part, but should move here.
+#
+
 require 'date'
 
 class Time

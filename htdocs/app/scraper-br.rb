@@ -20,6 +20,17 @@
 #
 # MIT License http://opensource.org/licenses/MIT
 
+#
+# Station-specific part of the broadcast website scraper for http://br.de.
+#
+# Linked to from station/<name>/app/scraper.rb, so each station can provide a custom scraper.
+#
+# Fires the generic driver method run_update_broadcast from Recorder::Scraper
+# which in turn calls back to update_broadcasts_between here.
+#
+# Writing the broadcast meta data to stdout (to_lua) is currently triggered here,
+# but should move to the station-agnostic htdocs/app/recorder.rb.
+#
 
 require File.join(File.dirname(File.expand_path(__FILE__)),'..','..','..','app','recorder')
 
@@ -71,7 +82,6 @@ module Recorder
 			# scrape calendar from program page
 			day_count = 0
 			each_day(@station.program_url) do |date,url|
-				# optional: write day url file.
 				t = station.day_start_for_day Time.local(date[0], date[1], date[2], 0, 0, 0)
 				# TODO fix: date is midnight, must not naively compare with tmin/tmax:
 				if t < t_min_day || t > t_max_day
