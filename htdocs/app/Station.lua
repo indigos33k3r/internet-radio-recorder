@@ -138,7 +138,7 @@ function Station:template_ics()
 		-- io.stderr:write('loading template \'', file, '\'\n')
 		tmpl = slt2.loadfile(file)
 		self.template_ics_ = tmpl
-		io.stderr:write('loaded template ', file, '\n')
+		io.stderr:write('loaded  ', file, '\n')
 	end
 	return tmpl
 end
@@ -157,7 +157,7 @@ function Station:save_ics(tmin,tmax)
 		end,
 		true
 	)
-	local ics_file = table.concat{'stations', '/', assert(self.id), '/broadcasts.ics'}
+	local ics_file = table.concat{'stations', '/', assert(self.id), '/', 'broadcasts', '.ics'}
 	local ics_new = slt2.render(assert(self:template_ics()), {self=self, broadcasts=broadcasts})
 	return io.write_if_changed(ics_file, ics_new)
 end

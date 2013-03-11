@@ -112,14 +112,14 @@ function Podcast:template_rss()
 		-- io.stderr:write('loading template \'', file, '\'\n')
 		tmpl = slt2.loadfile(file)
 		self.template_rss_ = tmpl
-		io.stderr:write('loaded template ', file, '\n')
+		io.stderr:write('loaded  ', file, '\n')
 	end
 	return tmpl
 end
 
 
 function Podcast:save_rss()
-	local rss_file = table.concat{'podcasts', '/', assert(self.id), '.rss'}
+	local rss_file = table.concat{'podcasts', '/', assert(self.id), '/', 'broadcasts', '.rss'}
 	local rss_new = slt2.render(assert(self:template_rss()), {podcast=self})
 	return io.write_if_changed(rss_file, rss_new)
 end
@@ -157,7 +157,7 @@ function Podcast:template_ics()
 		-- io.stderr:write('loading template \'', file, '\'\n')
 		tmpl = slt2.loadfile(file)
 		self.template_ics_ = tmpl
-		io.stderr:write('loaded template ', file, '\n')
+		io.stderr:write('loaded  ', file, '\n')
 	end
 	return tmpl
 end
@@ -166,7 +166,7 @@ end
 function Podcast:save_ics(tmin,tmax)
 	tmin = tmin or 0
 	tmax = tmax or (100 * 365 * 24* 60 * 60)
-	local ics_file = table.concat{'podcasts', '/', assert(self.id), '.ics'}
+	local ics_file = table.concat{'podcasts', '/', assert(self.id), '/', 'broadcasts', '.ics'}
 	local ics_new = slt2.render(assert(self:template_ics()), {self=self, broadcasts=self:broadcasts(nil,tmin,tmax)})
 	return io.write_if_changed(ics_file, ics_new)
 
