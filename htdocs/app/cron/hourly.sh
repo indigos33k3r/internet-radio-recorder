@@ -27,4 +27,7 @@ for scraper in stations/*/app/scraper.rb
 do
 	nice $scraper --incremental 2>> log/"$me".stderr.log | app/broadcast-render.lua --stdin 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log
 done
+
+nice app/calendar.lua stations/* podcasts/* 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log
+
 /bin/date 1>> log/"$me".stdout.log

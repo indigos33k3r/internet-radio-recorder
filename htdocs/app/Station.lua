@@ -128,3 +128,36 @@ function Station:broadcast_now(t,onlyfirst,future)
 	)
 	return candidate
 end
+
+local slt2 = require "slt2" -- http://github.com/henix/slt2
+
+function Station:template_ics()
+	local tmpl = self.template_ics_
+	if not tmpl then
+		local file = table.concat({ 'stations', assert(self.id), 'app', 'station.slt2.ics'}, '/')
+		-- io.stderr:write('loading template \'', file, '\'\n')
+		tmpl = slt2.loadfile(file)
+		self.template_ics_ = tmpl
+		io.stderr:write('loaded template ', file, '\n')
+	end
+	return tmpl
+end
+
+function Station:save_ics(tmin,tmax)
+	tmin = tmin or (os.time() - 3 * 60 * 60)
+	tmax = tmax or (tmin + 6 * 60 * 60)
+	-- io.stderr:write('t.b.d., ics for station ', self.id, "\n")
+	local broadcasts = {}
+	lfs.files_between(table.concat({'stations',self.id},'/'), tmin, tmax,
+		function(path)
+			if '.xml' == path:sub(-4) then
+				table.insert(broadcasts, Broadcast.from_file( path ) )
+				return false
+			end
+		end,
+		true
+	)
+	local ics_file = table.concat{'stations', '/', assert(self.id), '/broadcasts.ics'}
+	local ics_new = slt2.render(assert(self:template_ics()), {self=self, broadcasts=broadcasts})
+	return io.write_if_changed(ics_file, ics_new)
+end
