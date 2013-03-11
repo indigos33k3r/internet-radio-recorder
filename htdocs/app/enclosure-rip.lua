@@ -269,8 +269,6 @@ assert( enc:consolidate_mp3(dry_run) )
 pcall( enc:id3tag_mp3(dry_run ) )
 
 for _,p in pairs(enc.broadcast:podcasts()) do
+	p:purge_outdated(dry_run)
 	p:save_rss()
 end
-
-os.exit(0)
-

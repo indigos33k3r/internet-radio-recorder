@@ -98,7 +98,7 @@ function Enclosure:schedule()
 	end
 	local at_job,pending = self:at_jobnum()
 	if not at_job then
-		local params_unsafe = {assert(Recorder.app_root) .. '/app/enclosure-rip.lua', self:filename('xml')}
+		local params_unsafe = {assert(Recorder.app_root) .. '/app/enclosure-rip.lua', self.broadcast:filename('xml')}
 		local cmd = table.concat(escape_cmdline(params_unsafe), ' ')
 		local at_time = math.max(self.broadcast:dtstart() - 90, os.time() + 2)
 		at_job = os.at(at_time, cmd)
@@ -109,9 +109,23 @@ function Enclosure:schedule()
 	end
 end
 
+
 -- safe to call repeatedly
-function Enclosure:unschedule(bc)
+function Enclosure:unschedule(state)
 	local at_job,pending = self:at_jobnum()
 	if at_job then os.atrm(at_job) end
-	os.remove(pending)
+	io.write_if_changed(pending, nil)
+	if pending and state then io.write_if_changed(self:filename(state), '') end
 end
+
+
+function Enclosure:purge(dry_run)
+	if 'mp3' ~= self.state then return false,'not mp3' end
+	-- TODO: check ALL podcasts if we're really to be deleted. Membership is quick but count expensive.
+	-- io.stderr:write('purge ', self.id, "\n")
+	if dry_run then return true,'dry_run' end
+	os.remove( self:filename('mp3') )
+	return io.write_if_changed(self:filename('purged'), '')
+end
+
+

@@ -85,14 +85,14 @@ function Podcast:remove_broadcast(bc)
 end
 
 
-function Podcast:broadcasts(comparator)
+function Podcast:broadcasts(comparator,tmin,tmax)
 	local tmp = {}
 	local callback = function(file,t) table.insert( tmp, assert(Broadcast.from_file(file)) ) end
 	local base = table.concat{'podcasts', '/', self.id}
 	for station_id in lfs.dir(base) do
 		local sta = table.concat{base, '/', station_id}
 		if 'directory' == lfs.attributes(sta, 'mode') then
-			lfs.files_between(sta, nil, nil, callback, true)
+			lfs.files_between(sta, tmin, tmax, callback, true)
 		end
 	end
 	if not comparator then
@@ -117,8 +117,34 @@ function Podcast:template_rss()
 	return tmpl
 end
 
+
 function Podcast:save_rss()
 	local rss_file = table.concat{'podcasts', '/', assert(self.id), '.rss'}
 	local rss_new = slt2.render(assert(self:template_rss()), {podcast=self})
 	return io.write_if_changed(rss_file, rss_new)
+end
+
+
+function Podcast:purge_outdated(dry_run)
+	-- reverse, most recent first:
+	local bcs = self:broadcasts(function(a,b) return a.id > b.id end, 0, os.time())
+	local kept = 0
+	for _,bc in ipairs(bcs) do
+    	if 'mp3' == bc:enclosure().state then
+			-- io.stderr:write(bc.id, "\n")
+			if kept < self.episodes_to_keep then
+				kept = kept + 1
+			else
+				local ok,msg = bc:enclosure():purge(dry_run)
+				if ok then
+					io.stderr:write('purged ', bc.id, "\n")
+				end
+			end
+    	elseif 'pending' == bc:enclosure().state then
+    		io.stderr:write('failed ', bc.id, "\n")
+    		if dry_run ~= true then
+    			bc:enclosure():unschedule('failed')
+    		end
+		end
+	end
 end
