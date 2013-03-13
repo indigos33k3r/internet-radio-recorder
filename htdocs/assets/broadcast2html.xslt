@@ -105,7 +105,7 @@ function render_podcasts( data ) {
 	var names = data.podcasts.map( function(pc) {
 		if( pc.name == 'ad_hoc' )
 			has_ad_hoc = true;
-		return '<a href="../../../../../podcasts/">' + pc.name + '</a>';
+		return '<a href="../../../../../podcasts/' + pc.name + '/">' + pc.name + '</a>';
 	} );
 	$( '#podcasts' ).html( names.join(', ') );
 	if( names.length == 0 ) {

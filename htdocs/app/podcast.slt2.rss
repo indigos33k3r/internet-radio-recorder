@@ -9,15 +9,16 @@ assert(podcast, 'podcast')
 assert(podcast.id, 'podcast id')
 
 -- sort reverse, newest first:
-local bcs = podcast:broadcasts(function(a,b) return a.id > b.id end)
-
-local bc_most_recent = nil
-for _,bc in ipairs(bcs) do
+local bcs_all = podcast:broadcasts(function(a,b) return a.id > b.id end)
+local bcs = {}
+for _,bc in ipairs(bcs_all) do
     if 'file' == lfs.attributes(bc:enclosure():filename('mp3'), 'mode') then
-        bc_most_recent = bc
-        break
+    	table.insert(bcs, bc)
     end
 end
+bcs_all = nil
+local bc_most_recent = nil
+if #bcs then bc_most_recent = bcs[1] end
 
  }<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:atom="http://www.w3.org/2005/Atom">
@@ -25,9 +26,9 @@ end
     <link>#{= podcast:url('rss') }</link>
     <atom:link href="#{= podcast:url('rss') }" rel="self" type="application/rss+xml" />
     <title>Rec2013 #{= podcast.title }</title>
-    <itunes:subtitle>#{= podcast.subtitle }</itunes:subtitle>
-    <description></description>
-    <itunes:summary></itunes:summary>
+    <itunes:subtitle>subtitle #{= podcast.subtitle }</itunes:subtitle>
+    <description>description #{= podcast.subtitle }</description>
+    <itunes:summary>#{= podcast.subtitle }</itunes:summary>
 #{  if bc_most_recent and bc_most_recent:pbmi().DC_image then }    <!-- image of most recent enclosure -->
     <image>
       <link>#{= podcast:url('rss') }</link>
