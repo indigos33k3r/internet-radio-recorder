@@ -40,6 +40,7 @@ end
 
 
 function os.atq(jobnum)
+	if not jobnum then return nil,'No job number' end
 	local f = assert(io.popen('atq	' .. tostring(assert(jobnum)), 'r'))
 	local s = assert(f:read('*a'))
 	f:close()
@@ -54,7 +55,7 @@ function os.atq(jobnum)
 	-- for i,n in ipairs(month_names) do month2num[n] = i end
 	-- at seems to speak english no matter which locale is set. So we go with hardcoded month-names:
 	local month2num = {Jan=1,Feb=2,Mar=3,Apr=4,Mai=5,Jun=6,Jul=7,Aug=8,Sep=9,Oct=10,Nov=11,Dec=12}
-	return jobnum,os.time({year=year, month=assert(month2num[month], month), day=day, hour=hour, min=min, second=second})
+	return tonumber(jobn),os.time({year=year, month=assert(month2num[month], month), day=day, hour=hour, min=min, second=second})
 end
 
 
