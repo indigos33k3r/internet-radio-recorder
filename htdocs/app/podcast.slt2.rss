@@ -8,16 +8,19 @@ end
 assert(podcast, 'podcast')
 assert(podcast.id, 'podcast id')
 
--- sort reverse, newest first:
-local bcs_all = podcast:broadcasts(function(a,b) return a.id > b.id end)
+-- at first sort forward, oldest first (to get a meaningful, global episode counter):
+local bcs_all = podcast:broadcasts(function(a,b) return a.id < b.id end)
 local bcs = {}
-for _,bc in ipairs(bcs_all) do
+for num,bc in ipairs(bcs_all) do
     if 'file' == lfs.attributes(bc:enclosure():filename('mp3'), 'mode') then
+    	bc.number = num			-- add an episode counter
     	table.insert(bcs, bc)
     end
 end
 bcs_all = nil
 local bc_most_recent = nil
+-- then sort reverse, most recent first as rss wants it:
+table.sort(bcs, function(a,b) return a.id > b.id end)
 if #bcs then bc_most_recent = bcs[1] end
 
  }<?xml version="1.0" encoding="UTF-8"?>
@@ -25,14 +28,14 @@ if #bcs then bc_most_recent = bcs[1] end
   <channel>
     <link>#{= podcast:url('rss') }</link>
     <atom:link href="#{= podcast:url('rss') }" rel="self" type="application/rss+xml" />
-    <title>Rec2013 #{= podcast.title }</title>
+    <title>RadioPi #{= podcast.title }</title>
     <itunes:subtitle>subtitle #{= podcast.subtitle }</itunes:subtitle>
     <description>description #{= podcast.subtitle }</description>
     <itunes:summary>#{= podcast.subtitle }</itunes:summary>
 #{  if bc_most_recent and bc_most_recent:pbmi().DC_image then }    <!-- image of most recent enclosure -->
     <image>
       <link>#{= podcast:url('rss') }</link>
-      <title>Rec2013 #{= podcast.title }</title>
+      <title>RadioPi #{= podcast.title }</title>
       <url>#{= bc_most_recent:pbmi().DC_image }</url>
     </image>
     <itunes:image href="#{= bc_most_recent:pbmi().DC_image }"/>
@@ -45,7 +48,7 @@ if #bcs then bc_most_recent = bcs[1] end
         local start = assert(bc:dtstart())
         local end_ = assert(bc:dtend())
  }    <item>
-      <title>#{= bc:pbmi().DC_title:escape_xml() }</title>
+      <title>##{= bc.number } #{= bc:pbmi().DC_title:escape_xml() }</title>
       <itunes:subtitle>#{= bc:pbmi().DC_title_episode:escape_xml() }</itunes:subtitle>
       <description>#{= bc:pbmi().DC_description:escape_xml() }</description>
       <itunes:image href="#{= bc:pbmi().DC_image }"/>
