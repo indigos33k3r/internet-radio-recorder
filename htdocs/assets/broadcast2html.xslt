@@ -55,7 +55,7 @@
           <a href="{rec:meta[@name='DC.source']/@content}" id="via" rel="via">www.br.de</a>
         </p>
         <p id="date"><span id="dtstart" title="{rec:meta[@name='DC.format.timestart']/@content}"><xsl:value-of select="rec:meta[@name='DC.format.timestart']/@content"/></span>
-       bis 
+       bis
       <span id="dtend" title="{rec:meta[@name='DC.format.timeend']/@content}"><xsl:value-of select="rec:meta[@name='DC.format.timeend']/@content"/></span>
     </p>
         <p class="image">
@@ -72,6 +72,9 @@
             <input id="ad_hoc_submit" type="submit" value="Aufnehmen"/>
           </fieldset>
         </form>
+        <p id="enclosure">
+            <audio controls="controls" style="display:none">Doesn't play well with auth...<source type="audio/mpeg" /></audio>
+            <a id="enclosure_link">mp3</a></p>
         <hr/>
         <p id="footer">
           <!--
@@ -89,7 +92,6 @@
         <!-- script type="text/javascript" src="http://code.jquery.com/mobile/latest/jquery.mobile.min.js"/ -->
         <script type="text/javascript">
 //<![CDATA[
-
         var dtstart = new Date( $("meta[name='DC.format.timestart']").attr("content") );
         var dtend   = new Date( $("meta[name='DC.format.timeend']").attr("content") );
         var now = new Date();
@@ -100,32 +102,46 @@
         else
             $( 'html' ).addClass('is_past');
 
-function render_podcasts( data ) {
-    var has_ad_hoc = false;
-    var names = data.podcasts.map( function(pc) {
-        if( pc.name == 'ad_hoc' )
-            has_ad_hoc = true;
-        return '<a href="../../../../../podcasts/' + pc.name + '/">' + pc.name + '</a>';
-    } );
-    $( '#podcasts' ).html( names.join(', ') );
-    if( names.length == 0 ) {
-        ;
-    } else {
-        $( 'html' ).addClass('has_podcast');
-        if( has_ad_hoc ) {
-            $( '#ad_hoc_action' ).attr('name', 'remove');
-            $( '#ad_hoc_submit' ).attr('value', 'Nicht Aufnehmen');
-        } else {
-            $( '#ad_hoc_submit' ).attr('style', 'display:none;visibility:hidden');
-        }
-    }
-}
+        // display podcast links
         var podasts_json_url = window.location.pathname.replace(/^.*\//,'').replace(/\.xml$/,'.json');
         $.ajax({
             url: podasts_json_url,
-            cache: 'true',
-            dataType: 'json',
-            success: render_podcasts
+            cache: true,
+            dataType: 'json'
+        }).done( function( data ) {
+            // display mp3/enclosure dir link
+            var enclosure_dir_url = window.location.pathname.replace(/\/stations\//,'/enclosures/').replace(/[^\/]+\.xml$/,'');
+            $( 'a#enclosure_link' ).attr('href', enclosure_dir_url);
+            var enclosure_mp3_url = window.location.pathname.replace(/\/stations\//,'/enclosures/').replace(/\.xml$/,'.mp3');
+            $.ajax({
+                type: 'HEAD',
+                url: enclosure_mp3_url,
+                cache: true,
+            }).done( function() {
+                $( 'html' ).addClass('has_enclosure_mp3');
+                $( 'a#enclosure_link' ).attr('href', enclosure_mp3_url);
+                $( '#enclosure audio source' ).attr('src', enclosure_mp3_url);
+                $( '#enclosure' ).attr('style', 'display:block');
+            });
+            var has_ad_hoc = false;
+            var names = data.podcasts.map( function(pc) {
+                if( pc.name == 'ad_hoc' )
+                    has_ad_hoc = true;
+                return '<a href="../../../../../podcasts/' + pc.name + '/">' + pc.name + '</a>';
+            } );
+            $( '#podcasts' ).html( names.join(', ') );
+            if( names.length == 0 ) {
+                ;
+            } else {
+                $( 'p#enclosure' ).attr('style', 'display:block');
+                $( 'html' ).addClass('has_podcast');
+                if( has_ad_hoc ) {
+                    $( '#ad_hoc_action' ).attr('name', 'remove');
+                    $( '#ad_hoc_submit' ).attr('value', 'Nicht Aufnehmen');
+                } else {
+                    $( '#ad_hoc_submit' ).attr('style', 'display:none');
+                }
+            }
         });
 
         // make date time display human readable
