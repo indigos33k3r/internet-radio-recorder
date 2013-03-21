@@ -30,7 +30,7 @@
       <body id="broadcast">
         <ul class="navigation">
           <li id="link_now">
-            <a href="../../../../../app/now.lua">↻ aktuelle Sendung</a>
+            <a href="../../../now">↻ aktuelle Sendung</a>
           </li>
           <li id="link_parent">
             <a href="index.html" rel="parent">↑ ganzer Tag</a>
@@ -73,7 +73,7 @@
           </fieldset>
         </form>
         <p id="enclosure">
-            <audio controls="controls" style="display:none">Doesn't play well with auth...<source type="audio/mpeg" /></audio>
+            <!-- audio controls="controls" style="display:none">Doesn't play well with auth...<source type="audio/mpeg" /></audio -->
             <a id="enclosure_link">mp3</a></p>
         <hr/>
         <p id="footer">
@@ -89,9 +89,12 @@
         </p>
         <noscript>Script ist aus!</noscript>
         <script type="text/javascript" src="../../../../../assets/jquery-1.9.1.min.js"/>
-        <!-- script type="text/javascript" src="http://code.jquery.com/mobile/latest/jquery.mobile.min.js"/ -->
+        <script type="text/javascript" src="../../../../../assets/moment.min.js"/><!-- http://momentjs.com/ -->
+        <script type="text/javascript" src="../../../../../assets/lang/de.js"/><!-- https://github.com/timrwood/moment/blob/develop/min/lang/de.js -->
         <script type="text/javascript">
 //<![CDATA[
+		// moment.lang("de");
+
         var dtstart = new Date( $("meta[name='DC.format.timestart']").attr("content") );
         var dtend   = new Date( $("meta[name='DC.format.timeend']").attr("content") );
         var now = new Date();
@@ -106,7 +109,7 @@
         var podasts_json_url = window.location.pathname.replace(/^.*\//,'').replace(/\.xml$/,'.json');
         $.ajax({
             url: podasts_json_url,
-            cache: true,
+            cache: false,
             dataType: 'json'
         }).done( function( data ) {
             // display mp3/enclosure dir link
@@ -116,7 +119,7 @@
             $.ajax({
                 type: 'HEAD',
                 url: enclosure_mp3_url,
-                cache: true,
+                cache: false,
             }).done( function() {
                 $( 'html' ).addClass('has_enclosure_mp3');
                 $( 'a#enclosure_link' ).attr('href', enclosure_mp3_url);
@@ -125,8 +128,7 @@
             });
             var has_ad_hoc = false;
             var names = data.podcasts.map( function(pc) {
-                if( pc.name == 'ad_hoc' )
-                    has_ad_hoc = true;
+                has_ad_hoc = has_ad_hoc || (pc.name == 'ad_hoc');
                 return '<a href="../../../../../podcasts/' + pc.name + '/">' + pc.name + '</a>';
             } );
             $( '#podcasts' ).html( names.join(', ') );
@@ -145,8 +147,8 @@
         });
 
         // make date time display human readable
-        $( '#dtstart' ).html( dtstart.toLocaleString() );
-        $( '#dtend' ).html( dtend.toLocaleTimeString() );
+        $( '#dtstart' ).html( moment(dtstart).format('ddd D[.] MMM YYYY HH:mm') );
+        $( '#dtend' ).html( moment(dtend).format('HH:mm') );
 
         // add html linebreaks to description
         var t = $("meta[name='DC.description']").attr("content");
