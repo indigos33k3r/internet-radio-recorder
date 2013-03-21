@@ -1,44 +1,80 @@
-default namespace = "http://www.w3.org/1999/xhtml"
+default namespace =
+  "https://raw.github.com/mro/radio-pi/master/htdocs/app/pbmi2003-recmod2012/broadcast.rnc"
 namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
 
+
+## Copyright (c) 2013 Marcus Rohrmoser, https://github.com/mro/radio-pi
+## 
+## Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+## associated documentation files (the "Software"), to deal in the Software without restriction,
+## including without limitation the rights to use, copy, modify, merge, publish, distribute,
+## sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+## furnished to do so, subject to the following conditions:
+## 
+## The above copyright notice and this permission notice shall be included in all copies or
+## substantial portions of the Software.
+## 
+## THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+## NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+## NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+## OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+## CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+## 
+## MIT License http://opensource.org/licenses/MIT
 
 ## Dublin Core PBMI http://dcpapers.dublincore.org/pubs/article/view/749
 ## not: Ontology for Media Resources 1.0 http://www.w3.org/TR/mediaont-10/
 ## not: EBU http://tech.ebu.ch/lang/en/MetadataEbuCore
+## 
+## use e.g.
+## $ xmllint --noout --relaxng htdocs/app/pbmi2003-recmod2012/broadcast.rng htdocs/stations/*/????/??/??/*.xml 2>&1 | grep fail
+##
 start =
-  element html {
-    anyAttribute*,
-    element head {
-      anyElement+,
-      (meta.DC.scheme,
-       meta.DC.language,
-       meta.DC.title.series,
-       meta.DC.title.episode?,
-       meta.DC.format.timestart,
-       meta.DC.format.timeend,
-       meta.DC.format.duration,
-       meta.DC.image?,
-       meta.DC.description?,
-       meta.DC.publisher,
-       meta.DC.creator,
-       meta.DC.copyright,
-       meta.DC.source)
-      # unused , meta.DC.lastmodified
-      
-    },
-    element body { (anyAttribute | text | anyElement)* }
+  element broadcast {
+    (attribute xml:lang {
+       xsd:NCName {
+         
+         ## ISO 639-1 2-letter language code
+         pattern = "[a-z]{2}"
+       }
+     },
+     (meta.DC.scheme,
+      meta.DC.language,
+      meta.DC.title,
+      meta.DC.title.series?,
+      meta.DC.title.episode?,
+      meta.DC.format.timestart,
+      meta.DC.format.timeend,
+      meta.DC.format.duration,
+      meta.DC.image?,
+      meta.DC.description?,
+      meta.DC.publisher,
+      meta.DC.creator,
+      meta.DC.copyright,
+      meta.DC.source))
+    # unused , meta.DC.lastmodified
+    
   }
 meta.DC.scheme =
   
   ## Dublin Core PBMI http://dcpapers.dublincore.org/pubs/article/view/749
   element meta {
     attribute name { "DC.scheme" },
-    attribute content { "PBMI 2003/recmod2012" }
+    attribute content { "/app/pbmi2003-recmod2012/" }
   }
 meta.DC.language =
   element meta {
     attribute name { "DC.language" },
-    attribute content { "de" }
+    attribute content {
+      
+      ## ISO 639-1 2-letter language code
+      xsd:NCName { pattern = "[a-z]{2}" }
+    }
+  }
+meta.DC.title =
+  element meta {
+    attribute name { "DC.title" },
+    attribute content { text }
   }
 meta.DC.title.series =
   element meta {
@@ -86,7 +122,9 @@ meta.DC.format.timeend =
 meta.DC.format.duration =
   element meta {
     attribute name { "DC.format.duration" },
-    attribute content { xsd:nonNegativeInteger }
+    attribute content {
+      xsd:decimal { pattern = "\d+(\.0)?" minInclusive = "0" }
+    }
   }
 meta.DC.image =
   element meta {
@@ -118,11 +156,3 @@ meta.DC.source =
     attribute name { "DC.source" },
     attribute content { xsd:anyURI }
   }
-
-## unused
-anyElementButMeta =
-  element * - meta { (anyAttribute | text | anyElement)* }
-
-## https://www.oasis-open.org/committees/relax-ng/compact-20021121.html#syntax
-anyElement = element * { (anyAttribute | text | anyElement)* }
-anyAttribute = attribute * { text }

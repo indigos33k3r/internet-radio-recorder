@@ -1,21 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<grammar ns="http://www.w3.org/1999/xhtml" xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+<grammar ns="https://raw.github.com/mro/radio-pi/master/htdocs/app/pbmi2003-recmod2012/broadcast.rnc" xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <start>
+    <a:documentation>Copyright (c) 2013 Marcus Rohrmoser, https://github.com/mro/radio-pi
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute,
+sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or
+substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+MIT License http://opensource.org/licenses/MIT</a:documentation>
     <a:documentation>Dublin Core PBMI http://dcpapers.dublincore.org/pubs/article/view/749
 not: Ontology for Media Resources 1.0 http://www.w3.org/TR/mediaont-10/
-not: EBU http://tech.ebu.ch/lang/en/MetadataEbuCore</a:documentation>
-    <element name="html">
-      <zeroOrMore>
-        <ref name="anyAttribute"/>
-      </zeroOrMore>
-      <element name="head">
-        <oneOrMore>
-          <ref name="anyElement"/>
-        </oneOrMore>
+not: EBU http://tech.ebu.ch/lang/en/MetadataEbuCore
+
+use e.g.
+$ xmllint --noout --relaxng htdocs/app/pbmi2003-recmod2012/broadcast.rng htdocs/stations/*/????/??/??/*.xml 2&gt;&amp;1 | grep fail
+</a:documentation>
+    <element name="broadcast">
+      <group>
+        <attribute name="xml:lang">
+          <data type="NCName">
+            <param name="pattern">[a-z]{2}</param>
+            <a:documentation>ISO 639-1 2-letter language code</a:documentation>
+          </data>
+        </attribute>
         <group>
           <ref name="meta.DC.scheme"/>
           <ref name="meta.DC.language"/>
-          <ref name="meta.DC.title.series"/>
+          <ref name="meta.DC.title"/>
+          <optional>
+            <ref name="meta.DC.title.series"/>
+          </optional>
           <optional>
             <ref name="meta.DC.title.episode"/>
           </optional>
@@ -33,17 +58,8 @@ not: EBU http://tech.ebu.ch/lang/en/MetadataEbuCore</a:documentation>
           <ref name="meta.DC.copyright"/>
           <ref name="meta.DC.source"/>
         </group>
-        <!-- , meta.DC.lastmodified -->
-      </element>
-      <element name="body">
-        <zeroOrMore>
-          <choice>
-            <ref name="anyAttribute"/>
-            <text/>
-            <ref name="anyElement"/>
-          </choice>
-        </zeroOrMore>
-      </element>
+      </group>
+      <!-- unused , meta.DC.lastmodified -->
     </element>
   </start>
   <define name="meta.DC.scheme">
@@ -53,7 +69,7 @@ not: EBU http://tech.ebu.ch/lang/en/MetadataEbuCore</a:documentation>
         <value>DC.scheme</value>
       </attribute>
       <attribute name="content">
-        <value>PBMI 2003/recmod2012</value>
+        <value>/app/pbmi2003-recmod2012/</value>
       </attribute>
     </element>
   </define>
@@ -63,8 +79,19 @@ not: EBU http://tech.ebu.ch/lang/en/MetadataEbuCore</a:documentation>
         <value>DC.language</value>
       </attribute>
       <attribute name="content">
-        <value>de</value>
+        <data type="NCName">
+          <a:documentation>ISO 639-1 2-letter language code</a:documentation>
+          <param name="pattern">[a-z]{2}</param>
+        </data>
       </attribute>
+    </element>
+  </define>
+  <define name="meta.DC.title">
+    <element name="meta">
+      <attribute name="name">
+        <value>DC.title</value>
+      </attribute>
+      <attribute name="content"/>
     </element>
   </define>
   <define name="meta.DC.title.series">
@@ -128,7 +155,10 @@ not: EBU http://tech.ebu.ch/lang/en/MetadataEbuCore</a:documentation>
         <value>DC.format.duration</value>
       </attribute>
       <attribute name="content">
-        <data type="nonNegativeInteger"/>
+        <data type="decimal">
+          <param name="pattern">\d+(\.0)?</param>
+          <param name="minInclusive">0</param>
+        </data>
       </attribute>
     </element>
   </define>
@@ -183,40 +213,5 @@ not: EBU http://tech.ebu.ch/lang/en/MetadataEbuCore</a:documentation>
         <data type="anyURI"/>
       </attribute>
     </element>
-  </define>
-  <define name="anyElementButMeta">
-    <a:documentation>unused</a:documentation>
-    <element>
-      <anyName>
-        <except>
-          <name>meta</name>
-        </except>
-      </anyName>
-      <zeroOrMore>
-        <choice>
-          <ref name="anyAttribute"/>
-          <text/>
-          <ref name="anyElement"/>
-        </choice>
-      </zeroOrMore>
-    </element>
-  </define>
-  <define name="anyElement">
-    <a:documentation>https://www.oasis-open.org/committees/relax-ng/compact-20021121.html#syntax</a:documentation>
-    <element>
-      <anyName/>
-      <zeroOrMore>
-        <choice>
-          <ref name="anyAttribute"/>
-          <text/>
-          <ref name="anyElement"/>
-        </choice>
-      </zeroOrMore>
-    </element>
-  </define>
-  <define name="anyAttribute">
-    <attribute>
-      <anyName/>
-    </attribute>
   </define>
 </grammar>
