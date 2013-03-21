@@ -81,7 +81,7 @@ function Enclosure:at_jobnum()
 	f_pending:close()
 	local at_job_real = os.atq(at_job)
 	-- verify - query 'at' for mere EXISTENCE of such a job as a hint:
-	if at_job and not at_job_real then
+	if at_job and at_job ~= at_job_real then
 		io.stderr:write('warning ', 'inconsistent job numbers. Expected #', tonumber(at_job), ' found #', tonumber(at_job_real), '. repairing...', "\n")
 		io.write_if_changed(pending, at_job_real)
 		return at_job_real,pending
