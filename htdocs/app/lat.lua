@@ -39,18 +39,15 @@ function os.at(t,cmd,queue)
 end
 
 
-function os.atq(jobnum)
+function os.atc(jobnum)
 	if not jobnum then return nil,'No job number' end
-	local f = assert(io.popen('atq	' .. tostring(assert(jobnum)), 'r'))
+	local f = assert(io.popen('at -c ' .. tostring(assert(jobnum)), 'r'))
 	local s = assert(f:read('*a'))
 	f:close()
-	local _,_,jobn,wday,month,day,hour,min,second,year = s:find('(%d+)%s+(%u%l%l)%s+(%u%l%l)%s+(%d+)%s+(%d%d):(%d%d):(%d%d)%s+(%d%d%d%d)%s+')
-	if not jobn then
+	if not s then
 		return nil,'No at job ' .. jobnum
 	end
-	-- at seems to speak english no matter which locale is set. So we go with hardcoded month-names:
-	local month2num = {Jan=1,Feb=2,Mar=3,Apr=4,May=5,Jun=6,Jul=7,Aug=8,Sep=9,Oct=10,Nov=11,Dec=12}
-	return tonumber(jobn),os.time({year=year, month=assert(month2num[month], month), day=day, hour=hour, min=min, second=second})
+	return s
 end
 
 
