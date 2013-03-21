@@ -24,8 +24,9 @@ local function escape_cmdline(self)
 end
 
 
-function os.at(t,cmd)
-	local at_cmd = table.concat{'echo ', escape_cmdline(cmd), ' | at -q a ', os.date('%H:%M %d.%m.%Y', t), ' 2>&1'}
+function os.at(t,cmd,queue)
+	if not queue then queue = 'a' end
+	local at_cmd = table.concat{'echo ', escape_cmdline(cmd), ' | at -q ', queue, ' ', os.date('%H:%M %d.%m.%Y', t), ' 2>&1'}
 	io.stderr:write(at_cmd, "\n")
 	local f = assert(io.popen(at_cmd, 'r'))
 	local s = assert(f:read('*a'))

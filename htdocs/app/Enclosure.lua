@@ -101,7 +101,7 @@ function Enclosure:schedule()
 		local params_unsafe = {assert(Recorder.app_root) .. '/app/enclosure-rip.lua', self.broadcast:filename('xml')}
 		local cmd = table.concat(escape_cmdline(params_unsafe), ' ')
 		local at_time = math.max(self.broadcast:dtstart() - 90, os.time() + 2)
-		at_job = os.at(at_time, cmd)
+		at_job = os.at(at_time, cmd, 'c')
 		io.write_if_changed(pending, at_job)
 		return at_job,cmd
 	else
