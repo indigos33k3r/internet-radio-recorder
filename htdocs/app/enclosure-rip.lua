@@ -123,6 +123,7 @@ function Enclosure:run_streamripper(dry_run)
 --	local dir = assert(self.dir, 'dir not found')
 	local _,_,file = self.id:find('/([^/]+)$')
 
+	local rip_head = -3 -- add to mp3
 	local rip_tail = 15 -- add to mp3
 	local rip_post = 5	-- keep streamripper running post recording
 	while os.time() < t_end do
@@ -137,7 +138,7 @@ function Enclosure:run_streamripper(dry_run)
 			'-d', self:dir_mp3_temp(),		-- The destination directory
 			'-D', '../' .. assert(file),	-- file to create
 			'-o', 'version',
-			'-E', 'app/streamripper-injector.lua ' .. t_start .. ' ' .. t_end + rip_tail,
+			'-E', 'app/streamripper-injector.lua ' .. t_start + rip_head .. ' ' .. t_end + rip_tail,
 			'--codeset-filesys=UTF-8',
 			'--codeset-id3=UTF-8',
 			'--codeset-metadata=UTF-8',
