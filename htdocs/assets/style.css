@@ -5,7 +5,7 @@
     so each station could provide a custom skin.
 */
 html {
-    background-color: lightgrey;
+    background-color: rgb(211,211,220);
 }
 #image {
     float:right;
