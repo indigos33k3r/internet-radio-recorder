@@ -9,7 +9,7 @@ assert(podcast, 'podcast')
 assert(podcast.id, 'podcast id')
 
 -- at first sort forward, oldest first (to get a meaningful, global episode counter):
-local bcs_all = podcast:broadcasts(function(a,b) return a.id < b.id end)
+local bcs_all = podcast:broadcasts(function(a,b) return a < b end)
 local bcs = {}
 for num,bc in ipairs(bcs_all) do
     if 'file' == lfs.attributes(bc:enclosure():filename('mp3'), 'mode') then
@@ -20,7 +20,7 @@ end
 bcs_all = nil
 local bc_most_recent = nil
 -- then sort reverse, most recent first as rss wants it:
-table.sort(bcs, function(a,b) return a.id > b.id end)
+table.sort(bcs, function(a,b) return a > b end)
 if #bcs then bc_most_recent = bcs[1] end
 
  }<?xml version="1.0" encoding="UTF-8"?>
@@ -32,13 +32,15 @@ if #bcs then bc_most_recent = bcs[1] end
     <itunes:subtitle>subtitle #{= podcast.subtitle }</itunes:subtitle>
     <description>description #{= podcast.subtitle }</description>
     <itunes:summary>#{= podcast.subtitle }</itunes:summary>
-#{  if bc_most_recent and bc_most_recent:pbmi().DC_image then }    <!-- image of most recent enclosure -->
+#{  if bc_most_recent and bc_most_recent:pbmi().DC_image and bc_most_recent:pbmi().DC_image:len() > 0 then }    <!-- image of most recent enclosure -->
     <image>
       <link>#{= podcast:url('rss') }</link>
       <title>RadioPi #{= podcast.title }</title>
       <url>#{= bc_most_recent:pbmi().DC_image }</url>
     </image>
+#{   if bc_most_recent:pbmi().DC_image then }
     <itunes:image href="#{= bc_most_recent:pbmi().DC_image }"/>
+#{   end }
 #{ end }    <itunes:explicit>no</itunes:explicit>
     <language>de</language>
     <lastBuildDate>#{= date_rfc_822() }</lastBuildDate>
@@ -51,7 +53,9 @@ if #bcs then bc_most_recent = bcs[1] end
       <title>##{= bc.number } #{= bc:pbmi().DC_title:escape_xml() }</title>
       <itunes:subtitle>#{= bc:pbmi().DC_title_episode:escape_xml() }</itunes:subtitle>
       <description>#{= bc:pbmi().DC_description:escape_xml() }</description>
+#{   if bc:pbmi().DC_image and bc:pbmi().DC_image:len() > 0 then }
       <itunes:image href="#{= bc:pbmi().DC_image }"/>
+#{   end }
       <pubDate>#{= date_rfc_822(start) }</pubDate>
       <guid isPermaLink="true">#{= bc:url('xml') }</guid>
       <itunes:duration>#{= os.difftime(end_,start) }</itunes:duration>

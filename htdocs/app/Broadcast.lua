@@ -21,23 +21,23 @@
 
 
 local function meta_key_to_lua(k)
-	return k:gsub('%.', '_')
+  return k:gsub('%.', '_')
 end
 
 
 function string:to_filename()
-	local replace = {
-		['–']	= '-',
-		['/']	= '-',
-		["\t"]	= ' ',
-		["\n"]	= ' ',
-	}
-	local escape = {
-	}
-	local subf = function(s)
-		return replace[s] or escape[s] or s
-	end
-	return self:gsub('.', subf)
+  local replace = {
+    ['–'] = '-',
+    ['/'] = '-',
+    ["\t"]  = ' ',
+    ["\n"]  = ' ',
+  }
+  local escape = {
+  }
+  local subf = function(s)
+    return replace[s] or escape[s] or s
+  end
+  return self:gsub('.', subf)
 end
 
 
@@ -51,268 +51,293 @@ require'Enclosure'
 
 -- http://nova-fusion.com/2011/06/30/lua-metatables-tutorial/
 -- http://lua-users.org/wiki/LuaClassesWithMetatable
-Broadcast = {}							-- methods table
-Broadcast_mt = { __index = Broadcast }	-- metatable
+Broadcast = {}              -- methods table
+Broadcast_mt = { __index = Broadcast }  -- metatable
+
+function Broadcast_mt.__eq(a,b)
+  return a.id == b.id
+end
+
+-- compare acc. time, ignore dst switch.
+function Broadcast_mt.__le(a,b)
+  if     a.year  < b.year  then return true
+  elseif a.year  > b.year  then return false
+  elseif a.month < b.month then return true
+  elseif a.month > b.month then return false
+  elseif a.day   < b.day   then return true
+  elseif a.day   > b.day   then return false
+  elseif a.hour  < b.hour  then return true
+  elseif a.hour  > b.hour  then return false
+  elseif a.min   < b.min   then return true
+  elseif a.min   > b.min   then return false
+  elseif a.sec   < b.sec   then return true
+  elseif a.sec   > b.sec   then return false
+  else return a.id <= b.id end
+end
+
+function Broadcast_mt.__lt(a,b)
+  return a <= b and not (b <= a)
+end
 
 function Broadcast_mt.__tostring(self)
-	return self.id
+  return self.id
 end
 
 
 local function factory(ret)
-	local file = assert(ret._title):to_filename()
-	local t = os.time(ret)
-	ret.dir	= table.concat{assert(ret._station).id, '/', os.date('%Y/%m/%d', t)}
-	ret.id	= table.concat{ret.dir, '/', os.date('%H%M', t), ' ',  file}
-	return setmetatable( ret, Broadcast_mt )
+  local file = assert(ret._title):to_filename()
+  local t = os.time(ret)
+  ret.dir = table.concat{assert(ret._station).id, '/', os.date('%Y/%m/%d', t)}
+  ret.id  = table.concat{ret.dir, '/', os.date('%H%M', t), ' ',  file}
+  return setmetatable( ret, Broadcast_mt )
 end
 
 
 function Broadcast.from_meta(meta)
-	local pbmi = {
-		DC_scheme 			= assert( meta.DC_scheme ),
-		DC_language 		= assert( meta.DC_language ),
-		DC_title 			= assert( meta.DC_title ),
-		DC_title_series 	= meta.DC_title_series,
-		DC_title_episode 	= meta.DC_title_episode,
-		DC_format_timestart = assert( meta.DC_format_timestart ),
-		DC_format_timeend 	= assert( meta.DC_format_timeend ),
-		DC_format_duration 	= assert( meta.DC_format_duration ),
-		DC_image 			= meta.DC_image,
-		DC_description 		= assert( meta.DC_description ),
-		DC_copyright 		= assert( meta.DC_copyright ),
-		DC_source 			= assert( meta.DC_source ),
-	}
-	local ret = os.date('*t', assert(parse_iso8601(meta.DC_format_timestart, 'missing key \'DC_format_timestart\'')))
-	ret._station = assert(Station.from_id(meta.station), 'missing key \'station\'')
-	ret._dtend 	= assert(parse_iso8601(meta.DC_format_timeend, 'missing key \'DC_format_timeend\''))
-	ret._title 	= assert(meta.title)
-	ret._pbmi 	= pbmi
-	return factory(ret)
+  local pbmi = {
+    DC_scheme       = assert( meta.DC_scheme ),
+    DC_language     = assert( meta.DC_language ),
+    DC_title      = assert( meta.DC_title ),
+    DC_title_series   = meta.DC_title_series,
+    DC_title_episode  = meta.DC_title_episode,
+    DC_format_timestart = assert( meta.DC_format_timestart ),
+    DC_format_timeend   = assert( meta.DC_format_timeend ),
+    DC_format_duration  = assert( meta.DC_format_duration ),
+    DC_image      = meta.DC_image,
+    DC_description    = assert( meta.DC_description ),
+    DC_copyright    = assert( meta.DC_copyright ),
+    DC_source       = assert( meta.DC_source ),
+  }
+  local ret = os.date('*t', assert(parse_iso8601(meta.DC_format_timestart, 'missing key \'DC_format_timestart\'')))
+  ret._station = assert(Station.from_id(meta.station), 'missing key \'station\'')
+  ret._dtend  = assert(parse_iso8601(meta.DC_format_timeend, 'missing key \'DC_format_timeend\''))
+  ret._title  = assert(meta.title)
+  ret._pbmi   = pbmi
+  return factory(ret)
 end
 
 
 function Broadcast.from_id(f)
-	local ok,_,station,year,month,day,hour,min,title = f:find('([^/]+)/(%d%d%d%d)/(%d%d)/(%d%d)/(%d%d)(%d%d)%s(.+)$')
-	if not ok then return nil end
-	local ret = os.date('*t', os.time{year=year,month=month,day=day,hour=hour,min=min})
-	ret._station = assert(Station.from_id(station), 'missing key \'station\'')
-	ret._title 	= assert(title, 'missing title')
-	return factory(ret)
+  local ok,_,station,year,month,day,hour,min,title = f:find('([^/]+)/(%d%d%d%d)/(%d%d)/(%d%d)/(%d%d)(%d%d)%s(.+)$')
+  if not ok then return nil end
+  local ret = os.date('*t', os.time{year=year,month=month,day=day,hour=hour,min=min})
+  ret._station = assert(Station.from_id(station), 'missing key \'station\'')
+  ret._title  = assert(title, 'missing title')
+  return factory(ret)
 end
 
 
 function Broadcast.from_file(f)
-	local ok,_,id,ext = f:find('(.+)(%.[^%.]+)$')
-	if not ok then return nil end
-	return Broadcast.from_id(id)
+  local ok,_,id,ext = f:find('(.+)(%.[^%.]+)$')
+  if not ok then return nil end
+  return Broadcast.from_id(id)
 end
 
 
 function Broadcast:title()
-	return assert(self._title)
+  return assert(self._title)
 end
 
 
 function Broadcast:station()
-	return assert(self._station)
+  return assert(self._station)
 end
 
 
 function Broadcast:dtstart()
-	if not self._dtstart then
-		self._dtstart = assert(parse_iso8601(self:pbmi().DC_format_timestart))
-	end
-	return self._dtstart
+  if not self._dtstart then
+    self._dtstart = assert(parse_iso8601(self:pbmi().DC_format_timestart))
+  end
+  return self._dtstart
 end
 
 
 function Broadcast:dtend()
-	if not self._dtend then
-		self._dtend = assert(parse_iso8601(self:pbmi().DC_format_timeend))
-	end
-	return self._dtend
+  if not self._dtend then
+    self._dtend = assert(parse_iso8601(self:pbmi().DC_format_timeend))
+  end
+  return self._dtend
 end
 
 
 function Broadcast:is_past(now)
-	if now == nil then now = os.time() end
-	if os.time(self) < now then
-		-- already started, but still running?
-		if self:dtend() < now then
-			-- io.stderr:write('I\'m past: ', self.id, "\n")
-			return true
-		end
-	end
-	return false
+  if now == nil then now = os.time() end
+  if os.time(self) < now then
+    -- already started, but still running?
+    if self:dtend() < now then
+      -- io.stderr:write('I\'m past: ', self.id, "\n")
+      return true
+    end
+  end
+  return false
 end
 
 
 -- return table w. <meta> plus xml source
 -- TODO: sanity check found meta!
 local function broadcast_meta_from_xml(xml_file)
-	local metas,xml_old,file = {},nil,io.open(xml_file, 'r')
-	if file == nil then return nil,nil,xml_file end
-	local xml_old = file:read('*a')
-	file:close()
-	for v,k in xml_old:gmatch('<meta%s+content=\'([^\']*)\'%s+name=\'(DC%.[^\']+)\'%s*/?>') do
-		local k,v = k:unescape_xml_text(),v:unescape_xml_text()
-		metas[ meta_key_to_lua(k) ] = v
-	end
-	return metas,xml_old,xml_file
+  local metas,xml_old,file = {},nil,io.open(xml_file, 'r')
+  if file == nil then return nil,nil,xml_file end
+  local xml_old = file:read('*a')
+  file:close()
+  for v,k in xml_old:gmatch('<meta%s+content=\'([^\']*)\'%s+name=\'(DC%.[^\']+)\'%s*/?>') do
+    local k,v = k:unescape_xml_text(),v:unescape_xml_text()
+    metas[ meta_key_to_lua(k) ] = v
+  end
+  return metas,xml_old,xml_file
 end
 
 
 function Broadcast:filename(state)
-	local t = {'stations', '/', self.id}
-	if state then
-		table.insert(t, '.')
-		table.insert(t, state)
-	end
-	return table.concat(t)
+  local t = {'stations', '/', self.id}
+  if state then
+    table.insert(t, '.')
+    table.insert(t, state)
+  end
+  return table.concat(t)
 end
 
 
 function Broadcast:url(type_)
-	return table.concat{Recorder.base_url(), self:filename(type_)}:escape_url()
+  return table.concat{Recorder.base_url(), self:filename(type_)}:escape_url()
 end
 
 -- accessor to Dublin Core PBMI http://dcpapers.dublincore.org/pubs/article/view/749
 function Broadcast:pbmi()
-	if not self._pbmi then
-		self._pbmi,_,file = broadcast_meta_from_xml(self:filename('xml'))
-		assert(self._pbmi,'Couldn\'t load pbmi from ' .. file)
-	end
-	return assert(self._pbmi, 'lazy load failure.')
+  if not self._pbmi then
+    self._pbmi,_,file = broadcast_meta_from_xml(self:filename('xml'))
+    assert(self._pbmi,'Couldn\'t load pbmi from ' .. file)
+  end
+  return assert(self._pbmi, 'lazy load failure.')
 end
 
 
 function Broadcast:enclosure()
-	if not self._enclosure then
-		self._enclosure = Enclosure.from_broadcast(self)
-	end
-	return self._enclosure
+  if not self._enclosure then
+    self._enclosure = Enclosure.from_broadcast(self)
+  end
+  return self._enclosure
 end
 
 
 function Broadcast:add_podcast(pc)
-	self:podcasts()[pc.id] = pc
+  self:podcasts()[pc.id] = pc
 end
 
 
 function Broadcast:remove_podcast(pc)
-	self:podcasts()[pc.id] = nil
-	pc:remove_broadcast(self)
+  self:podcasts()[pc.id] = nil
+  pc:remove_broadcast(self)
 end
 
 
 function Broadcast:podcasts()
-	if not self._podcasts then
-		local ret = {}
-		for pi_id,pc in pairs(Podcast.each()) do
-			if pc:contains_broadcast(self) then
-				ret[pi_id] = pc
-			end
-			-- check presence ?
-			-- evtl. check match ?
-			-- add to podcast ?
-			-- add to list ?
-		end
-		self._podcasts = ret
-	end
-	return self._podcasts
+  if not self._podcasts then
+    local ret = {}
+    for pi_id,pc in pairs(Podcast.each()) do
+      if pc:contains_broadcast(self) then
+        ret[pi_id] = pc
+      end
+      -- check presence ?
+      -- evtl. check match ?
+      -- add to podcast ?
+      -- add to list ?
+    end
+    self._podcasts = ret
+  end
+  return self._podcasts
 end
 
 
 function Broadcast:match_podcasts()
-	for pc_id,pc in pairs( Podcast.each() ) do
-		local ok,match = pcall(assert(pc.match, 'match'), assert(self:pbmi(), 'pbmi'))
-		if ok and match then
-			self:podcasts()[pc_id] = pc
-		end
-	end
+  for pc_id,pc in pairs( Podcast.each() ) do
+    local ok,match = pcall(assert(pc.match, 'match'), assert(self:pbmi(), 'pbmi'))
+    if ok and match then
+      self:podcasts()[pc_id] = pc
+    end
+  end
 end
 
 
 -- find first one smaller or equal dtstart
 function Broadcast:prev_sibling()
-	return self:station():broadcast_now(self:dtstart()-1,true,false)
+  return self:station():broadcast_now(self:dtstart()-1,true,false)
 end
 
 
 -- find first one bigger or equal dtend
 function Broadcast:next_sibling()
-	return self:station():broadcast_now(self:dtend(),true,true)
+  return self:station():broadcast_now(self:dtend(),true,true)
 end
 
 
 function Broadcast:monopolize()
-	-- find all in interval [dtstart,dtend]
-	-- delete if not == self
-	-- need the same for podcasts and enclosure (if not mp3)
-	assert(false,'not implemented yet.')
+  -- find all in interval [dtstart,dtend]
+  -- delete if not == self
+  -- need the same for podcasts and enclosure (if not mp3)
+  assert(false,'not implemented yet.')
 end
 
 
 function Broadcast:save_xml()
-	-- TODO check time overlaps?
-	local xml = {
-		'<?xml version="1.0" encoding="UTF-8"?>',
-		'<?xml-stylesheet type="text/xsl" href="../../../app/broadcast2html.xslt"?>',
-    	'<!-- Dublin Core PBMI http://dcpapers.dublincore.org/pubs/article/view/749 -->',
-		'<!-- not: Ontology for Media Resources 1.0 http://www.w3.org/TR/mediaont-10/ -->',
-		'<!-- not: EBU http://tech.ebu.ch/lang/en/MetadataEbuCore -->',
-		'<broadcast xml:lang="de" xmlns="https://raw.github.com/mro/radio-pi/master/htdocs/app/pbmi2003-recmod2012/broadcast.rnc">',
-	}
-	for _,k in ipairs({
-		'DC.scheme', 'DC.language', 'DC.title', 'DC.title.series', 'DC.title.episode',
-		'DC.format.timestart', 'DC.format.timeend', 'DC.format.duration', 'DC.image',
-		'DC.description', 'DC.publisher', 'DC.creator', 'DC.copyright', 'DC.source',
-	}) do
-		local v = self:pbmi()[ meta_key_to_lua(k) ]
-		if not v then v = '' end
-		local row = {'    ', '<meta content=\'', v:escape_xml_attribute(), '\' name=\'', k, '\'/>'}
-		table.insert( xml, table.concat(row) )
-	end
-	table.insert( xml, '</broadcast>' )
-	return io.write_if_changed(self:filename('xml'), table.concat(xml,"\n"))
+  -- TODO check time overlaps?
+  local xml = {
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<?xml-stylesheet type="text/xsl" href="../../../app/broadcast2html.xslt"?>',
+      '<!-- Dublin Core PBMI http://dcpapers.dublincore.org/pubs/article/view/749 -->',
+    '<!-- not: Ontology for Media Resources 1.0 http://www.w3.org/TR/mediaont-10/ -->',
+    '<!-- not: EBU http://tech.ebu.ch/lang/en/MetadataEbuCore -->',
+    '<broadcast xml:lang="de" xmlns="https://raw.github.com/mro/radio-pi/master/htdocs/app/pbmi2003-recmod2012/broadcast.rnc">',
+  }
+  for _,k in ipairs({
+    'DC.scheme', 'DC.language', 'DC.title', 'DC.title.series', 'DC.title.episode',
+    'DC.format.timestart', 'DC.format.timeend', 'DC.format.duration', 'DC.image',
+    'DC.description', 'DC.publisher', 'DC.creator', 'DC.copyright', 'DC.source',
+  }) do
+    local v = self:pbmi()[ meta_key_to_lua(k) ]
+    if not v then v = '' end
+    local row = {'    ', '<meta content=\'', v:escape_xml_attribute(), '\' name=\'', k, '\'/>'}
+    table.insert( xml, table.concat(row) )
+  end
+  table.insert( xml, '</broadcast>' )
+  return io.write_if_changed(self:filename('xml'), table.concat(xml,"\n"))
 end
 
 
 function Broadcast:save_podcast_json()
-	-- io.stderr:write('to_podcast_json()', "\n")
-	local pc_ids = {}
-	for pc_id,pc in pairs( self:podcasts() ) do
-		pc:add_broadcast(self)
-		table.insert(pc_ids, pc.id)
-	end
-	local json = nil
-	if table.getn(pc_ids) > 0 then
-		json = table.concat{'{ "podcasts":[{"name":"', table.concat(pc_ids,'"},{"name":"'), '"}] }'}
-	end
-	return io.write_if_changed(self:filename('json'), json)
+  -- io.stderr:write('to_podcast_json()', "\n")
+  local pc_ids = {}
+  for pc_id,pc in pairs( self:podcasts() ) do
+    pc:add_broadcast(self)
+    table.insert(pc_ids, pc.id)
+  end
+  local json = nil
+  if table.getn(pc_ids) > 0 then
+    json = table.concat{'{ "podcasts":[{"name":"', table.concat(pc_ids,'"},{"name":"'), '"}] }'}
+  end
+  return io.write_if_changed(self:filename('json'), json)
 end
 
 
 function Broadcast:save_schedule()
-	for _,_ in pairs(self:podcasts()) do
-		-- no way to tell count of a hash - so we start to iterate and return after first
-		return self:enclosure():schedule()
-	end
-	return self:enclosure():unschedule()
+  for _,_ in pairs(self:podcasts()) do
+    -- no way to tell count of a hash - so we start to iterate and return after first
+    return self:enclosure():schedule()
+  end
+  return self:enclosure():unschedule()
 end
 
 
 function Broadcast:save()
-	-- broadcast xml
-	local file,msg,err = self:save_xml()
-	-- podcast membership
-	for _,pc in pairs(self:podcasts()) do
-		pc:add_broadcast(self)
-	end
-	self:save_podcast_json()
-	-- schedule
-	local at_job,cmd = self:save_schedule()
-	-- if at_job then io.stderr:write('at job  ', at_job, ' ', cmd, "\n") end
-	return file,msg,err
+  -- broadcast xml
+  local file,msg,err = self:save_xml()
+  -- podcast membership
+  for _,pc in pairs(self:podcasts()) do
+    pc:add_broadcast(self)
+  end
+  self:save_podcast_json()
+  -- schedule
+  local at_job,cmd = self:save_schedule()
+  -- if at_job then io.stderr:write('at job  ', at_job, ' ', cmd, "\n") end
+  return file,msg,err
 end
