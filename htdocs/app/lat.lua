@@ -44,7 +44,7 @@ function os.atc(jobnum)
 	local f = assert(io.popen('at -c ' .. tostring(assert(jobnum)), 'r'))
 	local s = assert(f:read('*a'))
 	f:close()
-	if not s then
+	if not s or s:len() == 0 then
 		return nil,'No at job ' .. jobnum
 	end
 	return s
