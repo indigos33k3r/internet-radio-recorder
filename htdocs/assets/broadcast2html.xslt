@@ -89,7 +89,7 @@
           Powered by <a href="https://github.com/mro/radio-pi">github.com/mro/radio-pi</a>
         </p>
         <noscript>Script ist aus!</noscript>
-        <script type="text/javascript" src="../../../../../assets/jquery-1.9.1.min.js"/>
+        <script type="text/javascript" src="../../../../../assets/jquery-2.0.0.min.js"/>
         <script type="text/javascript" src="../../../../../assets/moment.min.js"/><!-- http://momentjs.com/ -->
         <script type="text/javascript" src="../../../../../assets/lang/de.js"/><!-- https://github.com/timrwood/moment/blob/develop/min/lang/de.js -->
         <script type="text/javascript">
