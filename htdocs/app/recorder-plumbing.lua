@@ -113,7 +113,7 @@ end
 function http_400_bad_request(...)
 	io.write('HTTP/1.1 400 Bad Request', '\n')
 	io.write('Content-Type: text/plain', '\n')
-	io.write('Server: Recorder 2013/lua', '\n')
+	io.write('Server: RadioPi 2013/lua', '\n')
 	io.write('\n')
 	io.write(...)
 	io.write('\n')
@@ -124,7 +124,7 @@ end
 function http_303_see_other(uri, msg)
 	io.write('HTTP/1.1 303 See Other', '\n')
 	io.write('Content-Type: text/plain', '\n')
-	io.write('Server: Recorder 2013/lua', '\n')
+	io.write('Server: RadioPi 2013/lua', '\n')
 	io.write('Location: ', uri, '\n')
 	io.write('\n')
 	if msg then io.write(msg, '\n') end

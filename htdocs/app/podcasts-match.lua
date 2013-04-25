@@ -22,7 +22,7 @@
 if os.getenv('HTTP_HOST') then
 	io.write('HTTP/1.1 400 Bad Request', '\n')
 	io.write('Content-Type: text/plain', '\n')
-	io.write('Server: Recorder 2013/lua', '\n')
+	io.write('Server: RadioPi 2013/lua', '\n')
 	io.write('\n', 'I\'m not supposed to be run as cgi')
 	io.write('\n')
 	io.flush()
