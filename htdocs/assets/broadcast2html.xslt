@@ -77,6 +77,8 @@
           <!-- audio controls="controls" style="display:none">Doesn't play well with auth...<source type="audio/mpeg" /></audio -->
           <a id="enclosure_link">mp3</a></p>
         <hr/>
+        <ul id="allday" class="nobullet" style="display:none"></ul>
+        <hr/>
         <p id="footer">
           <!--
           <a style="display:none" href="http://validator.w3.org/check?uri=referer">
@@ -154,24 +156,44 @@
     // add html linebreaks to description
     var t = $("meta[name='DC.description']").attr("content");
     try {
-    	// escape for xml/html
+      // escape for xml/html
       t = t.replace(/&/g, "&amp;");
       t = t.replace(/</g, "&lt;");
       t = t.replace(/>/g, "&gt;");
-    	// linefeeds
-      t = t.replace(/\n/g, "\n<br/>\n");
+      // linefeeds
+      t = t.replace(/\n/g, "<br/>\n");
       $( '#content' ).html( t );
     } catch(e) {
       $( '#content' ).text( 'Aua: "' + e + '": ' + t );
     }
 
     // add today/tomorrow links
-    var links = [ $( '#link_now' ).html() ];
     var yesterday = new Date(dtstart.getTime() - 24*60*60*1000).toISOString().replace(/\.000Z/,'+00:00')
     var tomorrow = new Date(dtstart.getTime() + 24*60*60*1000).toISOString().replace(/\.000Z/,'+00:00')
-    links.push( '<a href="../../../../../app/now.lua?t=' + yesterday + '">gestern</a>' );
-    links.push( '<a href="../../../../../app/now.lua?t=' + tomorrow + '">morgen</a>' );
-    $( '#link_now' ).html( links.join(', ') );
+    $( '#link_now' ).append( ', <a href="../../../../../app/now.lua?t=' + yesterday + '">gestern</a>' );
+    $( '#link_now' ).append( ', <a href="../../../../../app/now.lua?t=' + tomorrow + '">morgen</a>' );
+    
+    // add all day broadcasts
+    $.ajax({
+      type: 'GET',
+      url: window.location.pathname + '/..',
+      cache: true,
+    }).done( function(xmlBody) {
+      var hasRecording = false;
+      var allLinks = $( $.parseXML( xmlBody ) ).find( "a[href $= '.xml'], a[href $= '.json']" ).map( function() {
+        var me = $(this);
+        var txt = me.text().replace(/^(\d{2})(\d{2})\s+(.*)(\.xml)$/, '$1:$2 $3');
+        if( hasRecording )
+          me.addClass('has_podcast');
+        if( hasRecording = me.attr("href").search(/\.json$/i) >= 0 )
+          return null;
+        me.text( txt );
+        return this;
+      });
+      $( '#allday' ).html( allLinks );
+      $( '#allday a' ).wrap("<li>");
+      $( '#allday' ).show();
+    });
   //]]>
         </script>
       </body>

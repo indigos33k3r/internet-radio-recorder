@@ -31,6 +31,13 @@ input[type="submit"] {
 /* disable recording button for past broadcasts */
 .is_past form#ad_hoc { display:none; }
 
+ul.nobullet {
+	list-style-type:none;
+	padding: 0;
+}
+
+ul >li > a.has_podcast:before { content:"* "; }
+
 @media screen and (max-width: 500px) {
     .navigation {
         line-height: 3.5ex;
