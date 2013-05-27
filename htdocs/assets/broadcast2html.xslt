@@ -51,8 +51,9 @@
         <h2 id="summary">
           <xsl:value-of select="rec:meta[@name='DC.title.episode']/@content"/>
         </h2>
-        <p class="via">
-          <a href="{rec:meta[@name='DC.source']/@content}" id="via" rel="via">www.br.de</a>
+        <p>
+          <a id="via" class="via" href="{rec:meta[@name='DC.source']/@content}" rel="via">www.br.de</a>,
+          <a id="stream" style="display:none">Stream</a>
         </p>
         <p id="date">
           <span id="dtstart" title="{rec:meta[@name='DC.format.timestart']/@content}"><xsl:value-of select="rec:meta[@name='DC.format.timestart']/@content"/></span>
@@ -110,20 +111,12 @@
 
     // display podcast links
     var podasts_json_url = window.location.pathname.replace(/^.*\//,'').replace(/\.xml$/,'.json');
-    $.ajax({
-      url: podasts_json_url,
-      cache: false,
-      dataType: 'json'
-    }).done( function( data ) {
+    $.ajax({ url: podasts_json_url, cache: false, dataType: 'json' }).done( function( data ) {
       // display mp3/enclosure dir link
       var enclosure_dir_url = window.location.pathname.replace(/\/stations\//,'/enclosures/').replace(/[^\/]+\.xml$/,'');
       $( 'a#enclosure_link' ).attr('href', enclosure_dir_url);
       var enclosure_mp3_url = window.location.pathname.replace(/\/stations\//,'/enclosures/').replace(/\.xml$/,'.mp3');
-      $.ajax({
-        type: 'HEAD',
-        url: enclosure_mp3_url,
-        cache: false,
-      }).done( function() {
+      $.ajax({ url: enclosure_mp3_url, type: 'HEAD', cache: false, }).done( function() {
         $( 'html' ).addClass('has_enclosure_mp3');
         $( 'a#enclosure_link' ).attr('href', enclosure_mp3_url);
         $( '#enclosure audio source' ).attr('src', enclosure_mp3_url);
@@ -174,11 +167,7 @@
     $( '#link_now' ).append( ', <a href="../../../../../app/now.lua?t=' + tomorrow + '">morgen</a>' );
     
     // add all day broadcasts
-    $.ajax({
-      type: 'GET',
-      url: window.location.pathname + '/..',
-      cache: true,
-    }).done( function(xmlBody) {
+    $.ajax({ url: window.location.pathname + '/..', type: 'GET', cache: true, }).done( function(xmlBody) {
       var hasRecording = false;
       var allLinks = $( $.parseXML( xmlBody ) ).find( "a[href $= '.xml'], a[href $= '.json']" ).map( function() {
         var me = $(this);
@@ -193,6 +182,13 @@
       $( '#allday' ).html( allLinks );
       $( '#allday a' ).wrap("<li>");
       $( '#allday' ).show();
+    });
+
+    // add stream url
+    $.ajax({ url: '../../../app/station.cfg', type: 'GET', cache: true, }).done( function(luaCfg) {
+			var stream_url = luaCfg.match( /(stream_url)\s*=\s*'([^']*)'/ );
+			if( stream_url )
+      	$( '#stream' ).attr( 'href', stream_url[2] ).show();
     });
   //]]>
         </script>
