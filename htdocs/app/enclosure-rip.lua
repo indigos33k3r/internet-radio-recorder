@@ -157,7 +157,7 @@ function Enclosure:run_streamripper(dry_run)
       io.stderr:write('streamripper result ', ret, "\n")
     end
   end
-  os.execute('find ' .. self:dir_mp3_temp():escape_cmdline() .. ' 1>> ' .. (self:dir_mp3_temp() .. '/stdout.log'):escape_cmdline())
+  os.execute('find ' .. self:dir_mp3_temp():escape_cmdline() .. ' -type f -exec ls -l {} \\; 1>> ' .. (self:dir_mp3_temp() .. '/stdout.log'):escape_cmdline())
   return true
 end
 
