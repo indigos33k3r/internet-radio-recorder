@@ -20,17 +20,17 @@
 -- MIT License http://opensource.org/licenses/MIT
 ]]
 if os.getenv('HTTP_HOST') then
-	io.write('HTTP/1.1 400 Bad Request', '\n')
-	io.write('Content-Type: text/plain', '\n')
-	io.write('Server: RadioPi 2013/lua', '\n')
-	io.write('\n', 'I\'m not supposed to be run as cgi')
-	io.write('\n')
-	io.flush()
-	os.exit(1)
+  io.write('HTTP/1.1 400 Bad Request', '\n')
+  io.write('Content-Type: text/plain', '\n')
+  io.write('Server: RadioPi 2013/lua', '\n')
+  io.write('\n', 'I\'m not supposed to be run as cgi')
+  io.write('\n')
+  io.flush()
+  os.exit(1)
 end
 
 if arg[1] == nil or arg[1] == '-?' or arg[1] == '--help' then
-	io.write([[
+  io.write([[
 Usage:
 
   display this help info
@@ -39,7 +39,7 @@ Usage:
   update/create broadcasts from meta data
   $ broadcast-render.lua --stdin
 ]])
-	os.exit(0)
+  os.exit(0)
 end
 
 -- ensure recorder.lua (next to this file) is found:
@@ -51,31 +51,31 @@ Recorder.chdir2app_root( arg[0] )
 
 -- multiple xml files to create/update
 if arg[1] == '--stdin' then
-	local metas,err = loadstring(table.concat{'return {', io.read('*a'), '}'})
-	if metas == nil then
-		io.write('error: ', err, "\n")
-		os.exit(1)
-	end
-	local ok,metas = pcall(metas)
-	if not ok then
-		io.write('error: ', metas, "\n")
-		os.exit(1)
-	end
-	-- table.sort(metas, function(a,b) return a.DC_format_timestart < b.DC_format_timestart end)
-	local process = function(meta)
-		local bc = Broadcast.from_meta(meta)
-		bc:match_podcasts()
-		return bc:save()
-	end
-	for _,meta in ipairs(metas) do
-		local ok,file,msg,err = pcall(process, meta)
-		if ok then
-			io.stderr:write(msg, ' ', file, "\n")
-		else
-			io.stderr:write('error: ', file, "\n")
-		end
-	end
-	os.exit(0)
+  local metas,err = loadstring(table.concat{'return {', io.read('*a'), '}'})
+  if metas == nil then
+    io.write('error: ', err, "\n")
+    os.exit(1)
+  end
+  local ok,metas = pcall(metas)
+  if not ok then
+    io.write('error: ', metas, "\n")
+    os.exit(1)
+  end
+  -- table.sort(metas, function(a,b) return a.DC_format_timestart < b.DC_format_timestart end)
+  local process = function(meta)
+    local bc = Broadcast.from_meta(meta)
+    bc:match_podcasts()
+    return bc:save()
+  end
+  for _,meta in ipairs(metas) do
+    local ok,file,msg,err = pcall(process, meta)
+    if ok then
+      io.stderr:write(msg, ' ', file, "\n")
+    else
+      io.stderr:write('error: ', file, "\n")
+    end
+  end
+  os.exit(0)
 end
 
 assert(false,'not supported')
