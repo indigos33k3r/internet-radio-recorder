@@ -6,13 +6,14 @@
   <rdf:Description rdf:about="radio-pi.rdf">
     <dc:description xml:lang="en">Turn broadcast XML into RDF.
 
-- follow http://www.w3.org/TR/grddl-tests/#sq2
+- do as shown in http://www.w3.org/TR/grddl-tests/#sq2
 - use a (relative, cough) namespace that points to a rdf: &lt;../../../../../assets/2013/radio-pi.rdf&gt;
-- make rdf point to a xslt (this file),
-- make rdf.xslt return a per-broadcast rdf,
-- test like $ rapper -i grddl -o turtle http://example.com/stations/b2/2013/06/13/0605%20radioWelt.rdf.xml
+- make that rdf point to a xslt,
+- make that xslt return a per-broadcast rdf,
+- test like $ rapper -i grddl -o turtle http://example.com/stations/b2/2013/06/13/0605%20radioWelt.xml
 </dc:description>
     <dc:subject rdf:resource="https://github.com/mro/radio-pi"/>
+    <dc:conformsTo rdf:resource="https://raw.github.com/mro/radio-pi/master/htdocs/app/pbmi2003-recmod2012/broadcast.rnc"/>
     <dataview:namespaceTransformation rdf:resource="rdf.xslt"/>
   </rdf:Description>
 </rdf:RDF>
