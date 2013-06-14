@@ -271,20 +271,33 @@ function Broadcast:next_sibling()
 end
 
 
-function Broadcast:monopolize()
-  -- find all in interval [dtstart,dtend]
-  -- delete if not == self
-  -- need the same for podcasts and enclosure (if not mp3)
-  assert(false,'not implemented yet.')
+function Broadcast:monopolize(dry_run)
+  local callb = function( path )
+    local other = Broadcast.from_file( path )
+    if other ~= nil and other ~= self then other:remove(dry_run) end
+    return false
+  end
+  lfs.files_between(table.concat({'stations',self:station().id},'/'), self:dtstart(), self:dtend()-0.1, callb, true)
 end
 
+
+function Broadcast:remove(dry_run)
+  io.stderr:write('delete ', self.id, "\n")
+  if dry_run then return end
+  self:enclosure():unschedule()
+  for _,pc in pairs(self:podcasts()) do
+    pc:remove_broadcast(self)
+  end
+  io.write_if_changed(self:filename('json'), nil)
+  io.write_if_changed(self:filename('xml'), nil)
+end
 
 function Broadcast:save_xml()
   -- TODO check time overlaps?
   local xml = {
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<?xml-stylesheet type="text/xsl" href="../../../app/broadcast2html.xslt"?>',
-      '<!-- Dublin Core PBMI http://dcpapers.dublincore.org/pubs/article/view/749 -->',
+    '<!-- Dublin Core PBMI http://dcpapers.dublincore.org/pubs/article/view/749 -->',
     '<!-- not: Ontology for Media Resources 1.0 http://www.w3.org/TR/mediaont-10/ -->',
     '<!-- not: EBU http://tech.ebu.ch/lang/en/MetadataEbuCore -->',
     '<broadcast xml:lang="de" xmlns="../../../../../assets/2013/radio-pi.rdf">',
@@ -329,6 +342,7 @@ end
 
 
 function Broadcast:save()
+  self:monopolize()
   -- broadcast xml
   local file,msg,err = self:save_xml()
   -- podcast membership

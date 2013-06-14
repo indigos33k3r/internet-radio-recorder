@@ -81,7 +81,7 @@ end
 
 
 function Podcast:remove_broadcast(bc)
-  os.remove(table.concat{'podcasts', '/', self.id, '/', bc.id, '.xml'})
+  return io.write_if_changed(table.concat{'podcasts', '/', self.id, '/', bc.id, '.xml'}, nil)
 end
 
 
