@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+   xmlns:dataview="http://www.w3.org/2003/g/data-view#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about="radio-pi.rdf">
+    <dc:description xml:lang="en">Turn broadcast XML into RDF.
+
+- follow http://www.w3.org/TR/grddl-tests/#sq2
+- use a (relative, cough) namespace that points to a rdf: &lt;../../../../../assets/2013/radio-pi.rdf&gt;
+- make rdf point to a xslt (this file),
+- make rdf.xslt return a per-broadcast rdf,
+- test like $ rapper -i grddl -o turtle http://example.com/stations/b2/2013/06/13/0605%20radioWelt.rdf.xml
+</dc:description>
+    <dc:subject rdf:resource="https://github.com/mro/radio-pi"/>
+    <dataview:namespaceTransformation rdf:resource="rdf.xslt"/>
+  </rdf:Description>
+</rdf:RDF>

@@ -5,7 +5,7 @@
   Supposed to be either linked to from or located in station/<name>/app/broadcast2html.xslt,
   so each station could provide a custom skin.
 -->
-<xsl:stylesheet xmlns:rec="https://raw.github.com/mro/radio-pi/master/htdocs/app/pbmi2003-recmod2012/broadcast.rnc" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" version="1.0">
+<xsl:stylesheet xmlns:rec="../../../../../assets/2013/radio-pi.rdf" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" version="1.0">
   <xsl:output method="html" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"/>
   <xsl:template match="rec:broadcast">
     <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{rec:meta[@name='DC.language']/@content}">

@@ -287,7 +287,7 @@ function Broadcast:save_xml()
       '<!-- Dublin Core PBMI http://dcpapers.dublincore.org/pubs/article/view/749 -->',
     '<!-- not: Ontology for Media Resources 1.0 http://www.w3.org/TR/mediaont-10/ -->',
     '<!-- not: EBU http://tech.ebu.ch/lang/en/MetadataEbuCore -->',
-    '<broadcast xml:lang="de" xmlns="https://raw.github.com/mro/radio-pi/master/htdocs/app/pbmi2003-recmod2012/broadcast.rnc">',
+    '<broadcast xml:lang="de" xmlns="../../../../../assets/2013/radio-pi.rdf">',
   }
   for _,k in ipairs({
     'DC.scheme', 'DC.language', 'DC.title', 'DC.title.series', 'DC.title.episode',
