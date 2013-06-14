@@ -15,12 +15,12 @@ else
 
 // display podcast links
 var podasts_json_url = window.location.pathname.replace(/^.*\//,'').replace(/\.xml$/,'.json');
-$.ajax({ url: podasts_json_url, cache: false, dataType: 'json' }).done( function( data ) {
+$.ajax({ url: podasts_json_url, cache: true, dataType: 'json' }).done( function( data ) {
   // display mp3/enclosure dir link
   var enclosure_dir_url = window.location.pathname.replace(/\/stations\//,'/enclosures/').replace(/[^\/]+\.xml$/,'');
   $( 'a#enclosure_link' ).attr('href', enclosure_dir_url);
   var enclosure_mp3_url = window.location.pathname.replace(/\/stations\//,'/enclosures/').replace(/\.xml$/,'.mp3');
-  $.ajax({ url: enclosure_mp3_url, type: 'HEAD', cache: false, }).done( function() {
+  $.ajax({ url: enclosure_mp3_url, type: 'HEAD', cache: true, }).done( function() {
     $( 'html' ).addClass('has_enclosure_mp3');
     $( 'a#enclosure_link' ).attr('href', enclosure_mp3_url);
     $( '#enclosure audio source' ).attr('src', enclosure_mp3_url);
