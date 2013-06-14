@@ -49,7 +49,7 @@
         <dc:titleSeries rdf:datatype="http://www.w3.org/2001/XMLSchema#string">
           <xsl:value-of select="rec:meta[@name='DC.title.series']/@content"/>
         </dc:titleSeries>
-        <dcterms:References rdf:resource="../../.."/>
+        <dcterms:references rdf:resource="../../.."/>
         <!-- dcterms:isPartOf rdf:resource="../../../../../podcasts/radiowelt/"/ -->
       </rdf:Description>
     </rdf:RDF>
