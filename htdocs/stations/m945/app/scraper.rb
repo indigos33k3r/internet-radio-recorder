@@ -163,8 +163,8 @@ module Recorder
       raise "Couldn't find language in #{bc.to_s}" if bc.DC_language.nil?
       #   broadcast[:last_modified] = Time.local(doc.at_css('html > head > meta[name="Last-Modified"]')['content'])
       #   raise "Couldn't find last_modified in #{uri}" if broadcast[:last_modified].nil?
-      bc.DC_author = doc.at_css('html > head > meta[name="publisher"]')['content']
-      raise "Couldn't find author in #{uri}" if bc.DC_author.nil?
+      bc.DC_author = bc.DC_creator = bc.DC_publisher = doc.at_css('html > head > meta[name="publisher"]')['content']
+      raise "Couldn't find publisher in #{uri}" if bc.DC_publisher.nil?
       bc.DC_copyright = doc.at_css('html > head > meta[name="copyright"]')['content']
       raise "Couldn't find copyright in #{uri}" if bc.DC_copyright.nil?
 
@@ -194,6 +194,9 @@ module Recorder
       bc.DC_description.gsub! /[ \t]*\n[ \t]*/, "\n"
       bc.DC_description.gsub! /\n(\s*\n)+/, "\n\n"
       bc.DC_description.strip!
+      
+      image_node = doc.at_css('#col-left img')
+      bc.DC_image = bc.src_url + image_node[:src] unless image_node.nil?
     end
   end
 end

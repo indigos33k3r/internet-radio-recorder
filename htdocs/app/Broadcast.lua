@@ -95,18 +95,21 @@ end
 
 function Broadcast.from_meta(meta)
   local pbmi = {
-    DC_scheme       = assert( meta.DC_scheme ),
-    DC_language     = assert( meta.DC_language ),
-    DC_title      = assert( meta.DC_title ),
-    DC_title_series   = meta.DC_title_series,
-    DC_title_episode  = meta.DC_title_episode,
+    DC_scheme           = assert( meta.DC_scheme ),
+    DC_language         = assert( meta.DC_language ),
+    DC_title            = assert( meta.DC_title ),
+    DC_title_series     = meta.DC_title_series,
+    DC_title_episode    = meta.DC_title_episode,
     DC_format_timestart = assert( meta.DC_format_timestart ),
     DC_format_timeend   = assert( meta.DC_format_timeend ),
     DC_format_duration  = assert( meta.DC_format_duration ),
-    DC_image      = meta.DC_image,
-    DC_description    = assert( meta.DC_description ),
-    DC_copyright    = assert( meta.DC_copyright ),
-    DC_source       = assert( meta.DC_source ),
+    DC_image            = meta.DC_image,
+    DC_description      = assert( meta.DC_description ),
+    DC_author           = meta.DC_author,
+    DC_creator          = meta.DC_creator,
+    DC_publisher        = meta.DC_publisher,
+    DC_copyright        = assert( meta.DC_copyright ),
+    DC_source           = assert( meta.DC_source ),
   }
   local ret = os.date('*t', assert(parse_iso8601(meta.DC_format_timestart, 'missing key \'DC_format_timestart\'')))
   ret._station = assert(Station.from_id(meta.station), 'missing key \'station\'')
@@ -121,7 +124,7 @@ function Broadcast.from_id(f)
   local ok,_,station,year,month,day,hour,min,title = f:find('([^/]+)/(%d%d%d%d)/(%d%d)/(%d%d)/(%d%d)(%d%d)%s(.+)$')
   if not ok then return nil end
   local ret = os.date('*t', os.time{year=year,month=month,day=day,hour=hour,min=min})
-  ret._station = assert(Station.from_id(station), 'missing key \'station\'')
+  ret._station = assert(Station.from_id(station), 'missing key \'station\': ' .. f)
   ret._title  = assert(title, 'missing title')
   return factory(ret)
 end
@@ -316,7 +319,7 @@ function Broadcast:save_xml()
   for _,k in ipairs({
     'DC.scheme', 'DC.language', 'DC.title', 'DC.title.series', 'DC.title.episode',
     'DC.format.timestart', 'DC.format.timeend', 'DC.format.duration', 'DC.image',
-    'DC.description', 'DC.publisher', 'DC.creator', 'DC.copyright', 'DC.source',
+    'DC.description', 'DC.author', 'DC.publisher', 'DC.creator', 'DC.copyright', 'DC.source',
   }) do
     local v = self:pbmi()[ meta_key_to_lua(k) ]
     if not v then v = '' end

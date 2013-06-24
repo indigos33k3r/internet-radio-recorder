@@ -117,9 +117,9 @@ module Recorder
 
   class Broadcast
     attr_reader :station, :dtstart, :title, :src_url
-    attr_accessor :DC_language, :DC_author, :DC_copyright, :DC_title_series, :DC_title_episode, :DC_title
+    attr_accessor :DC_language, :DC_copyright, :DC_title_series, :DC_title_episode, :DC_title
     attr_accessor :DC_format_timestart, :DC_format_timeend, :DC_format_duration, :DC_description, :DC_image
-    attr_accessor :DC_creator, :DC_publisher
+    attr_accessor :DC_author, :DC_creator, :DC_publisher
 
     def initialize station, dtstart, title, src_url
       @station = station
@@ -168,6 +168,7 @@ module Recorder
       kv_to_lua :DC_format_duration, self.DC_format_duration, dst
       kv_to_lua :DC_image, self.DC_image, dst
       kv_to_lua :DC_description, self.DC_description, dst
+      kv_to_lua :DC_author, self.DC_author, dst
       kv_to_lua :DC_publisher, self.DC_publisher, dst
       kv_to_lua :DC_creator, self.DC_creator, dst
       kv_to_lua :DC_copyright, self.DC_copyright, dst
@@ -241,11 +242,11 @@ module Recorder
           # rescrape next hour
           tmin = Time.now.localtime
           self.update_broadcasts_between tmin, tmin + 65 * 60, true
-          # rescrape next hour tomorrow
-          tmin = Time.now.localtime + 1*24*60*60 + 5*60
+          # rescrape +12
+          tmin = Time.now.localtime + 12*60*60 + 5*60
           self.update_broadcasts_between tmin, tmin + 65 * 60, true
-          # rescrape next hour seven days ahead
-          tmin = Time.now.localtime + 7*24*60*60 + 5*60
+          # rescrape next hour three days ahead
+          tmin = Time.now.localtime + 3*24*60*60 + 5*60
           self.update_broadcasts_between tmin, tmin + 65 * 60, true
         else
           display_updatebroadcast_help if opts.error?
