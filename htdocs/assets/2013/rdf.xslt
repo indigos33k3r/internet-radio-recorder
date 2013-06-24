@@ -13,6 +13,9 @@
         <dc:title rdf:datatype="http://www.w3.org/2001/XMLSchema#string">
           <xsl:value-of select="rec:meta[@name='DC.title']/@content"/>
         </dc:title>
+        <dc:author rdf:datatype="http://www.w3.org/2001/XMLSchema#string">
+          <xsl:value-of select="rec:meta[@name='DC.author']/@content"/>
+        </dc:author>
         <dc:copyright rdf:datatype="http://www.w3.org/2001/XMLSchema#string">
           <xsl:value-of select="rec:meta[@name='DC.copyright']/@content"/>
         </dc:copyright>
@@ -39,9 +42,6 @@
         <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string">
           <xsl:value-of select="rec:meta[@name='DC.publisher']/@content"/>
         </dc:publisher>
-        <dc:rights rdf:datatype="http://www.w3.org/2001/XMLSchema#string">
-          <xsl:value-of select="rec:meta[@name='DC.rights']/@content"/>
-        </dc:rights>
         <dc:source rdf:resource="{rec:meta[@name='DC.source']/@content}"/>
         <dc:titleEpisode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">
           <xsl:value-of select="rec:meta[@name='DC.title.episode']/@content"/>
