@@ -199,7 +199,7 @@ module Recorder
       raise "Couldn't find language in #{bc.to_s}" if bc.DC_language.nil?
   #   broadcast[:last_modified] = Time.local(doc.at_css('html > head > meta[name="Last-Modified"]')['content'])
   #   raise "Couldn't find last_modified in #{uri}" if broadcast[:last_modified].nil?
-      bc.DC_publisher = bc.DC_creator = bc.DC_author = doc.at_css('html > head > meta[name="author"]')['content']
+      bc.DC_author = doc.at_css('html > head > meta[name="author"]')['content']
       raise "Couldn't find author in #{uri}" if bc.DC_author.nil?
       bc.DC_copyright = doc.at_css('html > head > meta[name="copyright"]')['content']
       raise "Couldn't find copyright in #{uri}" if bc.DC_copyright.nil?
