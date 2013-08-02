@@ -316,6 +316,8 @@ function Broadcast:save_xml()
     '<!-- not: EBU http://tech.ebu.ch/lang/en/MetadataEbuCore -->',
     '<broadcast xml:lang="de" xmlns="../../../../../assets/2013/radio-pi.rdf">',
   }
+  local row = {'    ', '<meta content=\'', self.id:escape_xml_attribute(), '\' name=\'', 'DC.identifier', '\'/>'}
+  table.insert( xml, table.concat(row) )
   for _,k in ipairs({
     'DC.scheme', 'DC.language', 'DC.title', 'DC.title.series', 'DC.title.episode',
     'DC.format.timestart', 'DC.format.timeend', 'DC.format.duration', 'DC.image',

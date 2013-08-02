@@ -49,7 +49,15 @@
         <dc:titleSeries rdf:datatype="http://www.w3.org/2001/XMLSchema#string">
           <xsl:value-of select="rec:meta[@name='DC.title.series']/@content"/>
         </dc:titleSeries>
-        <dcterms:references rdf:resource="../../.."/>
+        <dcterms:relation rdf:resource="../../../../../enclosures/{rec:meta[@name='DC.identifier']/@content}.mp3"/>
+        <dcterms:isPartOf rdf:resource="../../.."/>
+        <!-- dcterms:references rdf:resource="../../../../../enclosures/"/ -->
+        <!-- dcterms:references>hu
+          <xsl:value-of select="base-uri('.')"/>
+        </dcterms:references -->
+          <!-- http://stackoverflow.com/questions/582957/get-file-name-using-xsl -->
+          <!-- xsl:value-of select="system-property('xsl:version')"/ -->
+          <!-- xsl:value-of select="base-uri()"/ -->
         <!-- dcterms:isPartOf rdf:resource="../../../../../podcasts/radiowelt/"/ -->
       </rdf:Description>
     </rdf:RDF>
