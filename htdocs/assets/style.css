@@ -35,6 +35,14 @@ ul.nobullet {
 	list-style-type:none;
 	padding: 0;
 }
+#navigation > a {
+	padding: 10px 5px;
+	background-color: rgb(200,200,209);
+	border-radius: 15px;
+}
+#navigation > a.large {
+	padding: 10px 3%;
+}
 
 ul >li > a.has_podcast:before { content:"* "; }
 

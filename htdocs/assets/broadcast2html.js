@@ -2,6 +2,7 @@
 // the 'if( now < dtstart )' ends up html escaped...
 
 // moment.lang("de");
+$('#my-url').text( window.location );
 
 var dtstart = new Date( $("meta[name='DC.format.timestart']").attr("content") );
 var dtend = new Date( $("meta[name='DC.format.timeend']").attr("content") );
@@ -65,10 +66,19 @@ try {
 }
 
 // add today/tomorrow links
-var yesterday = new Date(dtstart.getTime() - 24*60*60*1000).toISOString().replace(/\.000Z/,'+00:00')
-var tomorrow = new Date(dtstart.getTime() + 24*60*60*1000).toISOString().replace(/\.000Z/,'+00:00')
-$( '#link_now' ).append( ', <a href="../../../../../app/now.lua?t=' + yesterday + '">gestern</a>' );
-$( '#link_now' ).append( ', <a href="../../../../../app/now.lua?t=' + tomorrow + '">morgen</a>' );
+{
+  var prev_week = new Date(dtstart.getTime() - 7*24*60*60*1000).toISOString().replace(/\.000Z/,'+00:00')
+  $( '#prev_week' ).attr('href', '../../../../../app/now.lua?t=' + prev_week );
+}{
+  var yesterday = new Date(dtstart.getTime() - 24*60*60*1000).toISOString().replace(/\.000Z/,'+00:00')
+  $( '#yesterday' ).attr('href', '../../../../../app/now.lua?t=' + yesterday );
+}{
+  var tomorrow = new Date(dtstart.getTime() + 24*60*60*1000).toISOString().replace(/\.000Z/,'+00:00')
+  $( '#tomorrow' ).attr('href', '../../../../../app/now.lua?t=' + tomorrow );
+}{
+  var next_week = new Date(dtstart.getTime() + 7*24*60*60*1000).toISOString().replace(/\.000Z/,'+00:00')
+  $( '#next_week' ).attr('href', '../../../../../app/now.lua?t=' + next_week );
+}
 
 // add all day broadcasts
 $.ajax({ url: window.location.pathname + '/..', type: 'GET', cache: true, }).done( function(xmlBody) {

@@ -28,20 +28,15 @@
         </xsl:for-each>
       </head>
       <body id="broadcast">
-        <ul class="navigation">
-          <li id="link_now">
-            <a href="../../../now">↻ aktuelle Sendung</a>
-          </li>
-          <li id="link_parent">
-            <a href="index.html" rel="parent">↑ ganzer Tag</a>
-          </li>
-          <li id="link_prev">
-            <a href="../../../../../app/prev.lua" rel="prev">← vorige Sendung</a>
-          </li>
-          <li id="link_next">
-            <a href="../../../../../app/next.lua" rel="next">→ nächste Sendung</a>
-          </li>
-        </ul>
+        <p id="navigation" title="Navigation">
+            <a id="prev_week" href="../../../../../app/now.lua?t=P-7D" title="Woche vorher">&lt;&lt;&lt;</a>&#x00A0;
+            <a id="yesterday" href="../../../../../app/now.lua?t=P-1D" title="Tag vorher">&lt;&lt;</a>&#x00A0;
+            <a class="large" href="../../../../../app/prev.lua" rel="prev" title="Sendung vorher">&lt;</a>&#x00A0;
+            <a class="large" href="../../../now">aktuell</a>&#x00A0;
+            <a class="large" href="../../../../../app/next.lua" rel="next" title="Sendung nachher">&gt;</a>&#x00A0;
+            <a id="tomorrow" href="../../../../../app/now.lua?t=P1D" title="Tag nachher">&gt;&gt;</a>&#x00A0;
+            <a id="next_week" href="../../../../../app/now.lua?t=P7D" title="Woche nachher">&gt;&gt;&gt;</a>
+        </p>
         <h2 id="series">
           <xsl:value-of select="rec:meta[@name='DC.title.series']/@content"/>
         </h2>
@@ -79,6 +74,8 @@
           <a id="enclosure_link">mp3</a></p>
         <hr/>
         <ul id="allday" class="nobullet" style="display:none"></ul>
+        <noscript>JavaScript ist aus, es geht zwar (fast) alles auch ohne, aber mit ist's <b>schöner</b>. (Datumsformatierung, Zeilenumbrüche, Aufnahmen wieder stornieren, Tagesübersicht, Link zum Stream)</noscript>
+        <p><a href=".">Verzeichnis Index</a></p>
         <hr/>
         <p id="footer">
           <!--
@@ -89,9 +86,9 @@
           <img alt="CSS ist valide!" src="http://jigsaw.w3.org/css-validator/images/vcss-blue" style="border:0;width:88px;height:31px"/>
           </a>
           -->
-          Powered by <a href="https://github.com/mro/radio-pi">github.com/mro/radio-pi</a>
+          Powered by <a href="https://github.com/mro/radio-pi">github.com/mro/radio-pi</a><br />
+          RDF: <tt>$ <a href="http://librdf.org/raptor/rapper.html">rapper</a> -i grddl -o rdfxml-abbrev '<span id="my-url">&lt;url from address bar&gt;</span>'</tt>
         </p>
-        <noscript>Script ist aus!</noscript>
         <script type="text/javascript" src="../../../../../assets/jquery-2.0.0.min.js"/>
         <script type="text/javascript" src="../../../../../assets/moment.min.js"/><!-- http://momentjs.com/ -->
         <script type="text/javascript" src="../../../../../assets/lang/de.js"/><!-- https://github.com/timrwood/moment/blob/develop/min/lang/de.js -->
