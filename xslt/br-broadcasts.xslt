@@ -13,14 +13,13 @@
     xmlns:dcterms="http://purl.org/dc/terms/"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:date="http://exslt.org/dates-and-times"
-    extension-element-prefixes="date"
     exclude-result-prefixes="xsl"
     version="1.0">
   <xsl:output method="xml" indent="yes"/>
 
   <!--
     The daily schedule has the odd habit to list broadcasts between midnight and 
-    closedown with the previous day. So we have to add PD1 (one day) to the date
+    closedown with the previous day. So we have to add P1D (one day) to the date
     for those broadcasts.
   -->
   <xsl:param name="closedown-hour">05</xsl:param>
@@ -44,25 +43,26 @@
     <xsl:param name="day-number" />
     <rdf:Description rdf:about="{@href}">
       <dc:title><xsl:value-of select="substring-after(normalize-space(.),' ')"/></dc:title>
-      <xsl:comment> CAUTION! days will overflow end of month for broadcasts on last day of month between 00:00 and <xsl:value-of select="$closedown-hour"/>:00 </xsl:comment>
-      <!-- maybe use http://www.exslt.org/date/functions/add/index.html ? -->
-      <xsl:variable name="hour" select="substring-before(strong,':')"/>
-      <xsl:variable name="real-day">
-      	<xsl:choose>
-      	  <xsl:when test="$hour &lt; $closedown-hour"><xsl:value-of select="$day-number + 1"/></xsl:when>
-      	  <xsl:otherwise><xsl:value-of select="$day-number"/></xsl:otherwise>
-      	</xsl:choose>
-      </xsl:variable>
-      <xsl:variable name="temp-date">
+      <!-- compute a temporary ISO dateTime ... -->
+      <xsl:variable name="temp-time">
 		<xsl:call-template name="YearForMonthNumber">
           <xsl:with-param name="month-number" select="$month-number" />             
         </xsl:call-template><!--
         -->-<xsl:value-of select="$month-number"/><!--
-        -->-<xsl:value-of select="format-number($real-day,'00')"/><!--
+        -->-<xsl:value-of select="$day-number"/><!--
         -->T<xsl:value-of select="strong"/>:00<!--
       --></xsl:variable>
+      <xsl:variable name="hour" select="substring-before(strong,':')"/>
+      <!-- compute the final ISO dateTime ... -->
+      <xsl:variable name="real-time">
+      	<xsl:choose>
+      	  <!-- add one day for broadcasts between midnight and closedown: -->
+      	  <xsl:when test="$hour &lt; $closedown-hour"><xsl:value-of select="date:add($temp-time, 'P1D')"/></xsl:when>
+      	  <xsl:otherwise><xsl:value-of select="$temp-time"/></xsl:otherwise>
+      	</xsl:choose>
+      </xsl:variable>
       <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">
-        <xsl:value-of select="$temp-date"/>
+        <xsl:value-of select="$real-time"/>
       </dc:date>
     </rdf:Description>
   </xsl:template>
