@@ -53,7 +53,7 @@
         -->T<xsl:value-of select="strong"/>:00<!--
       --></xsl:variable>
       <xsl:variable name="hour" select="substring-before(strong,':')"/>
-      <!-- compute the final ISO dateTime ... -->
+      <!-- compute the final ISO dateTime by adding p1D if needed ... -->
       <xsl:variable name="real-time">
       	<xsl:choose>
       	  <!-- add one day for broadcasts between midnight and closedown: -->
