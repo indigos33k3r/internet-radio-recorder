@@ -26,7 +26,7 @@
 
   <xsl:template match="/">
     <rdf:RDF xml:base="http://www.br.de">
-      <xsl:apply-templates select=".//div[@class='detail_inlay']/div/div[@class='day_1' or @class='day_2' or @class='day_3']" mode="day" />
+      <xsl:apply-templates select="html/body/div/div/div/div/div[@class='detail_inlay']/div/div[@class='day_1' or @class='day_2' or @class='day_3']" mode="day" />
     </rdf:RDF>
   </xsl:template>
 
@@ -86,7 +86,7 @@
         <xsl:when test="$month-number = '12'">Dezember</xsl:when>
       </xsl:choose>
     </xsl:variable>
-    <xsl:variable name="YearHint" select="normalize-space(//div[@class='calendar']/div/div[@class='box_inlay']/table[contains(@summary,$month-name)]/@summary)" />
+    <xsl:variable name="YearHint" select="normalize-space(/html/body/div/div/div/div/div[@class='calendar']/div/div[@class='box_inlay']/table[contains(@summary,$month-name)]/@summary)" />
     <xsl:value-of select="substring-after(substring-after($YearHint,' '),' ')"/>
   </xsl:template>
 </xsl:stylesheet>

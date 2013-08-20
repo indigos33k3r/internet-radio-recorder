@@ -18,7 +18,7 @@
   
   <xsl:template match="/">
     <rdf:RDF xml:base="http://www.br.de">
-      <xsl:apply-templates select=".//div[@class='calendar']/div/div[@class='box_inlay']/table[@summary]" mode="month" />
+      <xsl:apply-templates select="html/body/div/div/div/div/div[@class='calendar']/div/div[@class='box_inlay']/table[@summary]" mode="month" />
     </rdf:RDF>
   </xsl:template>
 
