@@ -78,9 +78,7 @@
       <dc:description xml:lang="{/html/head/meta[@http-equiv='Language']/@content}">
         <xsl:for-each select="p">
           <xsl:value-of select="."/>
-          <xsl:text>
-
-          </xsl:text>         
+          <xsl:text>&#10;&#10;</xsl:text>
         </xsl:for-each>
       </dc:description>
     </rdf:Description>
