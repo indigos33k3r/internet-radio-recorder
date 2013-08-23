@@ -27,30 +27,30 @@
   <xsl:template match="div">
     <rdf:Description rdf:about="">
       <xsl:for-each select="/html/head/meta[@http-equiv='Language']/@content">
-        <dc:language rdf:datatype="http://purl.org/dc/terms/ISO639-2"><xsl:value-of select="."/></dc:language>
+        <dcterms:language rdf:datatype="http://purl.org/dc/terms/ISO639-2"><xsl:value-of select="."/></dcterms:language>
       </xsl:for-each>
       <xsl:for-each select="/html/head/meta[@name='author']/@content">
-        <dc:author rdf:datatype="http://www.w3.org/2001/XMLSchema#string"><xsl:value-of select="."/></dc:author>
+        <dcterms:author rdf:datatype="http://www.w3.org/2001/XMLSchema#string"><xsl:value-of select="."/></dcterms:author>
       </xsl:for-each>
       <xsl:for-each select="/html/head/meta[@name='copyright']/@content">
-        <dc:copyright xml:lang="{/html/head/meta[@http-equiv='Language']/@content}"><xsl:value-of select="."/></dc:copyright>
+        <dcterms:copyright xml:lang="{/html/head/meta[@http-equiv='Language']/@content}"><xsl:value-of select="."/></dcterms:copyright>
       </xsl:for-each>
-      <dc:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string" />
-      <dc:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string" />
+      <dcterms:creator rdf:datatype="http://www.w3.org/2001/XMLSchema#string" />
+      <dcterms:publisher rdf:datatype="http://www.w3.org/2001/XMLSchema#string" />
       <xsl:for-each select="div[@class='bcast_head']/div[@class='detail_picture_256']/div[@class='detail_picture_inlay']/span/img/@src">
-        <dc:image rdf:resource="{.}"/>
+        <dcterms:image rdf:resource="{.}"/>
       </xsl:for-each>
       <xsl:for-each select="h1">
-        <dc:title xml:lang="{/html/head/meta[@http-equiv='Language']/@content}"><xsl:value-of select="normalize-space(text())"/></dc:title>
+        <dcterms:title xml:lang="{/html/head/meta[@http-equiv='Language']/@content}"><xsl:value-of select="normalize-space(text())"/></dcterms:title>
         <xsl:for-each select="span[@class='bcast_subtitle']">
-          <dc:titleEpisode xml:lang="{/html/head/meta[@http-equiv='Language']/@content}"><xsl:value-of select="normalize-space(text())"/></dc:titleEpisode>
+          <dcterms:titleEpisode xml:lang="{/html/head/meta[@http-equiv='Language']/@content}"><xsl:value-of select="normalize-space(text())"/></dcterms:titleEpisode>
         </xsl:for-each>
         <xsl:for-each select="span[@class='bcast_overline']">
-          <dc:titleSeries xml:lang="{/html/head/meta[@http-equiv='Language']/@content}"><xsl:value-of select="normalize-space(text())"/></dc:titleSeries>
+          <dcterms:titleSeries xml:lang="{/html/head/meta[@http-equiv='Language']/@content}"><xsl:value-of select="normalize-space(text())"/></dcterms:titleSeries>
         </xsl:for-each>
       </xsl:for-each>
       <xsl:for-each select="div[@class='bcast_head']/div[@class='bcast_info']/p[@class='bcast_date']">
-        <dc:extent>
+        <dcterms:extent>
           <tl:Interval>
             <xsl:comment> TODO: Timezone </xsl:comment>
             <xsl:variable name="part0" select="normalize-space(substring-before(substring-after(.,','),'Uhr'))"/>
@@ -73,19 +73,19 @@
             <xsl:comment>TODO: add one day in case stop &lt; start</xsl:comment>
             <tl:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"><xsl:value-of select="$date"/>T<xsl:value-of select="$t_stop"/>:00</tl:end>
           </tl:Interval>
-        </dc:extent>
+        </dcterms:extent>
       </xsl:for-each>
-      <dc:description xml:lang="{/html/head/meta[@http-equiv='Language']/@content}">
+      <dcterms:description xml:lang="{/html/head/meta[@http-equiv='Language']/@content}">
         <xsl:for-each select="p">
           <xsl:value-of select="."/>
           <xsl:text>&#10;&#10;</xsl:text>
         </xsl:for-each>
-      </dc:description>
+      </dcterms:description>
     </rdf:Description>
     
-    <xsl:comment> TODO dc:identifier,dc:source,dcterms:isPartOf,dcterms:relation
-      <dc:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">b2/2013/08/22/1005 Sommernotizbuch</dc:identifier>
-      <dc:source rdf:resource="http://www.br.de/radio/bayern2/programmkalender/sendung611984.html"/>
+    <xsl:comment> TODO dcterms:identifier,dcterms:source,dcterms:isPartOf,dcterms:relation
+      <dcterms:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">b2/2013/08/22/1005 Sommernotizbuch</dcterms:identifier>
+      <dcterms:source rdf:resource="http://www.br.de/radio/bayern2/programmkalender/sendung611984.html"/>
       <dcterms:isPartOf rdf:resource="http://rec.domus.mro.name/stations/b2/"/>
       <dcterms:relation rdf:resource="http://rec.domus.mro.name/enclosures/b2/2013/08/22/1005 Sommernotizbuch.mp3"/>
     </xsl:comment>      
