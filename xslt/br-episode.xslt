@@ -77,12 +77,17 @@
       </xsl:for-each>
       <dcterms:description xml:lang="{/html/head/meta[@http-equiv='Language']/@content}">
         <xsl:for-each select="p">
-          <xsl:value-of select="."/>
-          <xsl:text>&#10;&#10;</xsl:text>
+          <xsl:for-each select="*|text()">
+          	<xsl:choose>
+          	  <xsl:when test="name() = 'br'"><xsl:text>&#10;<!-- linefeed --></xsl:text></xsl:when>
+          	  <xsl:otherwise><xsl:value-of select="."/></xsl:otherwise>
+          	</xsl:choose>
+          </xsl:for-each>
+          <xsl:text>&#10;&#10;<!-- double linefeed --></xsl:text>
         </xsl:for-each>
       </dcterms:description>
     </rdf:Description>
-    
+
     <xsl:comment> TODO dcterms:identifier,dcterms:source,dcterms:isPartOf,dcterms:relation
       <dcterms:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">b2/2013/08/22/1005 Sommernotizbuch</dcterms:identifier>
       <dcterms:source rdf:resource="http://www.br.de/radio/bayern2/programmkalender/sendung611984.html"/>
