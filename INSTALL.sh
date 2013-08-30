@@ -101,6 +101,9 @@ pkgs=""
 	fi
 	pkgs="$pkgs libxml2-dev libxslt-dev"
 
+### xsltproc (simplified scraper):
+	pkgs="$pkgs xsltproc"
+
 ### lua, luarocks, lfs:
 	pkgs="$pkgs lua5.1 luarocks"
 

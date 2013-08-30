@@ -23,7 +23,7 @@ cd "$(dirname "$0")"/../..
 me="$(basename "$0")"
 
 /bin/date 1> log/"$me".stdout.log 2> log/"$me".stderr.log
-for scraper in stations/*/app/scraper.rb
+for scraper in stations/*/app/scraper.??
 do
 	nice $scraper --new 2>> log/"$me".stderr.log | app/broadcast-render.lua --stdin 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log
 done

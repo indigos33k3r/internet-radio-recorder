@@ -13,3 +13,4 @@ logs/
 */stations/
 !*/stations/app/
 
+.DS_Store
