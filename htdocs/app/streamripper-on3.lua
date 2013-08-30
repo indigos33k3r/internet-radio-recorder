@@ -46,9 +46,9 @@ local function scrape_playlist_tracks(now)
 		table.insert(rows, { [clz] = txt })
 	end
 	-- group 3 entries into one, ascending acc. time
-	assert(table.getn(rows) % 3 == 0)
+	assert( #rows % 3 == 0)
 	local play_list = {}
-	for i = table.getn(rows),3,-3 do
+	for i = #rows,3,-3 do
 		local item = {}
 		for j = 0,2,1 do for k,v in pairs(rows[i-j]) do item[k] = v end end
 		if item.time then

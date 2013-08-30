@@ -341,7 +341,7 @@ function Broadcast:save_podcast_json()
     table.insert(pc_ids, pc.id)
   end
   local json = nil
-  if table.getn(pc_ids) > 0 then
+  if #pc_ids > 0 then
     json = table.concat{'{ "podcasts":[{"name":"', table.concat(pc_ids,'"},{"name":"'), '"}] }'}
   end
   return io.write_if_changed(self:filename('json'), json)

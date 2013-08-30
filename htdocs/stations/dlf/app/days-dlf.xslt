@@ -6,7 +6,7 @@
     
     or rather (we need to http POST):
     
-    $ curl --form year=2012 --form month=12 --form day=6 http://www.dradio.de/dlf/vorschau/ \
+    $ curl - -form year=2012 - -form month=12 - -form day=6 http://www.dradio.de/dlf/vorschau/ \
       | xsltproc - -html days-dlf.xslt -
 
     http://www.w3.org/TR/xslt
