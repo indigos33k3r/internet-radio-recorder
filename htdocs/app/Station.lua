@@ -134,7 +134,7 @@ local slt2 = require "slt2" -- http://github.com/henix/slt2
 function Station:template_ics()
   local tmpl = self.template_ics_
   if not tmpl then
-    local file = table.concat({ 'stations', assert(self.id), 'app', 'station.slt2.ics'}, '/')
+    local file = table.concat({ 'stations', assert(self.id), 'app', 'broadcasts.slt2.ics'}, '/')
     -- io.stderr:write('loading template \'', file, '\'\n')
     tmpl = slt2.loadfile(file)
     self.template_ics_ = tmpl
