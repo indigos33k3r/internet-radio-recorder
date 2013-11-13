@@ -287,7 +287,7 @@ end
 function Broadcast:log_change(msg)
   io.stderr:write(string.format("%-7s %s\n",msg,self.id))
   if 'unchang' == msg then return end
-  local f,_ = io.open('stations/change.ttl', 'a+')
+  local f,_ = io.open('stations/modified.ttl', 'a+')
   if f then
     f:write("<", self.id, ".xml> <http://purl.org/dc/terms/modified> \"", os.date("!%Y-%m-%dT%H:%M:%SZ"), "\" .\n")
     f:close()
