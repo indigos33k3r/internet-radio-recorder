@@ -29,7 +29,9 @@ Recorder.chdir2app_root( arg[0] )
 -- prepare, extract GET parameters:
 local params = {}
 local qs = os.getenv('QUERY_STRING')
-if qs then for k,v in qs:gmatch('([^?&=]+)=([^&]*)') do params[k] = v end end
+if qs then for k,v in qs:gmatch('([^?&=]+)=([^&]*)') do
+	params[k:unescape_url()] = v:unescape_url()
+end end
 
 -- guess station from GET params or referer:
 local station_name = nil
