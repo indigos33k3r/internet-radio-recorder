@@ -108,7 +108,7 @@ local slt2 = require "slt2" -- http://github.com/henix/slt2
 function Podcast:template_rss()
   local tmpl = self.template_rss_
   if not tmpl then
-    local file = table.concat({ 'podcasts', assert(self.id), 'app', 'podcast.slt2.rss'}, '/')
+    local file = table.concat({ 'podcasts', assert(self.id), 'app', 'broadcasts.slt2.rss'}, '/')
     -- io.stderr:write('loading template \'', file, '\'\n')
     tmpl = slt2.loadfile(file)
     self.template_rss_ = tmpl
