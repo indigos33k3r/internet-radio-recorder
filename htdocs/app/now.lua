@@ -30,7 +30,6 @@ Recorder.chdir2app_root( arg[0] )
 local params = {}
 local qs = os.getenv('QUERY_STRING')
 if qs then for k,v in qs:gmatch('([^?&=]+)=([^&]*)') do
-  io.stderr:write(k:unescape_url_param(), ' = ', v:unescape_url_param(), '\n')
   params[k:unescape_url_param()] = v:unescape_url_param()
 end end
 
