@@ -4,9 +4,9 @@
 // moment.lang("de");
 $('#my-url').text( window.location );
 
-var dtstart = new Date( $("meta[name='DC.format.timestart']").attr("content") );
-var dtend = new Date( $("meta[name='DC.format.timeend']").attr("content") );
-var now = new Date();
+var dtstart = moment( $("meta[name='DC.format.timestart']").attr("content") );
+var dtend = moment( $("meta[name='DC.format.timeend']").attr("content") );
+var now = moment();
 if( now < dtstart )
   $( 'html' ).addClass('is_future');
 else if( now < dtend )
@@ -67,23 +67,23 @@ try {
 
 // add today/tomorrow links
 {
-  var prev_week = new Date(dtstart.getTime() - 7*24*60*60*1000).toISOString().replace(/\.000Z/,'+00:00')
-  $( '#prev_week' ).attr('href', '../../../../../app/now.lua?t=' + prev_week );
+  var prev_week = moment(dtstart).subtract('days', 7);
+  $( '#prev_week' ).attr('href', '../../../../../app/now.lua?t=' + prev_week.format() );
 }{
-  var yesterday = new Date(dtstart.getTime() - 24*60*60*1000).toISOString().replace(/\.000Z/,'+00:00')
-  $( '#yesterday' ).attr('href', '../../../../../app/now.lua?t=' + yesterday );
+  var yesterday = moment(dtstart).subtract('days', 1);
+  $( '#yesterday' ).attr('href', '../../../../../app/now.lua?t=' + yesterday.format() );
 }{
-  var tomorrow = new Date(dtstart.getTime() + 24*60*60*1000).toISOString().replace(/\.000Z/,'+00:00')
-  $( '#tomorrow' ).attr('href', '../../../../../app/now.lua?t=' + tomorrow );
+  var tomorrow = moment(dtstart).add('days', 1);
+  $( '#tomorrow' ).attr('href', '../../../../../app/now.lua?t=' + tomorrow.format() );
 }{
-  var next_week = new Date(dtstart.getTime() + 7*24*60*60*1000).toISOString().replace(/\.000Z/,'+00:00')
-  $( '#next_week' ).attr('href', '../../../../../app/now.lua?t=' + next_week );
+  var next_week = moment(dtstart).add('days', 7);
+  $( '#next_week' ).attr('href', '../../../../../app/now.lua?t=' + next_week.format() );
 }
 
 // add all day broadcasts
-$.ajax({ url: window.location.pathname + '/..', type: 'GET', cache: true, }).done( function(xmlBody) {
+$.ajax({ url: '.', type: 'GET', cache: true, dataType: 'xml', }).done( function(xmlBody) {
   var hasRecording = false;
-  var allLinks = $( $.parseXML( xmlBody ) ).find( "a[href $= '.xml'], a[href $= '.json']" ).map( function() {
+  var allLinks = $(xmlBody).find( "a[href $= '.xml'], a[href $= '.json']" ).map( function() {
     var me = $(this);
     var txt = me.text().replace(/^(\d{2})(\d{2})\s+(.*)(\.xml)$/, '$1:$2 $3');
     if( hasRecording )
@@ -104,3 +104,31 @@ $.ajax({ url: '../../../app/station.cfg', type: 'GET', cache: true, }).done( fun
   if( stream_url )
     $( '#stream' ).attr( 'href', stream_url[2] ).show();
 });
+
+// add whatsonnow station list
+$.ajax({ url: '../../../..', type: 'GET', cache: true, dataType: 'xml', }).done( function(xmlBody) {
+  // scan all stations/*/
+  var allStations = $(xmlBody).find( "a[href $= '/']" ).map( function() {
+    var me = $(this);
+    var url_ = me.attr('href');
+    if( url_.match(/^\.\.\/$/) )
+      return null;
+    me.attr('href', '../../../../../../app/now.lua?station=' + url_.replace(/\/$/,''));
+ 
+    $.ajax({ url: me.attr('href'), type: 'GET', cache: true, dataType: 'xml', }).done( function(xmlBody) {
+      var title = $(xmlBody).find("meta[name = 'DC.title']").attr('content');
+      //me.html('<span class="station">' + me.html() + '</span>' );
+      me.wrapInner('<span class="station">');
+      if( title )
+        me.append('<br/>', '<span class="broadcast">' + title + '</span>' );
+    }).fail( function() {
+      // disable broken hrefs
+      me.attr('href', null);
+    });
+
+    return this;
+  });
+  $( '#whatsonnow' ).html( allStations );
+  $( '#whatsonnow a' ).wrap("<li>");
+});
+

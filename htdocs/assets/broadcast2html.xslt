@@ -47,6 +47,7 @@
         </xsl:for-each>
       </head>
       <body id="broadcast">
+        <ul id="whatsonnow"/>
         <p id="navigation" title="Navigation">
             <a id="prev_week" href="../../../../../app/now.lua?t=P-7D" title="Woche vorher">&lt;&lt;&lt;</a>&#x00A0;
             <a id="yesterday" href="../../../../../app/now.lua?t=P-1D" title="Tag vorher">&lt;&lt;</a>&#x00A0;
