@@ -311,9 +311,7 @@ function Broadcast:save_xml()
   local xml = {
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<?xml-stylesheet type="text/xsl" href="../../../app/broadcast2html.xslt"?>',
-    '<!-- Dublin Core PBMI http://dcpapers.dublincore.org/pubs/article/view/749 -->',
-    '<!-- not: Ontology for Media Resources 1.0 http://www.w3.org/TR/mediaont-10/ -->',
-    '<!-- not: EBU http://tech.ebu.ch/lang/en/MetadataEbuCore -->',
+    '<!-- unorthodox relative namespace to enable http://www.w3.org/TR/grddl-tests/#sq2 without a central server -->',
     '<broadcast xml:lang="de" xmlns="../../../../../assets/2013/radio-pi.rdf">',
   }
   local row = {'    ', '<meta content=\'', self.id:escape_xml_attribute(), '\' name=\'', 'DC.identifier', '\'/>'}
