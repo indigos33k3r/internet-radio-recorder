@@ -203,7 +203,14 @@ module Recorder
       raise "Couldn't find author in #{uri}" if bc.DC_author.nil?
       bc.DC_copyright = doc.at_css('html > head > meta[name="copyright"]')['content']
       raise "Couldn't find copyright in #{uri}" if bc.DC_copyright.nil?
-  
+
+      doc.css('div.bcast_head > div.detail_picture_256 img , .detail_picture_inlay img').each do |image_node|
+        unless image_node[:src].nil?
+          bc.DC_image = bc.src_url + image_node[:src]
+          break
+        end
+      end
+
       doc = doc.at_css '.detail_inlay'
   
       title_node = doc.at_css('h1.bcast_headline')
@@ -249,9 +256,6 @@ module Recorder
 
       # image_thumb_node = doc.at_css('.teaser_picture img')
       # image_thumb = uri + image_thumb_node[:src] unless image_thumb_node.nil?
-
-      image_node = doc.at_css('div.bcast_head > div.detail_picture_256 img')
-      bc.DC_image = bc.src_url + image_node[:src] unless image_node.nil?
     end
   end
 end
