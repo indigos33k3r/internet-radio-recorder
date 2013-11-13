@@ -65,7 +65,7 @@
       </dcterms:title>
       <dcterms:description>
         <xsl:for-each select="td[@class='rechte-spalte']/p">
-          <xsl:for-each select="*|text()">
+          <xsl:for-each select="*[not(name() = 'a' and @class = 'link_recorder')]|text()">
             <xsl:choose>
               <xsl:when test="name() = 'br'"><xsl:text>&#10;<!-- linefeed --></xsl:text></xsl:when>
               <xsl:otherwise><xsl:value-of select="."/></xsl:otherwise>
