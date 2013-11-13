@@ -153,7 +153,7 @@ end
 function Podcast:template_ics()
   local tmpl = self.template_ics_
   if not tmpl then
-    local file = table.concat({ 'podcasts', assert(self.id), 'app', 'podcast.slt2.ics'}, '/')
+    local file = table.concat({ 'podcasts', assert(self.id), 'app', 'broadcasts.slt2.ics'}, '/')
     -- io.stderr:write('loading template \'', file, '\'\n')
     tmpl = slt2.loadfile(file)
     self.template_ics_ = tmpl
