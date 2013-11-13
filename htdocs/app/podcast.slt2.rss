@@ -29,8 +29,8 @@ if #bcs then bc_most_recent = bcs[1] end
     <link>#{= podcast:url('rss') }</link>
     <atom:link href="#{= podcast:url('rss') }" rel="self" type="application/rss+xml" />
     <title>RadioPi #{= podcast.title }</title>
-    <itunes:subtitle>subtitle #{= podcast.subtitle }</itunes:subtitle>
-    <description>description #{= podcast.subtitle }</description>
+    <itunes:subtitle>#{= podcast.subtitle }</itunes:subtitle>
+    <description>#{= podcast.subtitle }</description>
     <itunes:summary>#{= podcast.subtitle }</itunes:summary>
 #{  if bc_most_recent and bc_most_recent:pbmi().DC_image and bc_most_recent:pbmi().DC_image:len() > 0 then }    <!-- image of most recent enclosure -->
     <image>
