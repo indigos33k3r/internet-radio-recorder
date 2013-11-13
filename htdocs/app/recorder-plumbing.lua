@@ -121,10 +121,13 @@ function http_400_bad_request(...)
 	os.exit(0)
 end
 
-function http_303_see_other(uri, msg)
+function http_303_see_other(uri, msg, expires)
 	io.write('HTTP/1.1 303 See Other', '\n')
 	io.write('Content-Type: text/plain', '\n')
 	io.write('Server: RadioPi 2013/lua', '\n')
+	if expires then
+		io.write('Expires: ', expires, '\n')
+	end
 	io.write('Location: ', uri, '\n')
 	io.write('\n')
 	if msg then io.write(msg, '\n') end
