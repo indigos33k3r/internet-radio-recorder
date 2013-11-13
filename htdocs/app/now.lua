@@ -47,8 +47,8 @@ local t = parse_iso8601( params.t )
 local bc = st:broadcast_now(t or os.time(), true, false)
 if bc then
   -- RFC 2616 http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1
-  local fmt_date_rdf2616 = '!%a, %d %b %Y %H:%M:%S GMT'
-  http_303_see_other('../stations/' .. bc.id .. '.xml', nil, os.date(fmt_date_rdf2616, bc:dtend()))
+  local fmt_date_rfc1123 = '!%a, %d %b %Y %H:%M:%S GMT'
+  http_303_see_other('../stations/' .. bc.id .. '.xml', nil, os.date(fmt_date_rfc1123, bc:dtend()))
 else
   http_400_bad_request('Ouch, cannot find current broadcast for station: \'', station_name, '\'')
 end
