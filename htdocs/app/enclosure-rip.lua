@@ -145,10 +145,10 @@ function Enclosure:run_streamripper(dry_run)
       '--codeset-relay=UTF-8',
     }
     local params = escape_cmdline(params_unsafe)
-    table.insert(params, '1>>')
-    table.insert(params, (self:dir_mp3_temp() .. '/stdout.log'):escape_cmdline() )
-    table.insert(params, '2>>')
-    table.insert(params, (self:dir_mp3_temp() .. '/stderr.log'):escape_cmdline() )
+--    table.insert(params, '1>>')
+--    table.insert(params, (self:dir_mp3_temp() .. '/stdout.log'):escape_cmdline() )
+--    table.insert(params, '2>>')
+--    table.insert(params, (self:dir_mp3_temp() .. '/stderr.log'):escape_cmdline() )
     if dry_run then
       io.write('dry-run ', table.concat(params, ' '), "\n")
       return true
