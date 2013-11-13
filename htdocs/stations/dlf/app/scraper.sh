@@ -32,35 +32,35 @@ tmp_suffix="lua"
 tmp_file="$tmp_prefix-$$.$tmp_suffix"
 
 if [ "$cmd" = "--total" ] || [ "$cmd" = "--new" ] || [ "$cmd" = "--future" ] || [ "$cmd" = "--incremental" ] ; then
-	if [ "$1" = "" ] ; then
-		# called WITHOUT day list
-		echo "scrape schedule..." 1>&2
-		rm "$tmp_prefix-"*".$tmp_suffix" 2> /dev/null
-		xsltproc --html days-dlf.xslt "$program_url" 2> /dev/null \
-		 | ./dayfilter.lua "$cmd" \
-		 | xargs -n 3 -P 10 "./$myself" "$cmd"
-		cat "$tmp_prefix-"*".$tmp_suffix"
-		rm "$tmp_prefix-"*".$tmp_suffix" 2> /dev/null
-	else
-		# called WITH day list
-		echo "./$myself $cmd $@" 1>&2
-		rm "$tmp_file" 2> /dev/null
-		while [ "$1" != "" ] ; do
-			tmp_file="$tmp_prefix-$1.$tmp_suffix"
-			year=$(echo $1 | cut -d "-" -f 1)
-			mon=$(echo $1 | cut -d "-" -f 2 | sed 's/^[0]*//') # http://www.unixcl.com/2010/04/remove-leading-zero-from-line-awk-sed.html
-			day=$(echo $1 | cut -d "-" -f 3 | sed 's/^[0]*//')
-			# HTTP form POST
-			curl --silent --form year=$year --form month=$mon --form day=$day "$program_url" \
-			 | xsltproc --html broadcasts2rdf-dlf.xslt - 2>/dev/null \
-			 | xsltproc rdf2lua.xslt - 2>/dev/null \
-			 | ./broadcast-amend.lua "$cmd" \
-			 >> "$tmp_file"
-			echo "scraped $1" 1>&2
-			shift
-		done
-	fi
-	exit 0
+  if [ "$1" = "" ] ; then
+    # called WITHOUT day list
+    echo "scrape schedule..." 1>&2
+    rm "$tmp_prefix-"*".$tmp_suffix" 2> /dev/null
+    xsltproc --html days-dlf.xslt "$program_url" 2> /dev/null \
+     | ./dayfilter.lua "$cmd" \
+     | xargs -n 1 -P 20 "./$myself" "$cmd"
+    cat "$tmp_prefix-"*".$tmp_suffix"
+    rm "$tmp_prefix-"*".$tmp_suffix" 2> /dev/null
+  else
+    # called WITH day list
+    echo "./$myself $cmd $@" 1>&2
+    rm "$tmp_file" 2> /dev/null
+    while [ "$1" != "" ] ; do
+      tmp_file="$tmp_prefix-$1.$tmp_suffix"
+      year=$(echo $1 | cut -d "-" -f 1)
+      mon=$(echo $1 | cut -d "-" -f 2 | sed 's/^[0]*//') # http://www.unixcl.com/2010/04/remove-leading-zero-from-line-awk-sed.html
+      day=$(echo $1 | cut -d "-" -f 3 | sed 's/^[0]*//')
+      # HTTP form POST
+      curl --silent --form year=$year --form month=$mon --form day=$day "$program_url" \
+       | xsltproc --html broadcasts2rdf-dlf.xslt - 2>/dev/null \
+       | xsltproc rdf2lua.xslt - 2>/dev/null \
+       | ./broadcast-amend.lua "$cmd" \
+       >> "$tmp_file"
+      echo "scraped $1" 1>&2
+      shift
+    done
+  fi
+  exit 0
 fi
 
 cat 1>&2 <<InputComesFromHERE

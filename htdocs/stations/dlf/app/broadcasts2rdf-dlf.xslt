@@ -48,6 +48,7 @@
       <dcterms:language><xsl:value-of select="/html/head/meta[@http-equiv='content-language']/@content"/></dcterms:language>
       <dcterms:copyright><xsl:value-of select="/html/head/meta[@name='copyright']/@content"/></dcterms:copyright>
       <dcterms:last-modified><xsl:value-of select="/html/head/meta[@name='last-modified']/@content" /></dcterms:last-modified>
+      <!-- start time only - end computed by broadcast-amend.lua assuming schedule starts 00:00 and ends 24:00 -->
       <dcterms:date><xsl:value-of select="$dateTime"/></dcterms:date>
       <xsl:for-each select="td[@class='rechte-spalte']/p/a[@class='link_arrow_right']/@href">
         <dcterms:relation rdf:resource="{.}" />
