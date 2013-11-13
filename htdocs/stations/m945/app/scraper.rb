@@ -130,7 +130,8 @@ module Recorder
         raise "Cannot parse day '#{day_node}'" if day_match.nil?
         day = day_match[1]
         month = day_match[2]
-        year = day_match[3]
+        year = day_match[3].to_i
+        year += 2000 if year < 1000
         doc.css('#col-left .item').each do |bc_node|
           time_node = bc_node.at_css('.time')
           next if time_node.nil?
