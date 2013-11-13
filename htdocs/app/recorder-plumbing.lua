@@ -174,6 +174,12 @@ function string:unescape_url()
 end
 
 
+function string:unescape_url_param()
+  ret = self:gsub('%%(%x%x)', function(h) return string.char(tonumber(h,16)) end)
+  return ret:gsub("\r\n", "\n")
+end
+
+
 function string:escape_xml()
 	local tt = {
 		['<'] = '&lt;',

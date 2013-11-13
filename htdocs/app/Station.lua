@@ -29,6 +29,7 @@ Station._stations = {}
 function Station.from_id(id)
   local st = Station._stations[id]
   if not st then
+    if not id then return nil end
     local f = table.concat({'stations', id, 'app', 'station.cfg'}, '/')
     local fh,msg = io.open(f,'r')
     if not fh then return nil,msg end
