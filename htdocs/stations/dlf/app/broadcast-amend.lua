@@ -83,7 +83,7 @@ for _,meta in ipairs(metas) do
     meta.DC_relation = nil
     meta.DC_title = meta.DC_title:gsub('%s+$', '')
     meta.title = meta.DC_title
-    meta.DC_description = meta.DC_description:gsub('%s+$', '')
+    meta.DC_description = meta.DC_description:gsub('%s+$', ''):gsub('^%s+', '')
     -- meta.DC_author = meta.DC_copyright
     -- meta.DC_publisher = meta.DC_copyright
     meta.DC_format_timestart = os.date('%FT%H:%M:%S%z', t_start):timezone_lua_to_iso()
