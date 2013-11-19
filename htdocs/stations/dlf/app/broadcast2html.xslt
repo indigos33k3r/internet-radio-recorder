@@ -67,15 +67,11 @@
           <xsl:value-of select="rec:meta[@name='DC.title.episode']/@content"/>
         </h2>
         <p>
-          <form name="via_form" id="via_form" method="post" action="{rec:meta[@name='DC.source']/@content}">
-            <!-- http://www.javascript-coder.com/javascript-form/javascript-form-submit.phtml
-              http://stackoverflow.com/a/3915941 -->
-            <input type="hidden" name="year" value="{substring-before(substring-after(rec:meta[@name='DC.source']/@content, 'year='), '&amp;')}"/>
-            <input type="hidden" name="month" value="{substring-before(substring-after(rec:meta[@name='DC.source']/@content, 'month='), '&amp;')}"/>
-            <input type="hidden" name="day" value="{substring-after(rec:meta[@name='DC.source']/@content, 'day=')}"/>
-            <!-- input type='hidden' name='ACTION_SEARCH' value="Weiter" / -->
-          </form>
-          <a id="via" class="via" title="HTTP POST {rec:meta[@name='DC.source']/@content}" href="javascript:document.via_form.submit()" rel="via">www.dradio.de</a>,
+          <xsl:variable name="dtstart" select="rec:meta[@name='DC.format.timestart']/@content"/>
+          <xsl:variable name="year" select="substring($dtstart, 1, 4)"/>
+          <xsl:variable name="month" select="substring($dtstart, 6, 2)"/>
+          <xsl:variable name="day" select="substring($dtstart, 9, 2)"/>
+          <a id="via" class="via" href="http://www.deutschlandfunk.de/programmvorschau.281.de.html?drbm:date={$day}.{$month}.{$year}">www.dradio.de</a>,
           <a id="stream" style="display:none">Live Stream</a>
         </p>
         <p id="date">

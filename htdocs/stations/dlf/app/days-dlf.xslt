@@ -6,8 +6,7 @@
     
     or rather (we need to http POST):
     
-    $ curl - -form year=2012 - -form month=12 - -form day=6 http://www.dradio.de/dlf/vorschau/ \
-      | xsltproc - -html days-dlf.xslt -
+    $ xsltproc -html days-dlf.xslt http://www.deutschlandfunk.de/programmvorschau.281.de.html 2>/dev/null
 
     http://www.w3.org/TR/xslt
     
@@ -36,28 +35,31 @@
     xmlns:dc="http://purl.org/dc/elements/1.1/"
     xmlns:dcterms="http://purl.org/dc/terms/"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns:date="http://exslt.org/dates-and-times"
+    extension-element-prefixes="date"
     exclude-result-prefixes="xsl"
     version="1.0">
   <xsl:output method="text" />
-  
+
   <xsl:template match="/">
-    <rdf:RDF xml:base="http://www.dradio.de/dlf/vorschau/">
-      <xsl:apply-templates select="//form[@id='archiv']" />
-    </rdf:RDF>
+  	<xsl:call-template name="daysuntil">
+  		<xsl:with-param name="max-date" select=".//input[@name='drbm[max_date]']/@value" />
+  		<xsl:with-param name="now-date" select="substring(date:date(),1,10)" />
+  	</xsl:call-template>
   </xsl:template>
 
-  <xsl:template match="form">
-  	<xsl:for-each select="select[@name='year']/option">
-  	  <xsl:variable name="year" select="@value" />
-  	  <xsl:for-each select="../../select[@name='month']/option">
-  	    <xsl:variable name="month" select="@value" />
-  	    <xsl:for-each select="../../select[@name='day']/option">
-<xsl:value-of select="$year"/>-<xsl:value-of select="format-number($month,'00')"/>-<xsl:value-of select="format-number(@value,'00')"/>
-<xsl:text>
+	<!-- inspired by http://www.ibm.com/developerworks/xml/library/x-tiploop/index.html -->
+	<!-- http://www.exslt.org/date/functions/add/index.html -->
+  <xsl:template name="daysuntil">
+  	<xsl:param name="max-date" select="1"/>
+  	<xsl:param name="now-date" select="1"/>
+		<xsl:if test="translate($max-date,'-','') > translate($now-date,'-','')">
+			<xsl:call-template name="daysuntil">
+  			<xsl:with-param name="max-date" select="date:add($max-date, '-P1D')" />
+  			<xsl:with-param name="now-date" select="$now-date" />
+      </xsl:call-template>
+    </xsl:if>  	 
+  	<xsl:value-of select="$max-date" /><xsl:text>
 </xsl:text>
-  	    </xsl:for-each>
-  	  </xsl:for-each>
-  	</xsl:for-each>
   </xsl:template>
-  
 </xsl:stylesheet>

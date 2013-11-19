@@ -2,7 +2,7 @@
 <!--
     extract broadcast links + dateTime + titles + text from dradio.de program day schedule
 
-    $ xsltproc - -html broadcasts2rdf-dlf.xslt http://www.dradio.de/dlf/vorschau/
+    $ xsltproc -html broadcasts2rdf-dlf.xslt http://www.deutschlandfunk.de/programmvorschau.281.de.html?drbm:date=19.11.2013
 
     http://www.w3.org/TR/xslt
 
@@ -38,34 +38,38 @@
 
   <xsl:template match="/">
     <rdf:RDF>
-      <xsl:apply-templates select="/html/body/div[3]/div[2]/table[@class='vorschau-tabelle']/tr" />
+      <xsl:apply-templates select="//*[@id='pageContentMain']//tbody//tr[@id]">
+        <xsl:with-param name="date">
+          <xsl:call-template name="DayMonthNameYear2ISO">
+            <xsl:with-param name="src" select="substring-after(//h3[strong]/text(),',')"/>
+          </xsl:call-template>
+        </xsl:with-param>
+      </xsl:apply-templates>
     </rdf:RDF>
   </xsl:template>
 
   <xsl:template match="tr">
-    <xsl:variable name="dateTime"><xsl:value-of select="/html/head/meta[@name='date']/@content"/>T<xsl:value-of select="substring-before(normalize-space(td[@class='linke-spalte']),' ')"/>:00</xsl:variable>
+    <xsl:param name="date"/>
+    <xsl:variable name="dateTime"><xsl:value-of select="$date"/>T<xsl:value-of select="normalize-space(translate(td[@class='time'], 'Uhr', '   '))"/>:00</xsl:variable>
     <rdf:Description rdf:about="{$dateTime}">
-      <dcterms:language><xsl:value-of select="/html/head/meta[@http-equiv='content-language']/@content"/></dcterms:language>
-      <dcterms:copyright><xsl:value-of select="/html/head/meta[@name='copyright']/@content"/></dcterms:copyright>
-      <dcterms:last-modified><xsl:value-of select="/html/head/meta[@name='last-modified']/@content" /></dcterms:last-modified>
+      <dcterms:language>de</dcterms:language>
+      <dcterms:copyright>DLF</dcterms:copyright>
+      <!-- dcterms:last-modified> </dcterms:last-modified -->
       <!-- start time only - end computed by broadcast-amend.lua assuming schedule starts 00:00 and ends 24:00 -->
       <dcterms:date><xsl:value-of select="$dateTime"/></dcterms:date>
-      <xsl:for-each select="td[@class='rechte-spalte']/p/a[@class='link_arrow_right']/@href">
+      <xsl:for-each select="td[@class='description']/p/a[@class='link_arrow_right']/@href">
         <dcterms:relation rdf:resource="{.}" />
       </xsl:for-each>
-      <dcterms:title>
-        <xsl:choose>
-          <xsl:when test="td[@class='rechte-spalte']/h2">
-            <xsl:value-of select="normalize-space(td[@class='rechte-spalte']/h2)"/>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:value-of select="td[@class='rechte-spalte']/p/a[@class='link_arrow_right']"/>
-          </xsl:otherwise>
-        </xsl:choose>
-      </dcterms:title>
+      <xsl:for-each select="td[@class='description']/h4">
+        <dcterms:title>
+          <xsl:for-each select="*[not(name() = 'a' and @class = 'psradio')]|text()">
+            <xsl:value-of select="normalize-space(.)"/>
+          </xsl:for-each>
+        </dcterms:title>
+      </xsl:for-each>
       <dcterms:description>
-        <xsl:for-each select="td[@class='rechte-spalte']/p">
-          <xsl:for-each select="*[not(name() = 'a' and @class = 'link_recorder')]|text()">
+        <xsl:for-each select="td[@class='description']/p">
+          <xsl:for-each select="*[not(name() = 'a' and @class = 'psradio')]|text()">
             <xsl:choose>
               <xsl:when test="name() = 'br'"><xsl:text>&#10;<!-- linefeed --></xsl:text></xsl:when>
               <xsl:otherwise><xsl:value-of select="."/></xsl:otherwise>
@@ -75,6 +79,33 @@
         </xsl:for-each>
       </dcterms:description>
     </rdf:Description>
+  </xsl:template>
+
+  <xsl:template name="DayMonthNameYear2ISO">
+    <!-- turn e.g. '26. November 2013,' into 2013-11-26 -->
+    <xsl:param name="src"/>
+    <xsl:variable name="tmp" select="normalize-space(translate($src,'&#9;&#xa0;.,', '    '))"/>
+    <xsl:variable name="day" select="substring-before($tmp, ' ')"/>
+    <xsl:variable name="month_year" select="substring-after($tmp, ' ')"/>
+    <xsl:variable name="month_name" select="substring-before($month_year, ' ')"/>
+    <xsl:variable name="year" select="substring-after($month_year, ' ')"/>
+    <xsl:value-of select="$year"/>-<!--
+    --><xsl:choose>
+      <xsl:when test="$month_name = 'Dezember'">12</xsl:when>
+      <xsl:when test="$month_name = 'November'">11</xsl:when>
+      <xsl:when test="$month_name = 'Oktober'">10</xsl:when>
+      <xsl:when test="$month_name = 'September'">09</xsl:when>
+      <xsl:when test="$month_name = 'August'">08</xsl:when>
+      <xsl:when test="$month_name = 'Juli'">07</xsl:when>
+      <xsl:when test="$month_name = 'Juni'">06</xsl:when>
+      <xsl:when test="$month_name = 'Mai'">05</xsl:when>
+      <xsl:when test="$month_name = 'April'">04</xsl:when>
+      <xsl:when test="$month_name = 'März'">03</xsl:when>
+      <xsl:when test="$month_name = 'Februar'">02</xsl:when>
+      <xsl:when test="$month_name = 'Januar'">01</xsl:when>
+      <xsl:otherwise>Unknown month in: '<xsl:value-of select="$tmp"/>'</xsl:otherwise>
+    </xsl:choose>-<!--
+    --><xsl:value-of select="$day"/>
   </xsl:template>
 
 </xsl:stylesheet>

@@ -81,6 +81,9 @@ for _,meta in ipairs(metas) do
     local date = os.date('*t', t_start)
     meta.DC_source = 'http://www.dradio.de/dlf/vorschau/' .. '?method=POST&year=' .. date.year .. '&month=' .. date.month .. '&day=' .. date.day
     meta.DC_relation = nil
+    meta.DC_author = 'http://www.deutschlandfunk.de/'
+    meta.DC_publisher = 'http://www.deutschlandfunk.de/'
+    meta.DC_creator = 'http://www.deutschlandfunk.de/'
     meta.DC_title = meta.DC_title:gsub('%s+$', '')
     meta.title = meta.DC_title
     meta.DC_description = meta.DC_description:gsub('%s+$', ''):gsub('^%s+', '')
