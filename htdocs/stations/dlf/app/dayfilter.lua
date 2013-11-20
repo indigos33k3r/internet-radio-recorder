@@ -25,25 +25,25 @@ local now = os.date('%F')
 local dateclip = os.date('%F', os.time() + (6*7-1)*24*60*60) -- look max 6 weeks ahead
 
 local function check_total(d)
-	return d <= dateclip
+  return d <= dateclip
 end
 local function check_future(d)
-	return d >= now and d <= dateclip
+  return d >= now and d <= dateclip
 end
 local function check_incremental(d)
-	return d == now or d == os.date('%F', os.time() + (1)*24*60*60) or d == os.date('%F', os.time() + (7)*24*60*60)
+  return d == now or d == os.date('%F', os.time() + (1)*24*60*60) or d == os.date('%F', os.time() + (7)*24*60*60)
 end
 
 local check_t = {
-	['--total']  			= check_total,
-	['--future'] 		  = check_future,
-	['--new']         = check_future,
-	['--incremental'] = check_incremental,
+  ['--total']       = check_total,
+  ['--future']      = check_future,
+  ['--new']         = check_future,
+  ['--incremental'] = check_incremental,
 }
 local check_f = check_t[arg[1]]
 
 if not check_f then
-	io.stderr:write([[
+  io.stderr:write([[
 Read from stdin, filter days (ISO8601), write stdout.
 
   --new         >= today, max. 6 weeks future
@@ -51,9 +51,9 @@ Read from stdin, filter days (ISO8601), write stdout.
   --future      >= today, max. 6 weeks future
   --incremental today, tomorrow, +1 week
 ]], '\n')
-	os.exit(1)
+  os.exit(1)
 end
 
 for line in io.lines() do
-	if check_f(line) then print(line) end
+  if check_f(line) then print(line) end
 end

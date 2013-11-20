@@ -1,20 +1,20 @@
 #{
-	local date_fmt = '%Y%m%dT%H%M%S'
-	local function ical(key,value)
-		local tt = {
-			[";"] = "\\;",
-			[","] = "\\,",
-			["\n"] = "\\n",
-			["\\"] = "\\\\",
-		}
-		local escaped = value:gsub("[;,\n\\]", tt) -- http://tools.ietf.org/html/rfc5545#section-3.3.11
-		local s = table.concat{key,':', escaped}
-		local folded = {} -- http://tools.ietf.org/html/rfc5545#section-3.1
-		for i=1,s:len(),75-3 do
-			table.insert(folded, s:sub(i,i+75-1-3))
-		end
-		return table.concat(folded, "\n ")
-	end
+  local date_fmt = '%Y%m%dT%H%M%S'
+  local function ical(key,value)
+    local tt = {
+      [";"] = "\\;",
+      [","] = "\\,",
+      ["\n"] = "\\n",
+      ["\\"] = "\\\\",
+    }
+    local escaped = value:gsub("[;,\n\\]", tt) -- http://tools.ietf.org/html/rfc5545#section-3.3.11
+    local s = table.concat{key,':', escaped}
+    local folded = {} -- http://tools.ietf.org/html/rfc5545#section-3.1
+    for i=1,s:len(),75-3 do
+      table.insert(folded, s:sub(i,i+75-1-3))
+    end
+    return table.concat(folded, "\n ")
+  end
  }BEGIN:VCALENDAR
 PRODID;X-RICAL-TZSOURCE=TZINFO:-//mro//radio-pi//DE
 CALSCALE:GREGORIAN
@@ -31,12 +31,12 @@ TZNAME:CET
 END:STANDARD
 END:VTIMEZONE
 #{ for idx,bc in ipairs(broadcasts) do
-	  local summ = {bc:pbmi().DC_title}
+    local summ = {bc:pbmi().DC_title}
       if bc:pbmi().DC_title_series:len() > 0 then table.insert(summ, 1, bc:pbmi().DC_title_series) end
       -- prefix with enclosure state indicator
       if bc:enclosure().state and bc:enclosure().state ~= 'none' then
-      	local map = {pending='*', ripping='♪', mp3='@', failed='!!', purged='-'}
-      	table.insert(summ, 1, map[bc:enclosure().state])
+        local map = {pending='*', ripping='♪', mp3='@', failed='!!', purged='-'}
+        table.insert(summ, 1, map[bc:enclosure().state])
       end
       summ = table.concat(summ, ' ')
  }BEGIN:VEVENT

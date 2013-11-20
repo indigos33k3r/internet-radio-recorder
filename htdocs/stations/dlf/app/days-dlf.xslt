@@ -42,24 +42,24 @@
   <xsl:output method="text" />
 
   <xsl:template match="/">
-  	<xsl:call-template name="daysuntil">
-  		<xsl:with-param name="max-date" select=".//input[@name='drbm[max_date]']/@value" />
-  		<xsl:with-param name="now-date" select="substring(date:date(),1,10)" />
-  	</xsl:call-template>
+    <xsl:call-template name="daysuntil">
+      <xsl:with-param name="max-date" select=".//input[@name='drbm[max_date]']/@value" />
+      <xsl:with-param name="now-date" select="substring(date:date(),1,10)" />
+    </xsl:call-template>
   </xsl:template>
 
-	<!-- inspired by http://www.ibm.com/developerworks/xml/library/x-tiploop/index.html -->
-	<!-- http://www.exslt.org/date/functions/add/index.html -->
+  <!-- inspired by http://www.ibm.com/developerworks/xml/library/x-tiploop/index.html -->
+  <!-- http://www.exslt.org/date/functions/add/index.html -->
   <xsl:template name="daysuntil">
-  	<xsl:param name="max-date" select="1"/>
-  	<xsl:param name="now-date" select="1"/>
-		<xsl:if test="translate($max-date,'-','') > translate($now-date,'-','')">
-			<xsl:call-template name="daysuntil">
-  			<xsl:with-param name="max-date" select="date:add($max-date, '-P1D')" />
-  			<xsl:with-param name="now-date" select="$now-date" />
+    <xsl:param name="max-date" select="1"/>
+    <xsl:param name="now-date" select="1"/>
+    <xsl:if test="translate($max-date,'-','') > translate($now-date,'-','')">
+      <xsl:call-template name="daysuntil">
+        <xsl:with-param name="max-date" select="date:add($max-date, '-P1D')" />
+        <xsl:with-param name="now-date" select="$now-date" />
       </xsl:call-template>
-    </xsl:if>  	 
-  	<xsl:value-of select="$max-date" /><xsl:text>
+    </xsl:if>    
+    <xsl:value-of select="$max-date" /><xsl:text>
 </xsl:text>
   </xsl:template>
 </xsl:stylesheet>
