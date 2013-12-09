@@ -85,7 +85,7 @@
     <!-- turn e.g. '26. November 2013,' into 2013-11-26 -->
     <xsl:param name="src"/>
     <xsl:variable name="tmp" select="normalize-space(translate($src,'&#9;&#xa0;.,', '    '))"/>
-    <xsl:variable name="day" select="substring-before($tmp, ' ')"/>
+    <xsl:variable name="day" select="format-number(substring-before($tmp, ' '),'00')"/>
     <xsl:variable name="month_year" select="substring-after($tmp, ' ')"/>
     <xsl:variable name="month_name" select="substring-before($month_year, ' ')"/>
     <xsl:variable name="year" select="substring-after($month_year, ' ')"/>
