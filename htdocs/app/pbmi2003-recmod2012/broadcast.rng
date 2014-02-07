@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <grammar ns="https://raw.github.com/mro/radio-pi/master/htdocs/app/pbmi2003-recmod2012/broadcast.rnc" xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <start>
-    <a:documentation>Copyright (c) 2013 Marcus Rohrmoser, https://github.com/mro/radio-pi
+    <a:documentation>Copyright (c) 2013-2014 Marcus Rohrmoser, https://github.com/mro/radio-pi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 associated documentation files (the "Software"), to deal in the Software without restriction,
