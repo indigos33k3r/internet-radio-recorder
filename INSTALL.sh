@@ -111,7 +111,7 @@ pkgs="make"
 	pkgs="$pkgs streamripper"
 
 ### id3tags:
-	pkgs="$pkgs libtag1-dev"
+	pkgs="$pkgs g++ libtag1-dev"
 
 echo "$echo_prefix apt-get install $pkgs"
 sudo apt-get install $pkgs
