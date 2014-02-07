@@ -27,4 +27,4 @@ me="$(basename "$0")"
 # remove all empty dirs
 /usr/bin/find . -depth -type d -empty -exec rmdir {} \; 1> log/"$me".stdout.log 2> log/"$me".stderr.log
 # fix access permissions
-/usr/bin/find . -type d -exec chmod 770 {} \; 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log
+/usr/bin/find . -type d -exec chmod u+rwx,g+rx-w,o-rwx {} \; 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log
