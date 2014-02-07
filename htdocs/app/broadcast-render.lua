@@ -62,8 +62,10 @@ if arg[1] == '--stdin' then
     os.exit(1)
   end
   -- table.sort(metas, function(a,b) return a.DC_format_timestart < b.DC_format_timestart end)
+  local now = os.time()
   local process = function(meta)
     local bc = Broadcast.from_meta(meta)
+    if bc:dtstart() <= now then return bc:filename('xml'),'ignored' end -- never overwrite already started or past broadcasts
     bc:match_podcasts()
     return bc:save()
   end
