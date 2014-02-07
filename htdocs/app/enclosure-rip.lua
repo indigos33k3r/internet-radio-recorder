@@ -149,8 +149,8 @@ function Enclosure:run_streamripper(dry_run)
 --    table.insert(params, (self:dir_mp3_temp() .. '/stdout.log'):escape_cmdline() )
 --    table.insert(params, '2>>')
 --    table.insert(params, (self:dir_mp3_temp() .. '/stderr.log'):escape_cmdline() )
+    io.stderr:write('$ ', table.concat(params, ' '), "\n")
     if dry_run then
-      io.write('dry-run ', table.concat(params, ' '), "\n")
       return true
     else
       local ret = os.execute(table.concat(params, ' '))
