@@ -136,25 +136,13 @@ module Recorder
 
     # scrape the url for calendar and yield dates + urls
     def each_day url, doc=download(url)
-      # $stderr.puts "#{self.class}.each_day #{url}"
-      month_year_regexp = Regexp.new( '(' + @@NUMBER_FOR_MONTH.keys.join('|') + ').*' + '(20\\d{2})' )
-      day_regexp = Regexp.new( '(\\d{1,2})\\.\\s+(' + @@NUMBER_FOR_MONTH.keys.join('|') + ')' )
-      doc.css('div.month').each do |div_month|
-        div_month.css('div table').each do |month_table|
-          month_year_match = month_year_regexp.match( month_table[:summary] )
-          raise "Cannot parse month+year '#{month_table[:summary]}'" if month_year_match.nil?
-          # check existence, block overwrites?
-          @year_for_month[ @@NUMBER_FOR_MONTH[ month_year_match[1] ] ] = month_year_match[2]
-          # $stderr.puts "Registered month->year #{@@NUMBER_FOR_MONTH[ month_year_match[1] ]}"
-          month_table.css('tbody td a').each do |day_node|
-            day_match = day_regexp.match( day_node.text )
-            raise "Cannot parse day '#{day_node.text}'" if day_match.nil?
-            day = '%02d' % day_match[1].to_i
-            month = @@NUMBER_FOR_MONTH[ day_match[2] ]
-            year = @year_for_month[ month ]
-            yield [year,month,day], url + day_node[:href]
-          end
-        end
+      url_regexp = /_date-(\d{4})-(\d{2})-(\d{2})_/
+      doc.css('a').each do |a|
+        m = url_regexp.match(a[:href])
+        next if m.nil?
+        date = m.to_a[1..3].collect{|i| i.to_i}
+        @year_for_month[ date[1] ] = date[0]
+        yield date, url + a[:href]
       end
       doc
     end
@@ -170,15 +158,15 @@ module Recorder
             time_node = bc_node.at_css('strong')
             time_match = /(\d{2}):(\d{2})/.match( time_node.text )
             raise "Cannot parse time '#{time_node}'" if time_match.nil?
-            day = day_match[1]
-            month = day_match[2]
+            day = day_match[1].to_i
+            month = day_match[2].to_i
             year = @year_for_month[ month ]
             raise "Sorry, I need to know the year for month '#{month}' first. Please run e.g. 'days'." if year.nil?
             time_str = "#{time_match[1]}#{time_match[2]}"
             time_node.remove
             raise 'Ouch' if @station.day_start.nil?
             if time_str < @station.day_start
-              d = Date.new(year.to_i, month.to_i, day.to_i) + 1
+              d = Date.new(year, month, day) + 1
               day   = '%02d' % d.day
               month = '%02d' % d.month
               year  = '%04d' % d.year
@@ -195,14 +183,14 @@ module Recorder
 
     # scrape broadcast page
     def scrape_broadcast bc, doc
-      bc.DC_language = doc.at_css('html > head > meta[http-equiv="Language"]')['content']
+      bc.DC_language = 'de'
       raise "Couldn't find language in #{bc.to_s}" if bc.DC_language.nil?
   #   broadcast[:last_modified] = Time.local(doc.at_css('html > head > meta[name="Last-Modified"]')['content'])
   #   raise "Couldn't find last_modified in #{uri}" if broadcast[:last_modified].nil?
-      bc.DC_author = doc.at_css('html > head > meta[name="author"]')['content']
-      raise "Couldn't find author in #{uri}" if bc.DC_author.nil?
-      bc.DC_copyright = doc.at_css('html > head > meta[name="copyright"]')['content']
-      raise "Couldn't find copyright in #{uri}" if bc.DC_copyright.nil?
+      node = doc.at_css('html > head > meta[name="author"]')
+      raise "Couldn't find author in #{uri}" if node.nil?
+      bc.DC_author = node['content']
+  #    bc.DC_copyright = bc.DC_author
 
       doc.css('div.bcast_head > div.detail_picture_256 img , .detail_picture_inlay img').each do |image_node|
         unless image_node[:src].nil?

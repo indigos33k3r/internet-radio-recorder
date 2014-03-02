@@ -108,7 +108,7 @@ function Broadcast.from_meta(meta)
     DC_author           = meta.DC_author,
     DC_creator          = meta.DC_creator,
     DC_publisher        = meta.DC_publisher,
-    DC_copyright        = assert( meta.DC_copyright ),
+    DC_copyright        = meta.DC_copyright,
     DC_source           = assert( meta.DC_source ),
   }
   local ret = os.date('*t', assert(parse_iso8601(meta.DC_format_timestart, 'missing key \'DC_format_timestart\'')))
