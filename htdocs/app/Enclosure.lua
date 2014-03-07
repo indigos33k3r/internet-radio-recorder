@@ -96,7 +96,7 @@ function Enclosure:schedule()
     	self.broadcast:filename('xml')
     }
     local cmd = table.concat(escape_cmdline(params_unsafe), ' ')
---    cmd = cmd .. ' >> ' .. Recorder.app_root .. '/log/atd.stdout.log 2>> ' .. Recorder.app_root .. '/log/atd.stderr.log'
+    cmd = cmd .. ' 1>> ' .. Recorder.app_root .. '/log/atd.stdout.log 2>> ' .. Recorder.app_root .. '/log/atd.stderr.log'
     local at_time = math.max(self.broadcast:dtstart() - 90, os.time() + 2)
     at_job = os.at(at_time, cmd, 'c')
     io.write_if_changed(pending, at_job)
