@@ -1,0 +1,23 @@
+# SPARQL query to return a csv subset of ../../modified.ttl
+# (changed after 10 am)
+#
+# http://www.w3.org/TR/rdf-sparql-query/
+# http://www.dajobe.org/talks/201105-sparql-11/
+# 
+# run e.g. via http://librdf.org/rasqal/:
+#
+# $ roqet --results csv http://example.com/rdf/tools/modified-broadcasts.rq
+#
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX dct: <http://purl.org/dc/terms/>
+
+SELECT ?date_modified, ?broadcast
+FROM <../../stations/modified.ttl>
+WHERE {
+	?broadcast dct:modified ?date_modified .
+#	BIND(NOW() As ?current)
+	BIND(HOURS(xsd:dateTime(?date_modified)) As ?hour)
+	FILTER (?hour >= 10)
+}
+ORDER BY DESC(?date_modified) ASC(?broadcast)
+
