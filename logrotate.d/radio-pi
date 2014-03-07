@@ -1,4 +1,4 @@
-/srv/rec.mro.name/logs/*.log {
+/srv/<subdir>/logs/*.log {
     weekly
 #    su www-data www-data
     missingok
@@ -13,7 +13,7 @@
         fi;
     endscript
 }
-/srv/rec.mro.name/htdocs/log/*.log {
+/srv/<subdir>/htdocs/log/*.log {
     daily
 #    su www-data www-data
     missingok
@@ -22,7 +22,7 @@
     compress
     notifempty
 }
-/srv/rec.mro.name/htdocs/stations/modified.ttl {
+/srv/<subdir>/htdocs/stations/modified.ttl {
     daily
 #    su www-data www-data
     dateext
