@@ -119,18 +119,14 @@ if [ $? -ne 0 ] ; then exit 6; fi
 
 echo "$echo_prefix Prerequisites - configuration.."
 
-### ruby + nokogiri (the scraper):
-	gem list --installed "^nokogiri$" 1>/dev/null
+### ruby + bundler (gem installation helper)
+	gem list --installed "^bundler$" 1>/dev/null
 	if [ 0 -ne $? ] ; then
-		sudo gem install nokogiri
+		sudo gem install bundler
 	fi
 
-### id3tags:
-	# had issues with more recent on OSX ( or was it debian amd_64?)
-	gem list --installed "^taglib-ruby$" 1>/dev/null
-	if [ 0 -ne $? ] ; then
-		sudo gem install taglib-ruby -v 0.4.0
-	fi
+### gems
+	sudo bundle install
 
 ### lua, luarocks, lfs:
 	luarocks show luafilesystem 1>/dev/null
@@ -185,3 +181,4 @@ echo "Recorder install finished. For initial radio program website scrape, call"
 echo "	  \$ sudo -u www-data $recorder_base/htdocs/app/cron/daily.sh"
 echo "Follow progress via"
 echo "	  \$ tail -f $recorder_base/htdocs/log/*"
+
