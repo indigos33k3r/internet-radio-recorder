@@ -1,0 +1,35 @@
+/srv/rec.mro.name/logs/*.log {
+    weekly
+#    su www-data www-data
+    missingok
+    copytruncate
+    rotate 7
+    compress
+    notifempty
+    sharedscripts
+    postrotate
+        if [ -f /var/run/lighttpd.pid ]; then \
+          /bin/kill -HUP $(</var/run/lighttpd.pid); \
+        fi;
+    endscript
+}
+/srv/rec.mro.name/htdocs/log/*.log {
+    daily
+#    su www-data www-data
+    missingok
+    copytruncate
+    rotate 7
+    compress
+    notifempty
+}
+/srv/rec.mro.name/htdocs/stations/modified.ttl {
+    daily
+#    su www-data www-data
+    dateext
+    extension .ttl
+    missingok
+    copytruncate
+    rotate 7
+    nocompress
+    notifempty
+}
