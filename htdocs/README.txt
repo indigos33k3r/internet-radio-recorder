@@ -1,9 +1,7 @@
 
-A simplistic internet radio recorder. Turns broadcasts of e.g. http://br.de/radio/,
-http://m945.de/ or http://dlf.de into RSS feeds with mp3 enclosures.
+A simplistic internet radio recorder. Turns broadcasts of e.g. http://br.de/radio/, http://m945.de/ or http://dlf.de into RSS feeds with mp3 enclosures.
 
-Built lightweight to run nicely on a raspi - http://www.raspberrypi.org/ -
-or any other debian-like system.
+Built lightweight to run nicely on a raspi - http://www.raspberrypi.org/ - or any other debian-like system.
 
 https://github.com/mro/radio-pi
 
@@ -17,6 +15,7 @@ CREDITS
     - http://jquery.com/ (MIT License)
     - http://momentjs.com/ (MIT License)
     - https://github.com/henix/slt2 (MIT License)
+
 
 COMMON TASKS
 
@@ -32,3 +31,11 @@ Add a Podcast to record
     - wait until hourly cron job picks up or run manually (sudo -u www-data htdocs/app/cron/hourly.sh)
     - find matched broadcasts in podcasts/<name>/<station>/<year>/<month>/<day>
     - find enclosures in enclosures/<station>/<year>/<month>/<day>
+
+
+SIMILAR
+
+    - https://github.com/DirkR/capturadio
+    - https://github.com/cosmovision/radiorecorder
+    - https://github.com/prop/radio-recorder
+    - https://github.com/BenHammersley/RadioPod
