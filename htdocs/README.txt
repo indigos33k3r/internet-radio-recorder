@@ -1,7 +1,9 @@
 
-A simplistic private radio podcast maker for http://br.de/radio/ broadcasts.
+A simplistic internet radio recorder. Turns broadcasts of e.g. http://br.de/radio/,
+http://m945.de/ or http://dlf.de into RSS feeds with mp3 enclosures.
 
-Built lightweight to run nicely on a raspi - http://www.raspberrypi.org/
+Built lightweight to run nicely on a raspi - http://www.raspberrypi.org/ -
+or any other debian-like system.
 
 https://github.com/mro/radio-pi
 
