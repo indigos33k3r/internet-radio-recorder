@@ -1,5 +1,7 @@
 
-A simplistic internet radio recorder. Turns broadcasts of e.g. http://br.de/radio/, http://m945.de/ or http://dlf.de into RSS feeds with mp3 enclosures.
+A internet radio recorder. Turns broadcasts of e.g. http://br.de/radio/, http://m945.de/ or http://dlf.de/ into RSS feeds with mp3 enclosures.
+
+Scrapes the websites to get proper descriptions, then does a match and schedules recordings in case.
 
 Built lightweight to run nicely on a raspi - http://www.raspberrypi.org/ - or any other debian-like system.
 
@@ -39,3 +41,5 @@ SIMILAR
     - https://github.com/cosmovision/radiorecorder
     - https://github.com/prop/radio-recorder
     - https://github.com/BenHammersley/RadioPod
+    - https://github.com/MiczFlor/streamplan (http://www.sourcefabric.org/en/community/blog/2077/)
+	  - http://www.stefan-lehnert.de/wortpresse/?p=2355 (recipe)
