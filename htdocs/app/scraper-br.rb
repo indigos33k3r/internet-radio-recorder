@@ -192,7 +192,7 @@ module Recorder
       bc.DC_author = node['content']
   #    bc.DC_copyright = bc.DC_author
 
-      doc.css('div.bcast_head > div.detail_picture_256 img , .detail_picture_inlay img').each do |image_node|
+      doc.css('.bcast_head .picturebox img , .bcast_serial_picture .picturebox img').each do |image_node|
         unless image_node[:src].nil?
           bc.DC_image = bc.src_url + image_node[:src]
           break
