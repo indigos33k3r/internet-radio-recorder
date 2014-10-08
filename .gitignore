@@ -16,3 +16,4 @@ logs/
 .DS_Store
 .bundle/config
 vendor/bundle/
+.config/streamripper/streamripper.ini

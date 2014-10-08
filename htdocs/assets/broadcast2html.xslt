@@ -83,7 +83,7 @@
         </div>
         <h3>Podcast</h3>
         <p id="podcasts" class="podcasts">keiner</p>
-        <form id="ad_hoc" method="post" action="../../../../../enclosures/app/ad_hoc.lua">
+        <form id="ad_hoc" method="post" action="../../../../../enclosures/app/ad_hoc.cgi">
           <fieldset>
           <input id="ad_hoc_action" type="hidden" name="add" value="referer"/>
           <input id="ad_hoc_submit" type="submit" value="Aufnehmen"/>
