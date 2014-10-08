@@ -22,163 +22,170 @@
 #
 # INSTALLATION
 #
-#	  $ curl https://raw.github.com/mro/radio-pi/master/INSTALL.sh > INSTALL.sh && dash INSTALL.sh
+#   $ curl https://raw.github.com/mro/radio-pi/master/INSTALL.sh > INSTALL.sh && dash INSTALL.sh
 #
 
-git_repo="git://github.com/mro/radio-pi.git"
-www_base="/srv"			# has to match simple-vhost.server-root from /etc/lighttpd/conf-available/10-simple-vhost.conf
+git_repo="https://github.com/mro/radio-pi.git"
+www_base="/srv"     # has to match simple-vhost.server-root from /etc/lighttpd/conf-available/10-simple-vhost.conf
+
+user="radio-pi"
+group="www-data"
+tmp_dir="/tmp/$user"
+
+# check preliminaries
+sudo -V > /dev/null             || { echo "Sorry, but I need that one." 1>&2 && exit 2; }
+apt-get --version > /dev/null   || { echo "Sorry, but I need that one." 1>&2 && exit 2; }
+apt-mark --version > /dev/null  || { echo "Sorry, but I need that one." 1>&2 && exit 2; }
+
+mkdir "$tmp_dir"                || { echo "Sorry, but I insist to create that (clean slate)." 1>&2 && exit 3; }
 
 me=$(basename "$0")
 
 git_branch="$1"
 if [ "" = "$git_branch" ] ; then
-	git_branch="master"
+  git_branch="master"
 fi
 RECORDER_DOMAIN="$2"
 echo_prefix="RadioPi:"
 
 if [ "" = "$RECORDER_DOMAIN" ] ; then
-	echo "$echo_prefix installing radio-pi from $git_repo to /srv/<recorder.example.com>"
-	read -p "$echo_prefix domain (e.g. recorder.example.com): " RECORDER_DOMAIN
-	if [ "" = "$RECORDER_DOMAIN" ] ; then
-		echo "$echo_prefix no domain given, exiting..."
-		exit 1
-	fi
+  apt-mark showmanual > "$tmp_dir/apt-mark.showmanual.pre"
+  apt-mark showauto > "$tmp_dir/apt-mark.showauto.pre"
+  
+  echo "$echo_prefix installing radio-pi from $git_repo to /srv/<recorder.example.com>"
+  read -p "$echo_prefix domain (e.g. recorder.example.com): " RECORDER_DOMAIN
+  if [ "" = "$RECORDER_DOMAIN" ] ; then
+    echo "$echo_prefix no domain given, exiting..."
+    exit 1
+  fi
 
-	recorder_base="$www_base/$RECORDER_DOMAIN"
+  recorder_base="$www_base/$RECORDER_DOMAIN"
 
-	cd "$www_base"
-	if [ $? -ne 0 ] ; then exit 2; fi
-	echo "$echo_prefix creating $recorder_base..."
+  cd "$www_base"
+  if [ $? -ne 0 ] ; then exit 2; fi
+  echo "$echo_prefix creating $recorder_base..."
 
-	echo "$echo_prefix grabbing git repo $git_repo ..."
-	sudo apt-get install git-core
-	if [ $? -ne 0 ] ; then
-		echo "$echo_prefix couldn't install git-core. Exiting..."
-		exit 3
-	fi
+  echo "$echo_prefix grabbing git repo $git_repo ..."
+  sudo apt-get install git-core || { echo "$echo_prefix couldn't install git-core. Exiting..." 1>&2 && exit 3; }
 
-	if [ -d "$recorder_base/.git" ] ; then
-		echo "$echo_prefix I'm not safe to be re-run for now. Exiting..."
-		exit 4
-		# cd "$RECORDER_DOMAIN"
-		# sudo git pull
-	else
-		sudo git clone "$git_repo" "$recorder_base"
-		sudo chown -R "$USER:www-data" "$recorder_base"
-		cd "$recorder_base"
-		git checkout "$git_branch"
-	fi
-	if [ $? -ne 0 ] ; then
-		echo "$echo_prefix couldn't fetch git-repo. Exiting..."
-		exit 5
-	fi
+  if [ -d "$recorder_base/.git" ] ; then
+    echo "$echo_prefix I'm not safe to be re-run for now. Exiting..."
+    exit 4
+  else
+    sudo git clone "$git_repo" "$recorder_base"
+    cd "$recorder_base"
+    sudo git checkout "$git_branch"
+  fi
+  if [ $? -ne 0 ] ; then
+    echo "$echo_prefix couldn't fetch git-repo. Exiting..."
+    exit 5
+  fi
 
-	echo "$echo_prefix handing over to $me from git..."
-	dash "$me" "$git_branch" "$RECORDER_DOMAIN"
-	exit 0
+  echo "$echo_prefix handing over to $me from git..."
+  dash "$me" "$git_branch" "$RECORDER_DOMAIN"
+  exit 0
 else
-	recorder_base="$www_base/$RECORDER_DOMAIN"
-	echo "$echo_prefix Continue install for recorder domain '$RECORDER_DOMAIN' ($git_branch)..."
+  recorder_base="$www_base/$RECORDER_DOMAIN"
+  echo "$echo_prefix Continue install for recorder domain '$RECORDER_DOMAIN' ($git_branch)..."
 fi
 
 echo "$echo_prefix Prerequisites - apt packages"
-pkgs="make"
+pkgs="adduser make"
 
 ### job scheduler cron + at:
-	pkgs="$pkgs cron at"
+  pkgs="$pkgs cron at"
 
 ### lighttpd (or just any web server to serve static files + simple CGIs + some convenience redirects):
-	pkgs="$pkgs lighttpd lighttpd-doc"
-	# user/password database:
-	pkgs="$pkgs apache2-utils"
+  pkgs="$pkgs lighttpd"
+  # user/password database:
+  pkgs="$pkgs apache2-utils"
 
 ### ruby + nokogiri (the scraper):
-	# avoid ruby reinstall for non-debian ruby, e.g. http://www.rubyenterpriseedition.com/
-	ruby -e puts > /dev/null
-	if [ $? -ne 0 ] ; then
-		pkgs="$pkgs ruby ruby-dev"
-	fi
-	pkgs="$pkgs libxml2-dev libxslt-dev"
+  # avoid ruby reinstall for non-debian ruby, e.g. http://www.rubyenterpriseedition.com/
+  ruby -e "require 'mkmf'" 2>&1 > /dev/null
+  if [ $? -ne 0 ] ; then
+    pkgs="$pkgs ruby-dev"
+  fi
+  pkgs="$pkgs libxml2-dev libxslt-dev"
 
 ### xsltproc (simplified scraper):
-	pkgs="$pkgs xsltproc"
+  pkgs="$pkgs xsltproc"
 
 ### lua, luarocks, lfs:
-	pkgs="$pkgs lua5.1 luarocks"
+  pkgs="$pkgs lua5.1 luarocks"
 
 ### streamripper:
-	pkgs="$pkgs streamripper"
+  pkgs="$pkgs streamripper"
 
 ### id3tags:
-	pkgs="$pkgs g++ libtag1-dev"
+  pkgs="$pkgs g++ libtag1-dev"
 
 echo "$echo_prefix apt-get install $pkgs"
-sudo apt-get install $pkgs
-if [ $? -ne 0 ] ; then exit 6; fi
+sudo apt-get install $pkgs || { echo "Couldn't install all preliminaries" 1>&2 && exit 6; }
 
 echo "$echo_prefix Prerequisites - configuration.."
 
+  sudo adduser --system --home="$recorder_base" --no-create-home --ingroup "$group" "$user" || { echo "Couldn't create dedicated user" 1>&2 && exit 7; }
+  sudo cp "$tmp_dir"/apt-mark.show*.pre "$recorder_base/logs/"
+  rm -rf "$tmp_dir"
+  apt-mark showmanual | sudo tee "$recorder_base/logs/apt-mark.showmanual.post"
+  apt-mark showauto | sudo tee "$recorder_base/logs/apt-mark.showauto.post"
+
+  sudo chown -R "$user:$group" "$recorder_base" || { echo "Couldn't chown" 1>&2 && exit 8; }
+
+  sudo tee /etc/sudoers.d/radio-pi - <<END_OF_SUDOERS
+www-data ALL = ($user:$group) NOPASSWD: $recorder_base/htdocs/enclosures/app/ad_hoc.lua
+#
+# In case you mess up this file, repair like described here http://ubuntuforums.org/showthread.php?t=2036382&p=12144840#post12144840
+# $ pkexec vim /etc/sudoers.d/radio-pi
+#
+END_OF_SUDOERS
+
 ### ruby + bundler (gem installation helper)
-	gem list --installed "^bundler$" 1>/dev/null
-	if [ 0 -ne $? ] ; then
-		sudo gem install bundler
-	fi
+  bundle --version || sudo gem install bundler
 
 ### gems
-	sudo bundle install
+  sudo -u "$user" bundle install --path vendor/bundle
 
-### lua, luarocks, lfs:
-	luarocks show luafilesystem 1>/dev/null
-	if [ 0 -ne $? ] ; then
-		sudo luarocks install luafilesystem
-	fi
-	luarocks show luaposix 1>/dev/null
-	if [ 0 -ne $? ] ; then
-		# had issues with 5.1.25-1 on debian amd_64
-		sudo luarocks install luaposix 5.1.24-1
-	fi
+### luarocks: lfs
+  luarocks show luafilesystem 2>/dev/null || sudo luarocks install luafilesystem
 
 ### streamripper:
 
 ### lighttpd (or just any web server to serve static files + simple CGIs + some convenience redirects):
-	sudo cp "$recorder_base"/conf-available/20-* /etc/lighttpd/conf-available
-	sudo lighty-enable-mod accesslog auth cgi dir-listing simple-vhost per-vhost-config
+  sudo cp "$recorder_base"/etc/lighttpd/conf-available/20-* /etc/lighttpd/conf-available
+  sudo lighty-enable-mod accesslog auth cgi dir-listing simple-vhost per-vhost-config
 
-	read -p "$echo_prefix http user (for authenticated http://$RECORDER_DOMAIN/ mp3 access): " RECORDER_HTTP_USER
-	if [ "" = "$RECORDER_HTTP_USER" ] ; then
-		echo "$echo_prefix no username given, exiting..."
-		echo "$echo_prefix to rerun call"
-		echo "	  $ $0 $1"
-		exit 7
-	fi
-	# user/password database:
-	sudo htdigest -c /etc/lighttpd/radio-pi.user.htdigest 'Radio Pi' "$RECORDER_HTTP_USER"
+  read -p "$echo_prefix http user (for authenticated http://$RECORDER_DOMAIN/ mp3 access): " RECORDER_HTTP_USER
+  if [ "" = "$RECORDER_HTTP_USER" ] ; then
+    echo "$echo_prefix no username given, exiting..."
+    echo "$echo_prefix to rerun call"
+    echo "    $ $0 $1"
+    exit 7
+  fi
+  # user/password database:
+  sudo htdigest -c /etc/lighttpd/radio-pi.user.htdigest 'Radio Pi' "$RECORDER_HTTP_USER"
 
-	sudo chown -R "www-data:www-data" "$recorder_base"
-	if [ $? -ne 0 ] ; then exit 8; fi
+  echo "http://$RECORDER_DOMAIN" | sudo -u "$user" tee "$recorder_base/htdocs/app/base.url"
 
-	echo "http://$RECORDER_DOMAIN" | sudo -u www-data tee "$recorder_base/htdocs/app/base.url"
-
-	sudo /etc/init.d/lighttpd force-reload
+  sudo /etc/init.d/lighttpd force-reload
 
 ### at & cron jobs
 
-echo "# $git_repo\nwww-data" | sudo tee /etc/at.allow
+echo "# $git_repo\n$user" | sudo tee --append /etc/at.allow
 
-sudo -u www-data crontab -ri
-sudo -u www-data crontab - <<END_OF_CRONTAB
+sudo -u "$user" crontab -ri
+sudo -u "$user" crontab - <<END_OF_CRONTAB
 # crontab generated by $0 from $git_repo branch $git_branch
 RADIO_PI_CRON_DIR=$recorder_base/htdocs/app/cron
 12 05  * * * /bin/dash "\$RADIO_PI_CRON_DIR/daily.sh"
 55 *   * * * /bin/dash "\$RADIO_PI_CRON_DIR/hourly.sh"
 10 */3 * * * /bin/dash "\$RADIO_PI_CRON_DIR/cleanup.sh"
 END_OF_CRONTAB
-sudo -u www-data crontab -l
+sudo -u "$user" crontab -l
 
 echo "######################################################"
 echo "Recorder install finished. For initial radio program website scrape, call"
-echo "	  \$ sudo -u www-data $recorder_base/htdocs/app/cron/daily.sh"
+echo "    \$ sudo -u $user $recorder_base/htdocs/app/cron/daily.sh"
 echo "Follow progress via"
-echo "	  \$ tail -f $recorder_base/htdocs/log/*"
-
+echo "    \$ tail -f $recorder_base/htdocs/log/*"
