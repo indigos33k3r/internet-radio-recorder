@@ -112,7 +112,7 @@ pkgs="adduser make"
   pkgs="$pkgs xsltproc"
 
 ### lua, luarocks, lfs:
-  pkgs="$pkgs lua5.1 luarocks"
+  pkgs="$pkgs luarocks lua-posix lua-filesystem"
 
 ### streamripper:
   pkgs="$pkgs streamripper"
@@ -152,8 +152,9 @@ END_OF_SUDOERS
 ### gems
   sudo -u "$user" bundle install --path vendor/bundle
 
-### luarocks: lfs
-  luarocks show luafilesystem 2>/dev/null || sudo luarocks install luafilesystem
+### luarocks: lfs, posix
+#  luarocks show luafilesystem 2>/dev/null || sudo luarocks install luafilesystem
+#  luarocks show luaposix 2>/dev/null || sudo luarocks install luaposix
 
 ### streamripper:
 
