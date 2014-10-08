@@ -71,7 +71,9 @@
           <xsl:variable name="year" select="substring($dtstart, 1, 4)"/>
           <xsl:variable name="month" select="substring($dtstart, 6, 2)"/>
           <xsl:variable name="day" select="substring($dtstart, 9, 2)"/>
-          <a id="via" class="via" href="http://www.deutschlandfunk.de/programmvorschau.281.de.html?drbm:date={$day}.{$month}.{$year}">www.dradio.de</a>,
+          <xsl:variable name="hour" select="substring($dtstart, 12, 2)"/>
+          <xsl:variable name="minute" select="substring($dtstart, 15, 2)"/>
+          <a id="via" class="via" href="http://www.deutschlandfunk.de/programmvorschau.281.de.html?drbm:date={$day}.{$month}.{$year}#anc{$hour}{$minute}">www.dradio.de</a>,
           <a id="stream" style="display:none">Live Stream</a>
         </p>
         <p id="date">

@@ -1,3 +1,4 @@
+# sudo /usr/sbin/logrotate -v /etc/logrotate.conf
 /srv/<subdir>/logs/*.log {
     weekly
 #    su www-data www-data
