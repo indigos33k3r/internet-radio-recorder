@@ -37,8 +37,6 @@ sudo -V > /dev/null             || { echo "Sorry, but I need that one." 1>&2 && 
 apt-get --version > /dev/null   || { echo "Sorry, but I need that one." 1>&2 && exit 2; }
 apt-mark --version > /dev/null  || { echo "Sorry, but I need that one." 1>&2 && exit 2; }
 
-mkdir "$tmp_dir"                || { echo "Sorry, but I insist to create that (clean slate)." 1>&2 && exit 3; }
-
 me=$(basename "$0")
 
 git_branch="$1"
@@ -49,6 +47,8 @@ RECORDER_DOMAIN="$2"
 echo_prefix="RadioPi:"
 
 if [ "" = "$RECORDER_DOMAIN" ] ; then
+  mkdir "$tmp_dir"                || { echo "Sorry, but I insist to create that (clean slate)." 1>&2 && exit 3; }
+
   apt-mark showmanual > "$tmp_dir/apt-mark.showmanual.pre"
   apt-mark showauto > "$tmp_dir/apt-mark.showauto.pre"
   
