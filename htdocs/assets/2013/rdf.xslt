@@ -82,10 +82,12 @@
           <!-- xsl:value-of select="base-uri()"/ -->
         <!-- dct:isPartOf rdf:resource="../../../../../podcasts/radiowelt/"/ -->
       </rdf:Description>
-      <dcmit:StillImage rdf:about="{rec:meta[@name='DC.image']/@content}">
-        <dct:format rdf:resource="http://purl.org/NET/mediatypes/image/jpeg"/>
-        <dct:isReferencedBy rdf:resource=""/>
-      </dcmit:StillImage>
+      <xsl:if test="string-length(rec:meta[@name='DC.image']/@content) > 0">
+        <dcmit:StillImage rdf:about="{rec:meta[@name='DC.image']/@content}">
+          <dct:format rdf:resource="http://purl.org/NET/mediatypes/image/jpeg"/>
+          <dct:isReferencedBy rdf:resource=""/>
+        </dcmit:StillImage>
+      </xsl:if>
       <!-- dcmit:Sound rdf:about="../../../../../enclosures/{rec:meta[@name='DC.identifier']/@content}.mp3">
         <dct:format rdf:resource="http://purl.org/NET/mediatypes/audio/mp3"/>
         <dct:isFormatOf rdf:resource=""/>
