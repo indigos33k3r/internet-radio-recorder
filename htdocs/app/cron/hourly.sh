@@ -25,7 +25,14 @@ me="$(basename "$0")"
 /bin/date 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log
 for scraper in stations/*/app/scraper.??
 do
-	nice $scraper --incremental 2>> log/"$me".stderr.log | app/broadcast-render.lua --stdin 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log
+  case "$scraper" in
+    *.rb)
+      nice bundle exec $scraper --incremental 2>> log/"$me".stderr.log | app/broadcast-render.lua --stdin 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log
+    ;;
+    *)
+      nice $scraper --incremental 2>> log/"$me".stderr.log | app/broadcast-render.lua --stdin 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log
+    ;;
+  esac
 done
 
 nice app/calendar.lua stations/* podcasts/* 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log

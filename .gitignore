@@ -14,3 +14,5 @@ logs/
 !*/stations/app/
 
 .DS_Store
+.bundle/config
+vendor/bundle/
