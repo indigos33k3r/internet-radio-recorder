@@ -121,7 +121,11 @@ pkgs="adduser make"
   pkgs="$pkgs g++ libtag1-dev"
 
 echo "$echo_prefix apt-get install $pkgs"
-sudo apt-get install $pkgs || { echo "Couldn't install all preliminaries" 1>&2 && exit 6; }
+sudo apt-get install $pkgs
+if [ $? -ne 0 ] ; then
+  echo "Couldn't install all preliminaries" 1>&2
+  exit 6
+fi
 
 echo "$echo_prefix Prerequisites - configuration.."
 
