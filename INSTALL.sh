@@ -132,10 +132,10 @@ echo "$echo_prefix Prerequisites - configuration.."
   sudo adduser --system --home="$recorder_base" --no-create-home --ingroup "$group" "$user" || { echo "Couldn't create dedicated user" 1>&2 && exit 7; }
   sudo cp "$tmp_dir"/apt-mark.show*.pre "$recorder_base/logs/"
   rm -rf "$tmp_dir"
-  apt-mark showmanual | sudo tee "$recorder_base/logs/apt-mark.showmanual.post"
-  apt-mark showauto | sudo tee "$recorder_base/logs/apt-mark.showauto.post"
+  apt-mark showmanual | sudo tee "$recorder_base/logs/apt-mark.showmanual.post" > /dev/null
+  apt-mark showauto | sudo tee "$recorder_base/logs/apt-mark.showauto.post" > /dev/null
 
-  sudo chown -R "$user:$group" "$recorder_base" || { echo "Couldn't chown" 1>&2 && exit 8; }
+  sudo chown -R "$user:$group" "$recorder_base" || { echo "Couldn't chown" 1>&2 && exit 8; }
 
   sudo tee /etc/sudoers.d/radio-pi - <<END_OF_SUDOERS
 www-data ALL = ($user:$group) NOPASSWD: $recorder_base/htdocs/enclosures/app/ad_hoc.lua
