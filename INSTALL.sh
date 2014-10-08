@@ -136,8 +136,9 @@ echo "$echo_prefix Prerequisites - configuration.."
   apt-mark showauto | sudo tee "$recorder_base/logs/apt-mark.showauto.post" > /dev/null
 
   sudo chown -R "$user:$group" "$recorder_base" || { echo "Couldn't chown" 1>&2 && exit 8; }
+  sudo chmod g+w "$recorder_base/logs"
 
-  sudo tee /etc/sudoers.d/radio-pi - <<END_OF_SUDOERS
+  sudo tee /etc/sudoers.d/radio-pi >/dev/null - <<END_OF_SUDOERS
 www-data ALL = ($user:$group) NOPASSWD: $recorder_base/htdocs/enclosures/app/ad_hoc.lua
 #
 # In case you mess up this file, repair like described here http://ubuntuforums.org/showthread.php?t=2036382&p=12144840#post12144840
@@ -146,7 +147,7 @@ www-data ALL = ($user:$group) NOPASSWD: $recorder_base/htdocs/enclosures/app/ad_
 END_OF_SUDOERS
 
 ### ruby + bundler (gem installation helper)
-  bundle --version || sudo gem install bundler
+  bundle --version || sudo gem install bundler --no-ri --no-rdoc
 
 ### gems
   sudo -u "$user" bundle install --path vendor/bundle
