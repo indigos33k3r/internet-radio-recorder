@@ -1,0 +1,49 @@
+# language (http://wiki.dublincore.org/index.php/User_Guide/Publishing_Metadata#dcterms:language) either
+# - http://psi.oasis-open.org/iso/639/#deu
+# - "de"^^http://purl.org/dc/terms/ISO639-2
+# - http://www.lexvo.org/page/iso639-1/de
+# - ?
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix dcmit: <http://purl.org/dc/dcmitype/> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix iso639-1: <http://www.lexvo.org/page/iso639-1/> .
+@prefix iso639-3: <http://www.lexvo.org/page/iso639-3/> .
+@prefix mime: <http://purl.org/NET/mediatypes/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rec: <http://purl.mro.name/recorder/2014/> .
+@prefix tz: <http://www.w3.org/2002/12/cal/tzd/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://br.de/>
+    dct:hasPart <> ;
+    a foaf:Organization ;
+    foaf:homepage <http://br.de/> ;
+    foaf:logo <http://br.de/static/img/logo/logo_home.png> ;
+    foaf:name "Bayerischer Rundfunk" .
+
+<>
+    foaf:name "Bayern 2" ;
+    dct:hasFormat <http://streams.br-online.de/bayern2_2.m3u> ;
+    dct:hasFormat <http://www.br.de/radio/bayern2/programmkalender/programmfahne102.html> ;
+    dct:isPartOf <http://br.de/> ;
+    foaf:homepage <http://bayern2.de/> ;
+    foaf:logo <http://www.br.de/static/img/bereich/radio/bayern2/bayern2_logo.png?v=a2d53> .
+
+<http://www.br.de/radio/bayern2/programmkalender/programmfahne102.html>
+    rec:curfew "05:00:00"^^xsd:time ;
+    rec:timezone <http://www.w3.org/2002/12/cal/tzd/Europe/Berlin> ;
+    rdfs:label "Programm Website"@deu ;
+    dct:format <http://purl.org/NET/mediatypes/text/html> ;
+    dct:isPartOf <> ;
+    dct:language iso639-3:deu ;
+    a dcmit:Text .
+
+<http://streams.br-online.de/bayern2_2.m3u>
+    rec:streamripperRelayPort 8002 ;
+    rdfs:label "Live Stream"@deu ;
+    dct:format <http://purl.org/NET/mediatypes/audio/x-mpegurl> ;
+    dct:isPartOf <> ;
+    dct:language iso639-3:deu ;
+    a dcmit:Sound .
