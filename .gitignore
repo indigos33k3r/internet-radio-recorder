@@ -16,3 +16,6 @@ logs/
 .DS_Store
 .bundle/config
 vendor/bundle/
+
+xslt/*.rdf
+xslt/*.ttl
