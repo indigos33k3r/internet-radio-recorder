@@ -22,23 +22,45 @@
   IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
   THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
-<!--
- Extract schedule base url from about.rdf.
--->
 <xsl:stylesheet
-  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-  xmlns:dcmit="http://purl.org/dc/dcmitype/"
-  xmlns:dct="http://purl.org/dc/terms/"
-  xmlns:rec="http://purl.mro.name/recorder/2014/"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:str="http://exslt.org/strings"
+  xmlns:func="http://exslt.org/functions"
+  extension-element-prefixes="func str"
   version="1.0">
-  <xsl:output method="text"/>
-  <xsl:template match="/">
-    <xsl:for-each select="rdf:RDF/dcmit:Text[
-    	rec:curfew/@rdf:datatype = 'http://www.w3.org/2001/XMLSchema#time'
-    	and dct:format/@rdf:resource = 'http://purl.org/NET/mediatypes/text/html'
-    ]/@rdf:about">
-      <xsl:value-of select="."/>
-    </xsl:for-each>
-  </xsl:template>
+
+  <!--
+    Turn text/html markup to text/plain.
+    
+    Hijack the str: namespace.
+  -->
+  <func:function name="str:html2ascii">
+    <xsl:param name="html" />
+    <xsl:variable name="head" select="$html[position() = 1]"/>
+    <xsl:variable name="tail" select="$html[position() > 1]"/>
+    <func:result>
+      <xsl:choose>
+        <xsl:when test="0 = count($head)"/>
+        <xsl:otherwise>
+          <xsl:choose>
+            <xsl:when test="'br' = name($head)">
+              <xsl:text>&#10;<!-- linefeed --></xsl:text>
+            </xsl:when>
+            <xsl:when test="'p' = name($head)">
+              <xsl:value-of select="str:html2ascii($head/node())"/>
+              <xsl:if test="count($tail) > 0">
+                <!-- omit trailing -->
+                <xsl:text>&#10;&#10;<!-- double linefeed --></xsl:text>
+              </xsl:if>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="normalize-space($head)"/>
+            </xsl:otherwise>
+          </xsl:choose>
+          <xsl:value-of select="str:html2ascii($tail)"/>
+        </xsl:otherwise>
+      </xsl:choose>    
+    </func:result>
+  </func:function>
+
 </xsl:stylesheet>

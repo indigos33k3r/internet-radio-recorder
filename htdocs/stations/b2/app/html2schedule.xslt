@@ -1,23 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- Copyright (c) 2013-2014 Marcus Rohrmoser, https://github.com/mro/radio-pi
+  Copyright (c) 2013-2014 Marcus Rohrmoser, https://github.com/mro/radio-pi
 
- Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
- associated documentation files (the "Software"), to deal in the Software without restriction,
- including without limitation the rights to use, copy, modify, merge, publish, distribute,
- sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
+  All rights reserved.
 
- The above copyright notice and this permission notice shall be included in all copies or
- substantial portions of the Software.
+  Redistribution and use in source and binary forms, with or without modification, are permitted
+  provided that the following conditions are met:
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
- NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
- OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  1. Redistributions of source code must retain the above copyright notice, this list of conditions
+  and the following disclaimer.
 
- MIT License http://opensource.org/licenses/MIT
+  2. The software must not be used for military or intelligence or related purposes nor
+  anything that's in conflict with human rights as declared in http://www.un.org/en/documents/udhr/ .
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
+  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+  FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+  IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <!--
  Extract
@@ -49,7 +52,7 @@
   xmlns:dc="http://purl.org/dc/elements/1.1/"
   xmlns:mime="http://purl.org/NET/mediatypes/"
 -->  
-  <xsl:output method="xml"/>
+  <xsl:output method="xml" indent="yes"/>
 
   <!-- some handy constants -->
   <xsl:variable name="xsdTime">http://www.w3.org/2001/XMLSchema#time</xsl:variable>
@@ -98,82 +101,74 @@
       <xsl:variable name="yesterday_tail" select="substring-after($yesterday_url, $date_prefix)"/>      
       <xsl:variable name="yesterday" select="substring-before($yesterday_tail, $date_suffix)"/>
 
-      <xsl:if test="string-length($yesterday)">
-        <xsl:variable name="today" select="date:add($yesterday, 'P1D')"/>
-        <xsl:variable name="tomorrow" select="date:add($yesterday, 'P2D')"/>
-        <xsl:if test="string-length($yesterday) + string-length($today) + string-length($tomorrow) > 0">
-          <xsl:for-each select=".//a[
-            contains(@class, 'link_broadcast')
-            and @href
-            and (
-              ../../../@class = 'day_1'
-              or ../../../@class = 'day_2'
-              or ../../../@class = 'day_3'
-            ) 
-          ]">
-            <xsl:variable name="dateRaw">
-              <xsl:choose>
-                <xsl:when test="../../../@class = 'day_1'"><xsl:value-of select="$yesterday"/></xsl:when>
-                <xsl:when test="../../../@class = 'day_2'"><xsl:value-of select="$today"/></xsl:when>
-                <xsl:when test="../../../@class = 'day_3'"><xsl:value-of select="$tomorrow"/></xsl:when>
-                <xsl:otherwise><xsl:comment>how odd.</xsl:comment></xsl:otherwise>
-              </xsl:choose>
-            </xsl:variable>
-            <!-- some syntactic checks -->
-            <xsl:if test="string-length($dateRaw) != 10">
-              <xsl:message terminate="yes">date must be a http://www.w3.org/2001/XMLSchema#date but was '<xsl:value-of select="$dateRaw"/>' </xsl:message>
-            </xsl:if>
-
-            <xsl:variable name="time"><xsl:value-of select="strong"/>:00</xsl:variable>
-            <!-- some syntactic checks -->
-            <xsl:if test="string-length($time) != 8">
-              <xsl:message terminate="yes">Time must be a http://www.w3.org/2001/XMLSchema#time but was '<xsl:value-of select="$time"/>' </xsl:message>
-            </xsl:if>
-
-            <xsl:variable name="date">
-              <xsl:variable name="time_numeric" select="date:second-in-minute($time) + 100 * (date:minute-in-hour($time) + 100 * date:hour-in-day($time))"/>
-              <xsl:choose>
-                <!-- add one day if between midnight and curfew -->
-                <xsl:when test="number($time_numeric) &lt; number($curfew_numeric)"><xsl:value-of select="date:add($dateRaw, 'P1D')"/></xsl:when>
-                <xsl:otherwise><xsl:value-of select="$dateRaw"/></xsl:otherwise>
-              </xsl:choose>
-            </xsl:variable>
-            <xsl:variable name="dateTime"><xsl:value-of select="$date"/>T<xsl:value-of select="$time"/></xsl:variable>
-            <!-- some syntactic checks -->
-            <xsl:if test="string-length($dateTime) != 19">
-              <xsl:message terminate="yes">dateTime must be a http://www.w3.org/2001/XMLSchema#dateTime but was '<xsl:value-of select="$dateTime"/>' </xsl:message>
-            </xsl:if>
-            <!--
-            <xsl:variable name="year" select="date:year($dateTime)"/>
-            <xsl:variable name="month"><xsl:number value="date:month-in-year($dateTime)" format="01"/></xsl:variable>
-            <xsl:variable name="day"><xsl:number value="date:day-in-month($dateTime)" format="01"/></xsl:variable>
-            <xsl:variable name="hour"><xsl:number value="date:hour-in-day($dateTime)" format="01"/></xsl:variable>
-            <xsl:variable name="minute"><xsl:number value="date:minute-in-hour($dateTime)" format="01"/></xsl:variable>
-            <xsl:variable name="second"><xsl:number value="date:second-in-minute($dateTime)" format="01"/></xsl:variable>
-            <xsl:variable name="identifier"><xsl:value-of select="$year"/>/<xsl:value-of select="$month"/>/<xsl:value-of select="$day"/>/<xsl:value-of select="$hour"/><xsl:value-of select="$minute"/><xsl:value-of select="$second"/></xsl:variable>
-            -->
-            <!--
-            <xsl:variable name="url"><xsl:value-of select="$station_url"/><xsl:value-of select="$identifier"/></xsl:variable>
-            -->
-            <xsl:variable name="title"><xsl:value-of select="normalize-space(strong/following-sibling::text())"/></xsl:variable>
-
-            <dcmit:Event rdf:about="{@href}">
-              <rdfs:label xml:lang="deu">Sendungsseite</rdfs:label>
-              <dct:format rdf:resource="{$mime_html}"/>
-              <dct:title xml:lang="{$language}"><xsl:value-of select="$title"/></dct:title>
-              <!-- dc:identifier><xsl:value-of select="$identifier"/></dc:identifier -->
-              <dct:date rdf:datatype="{$xsdDateTime}"><xsl:value-of select="$dateTime"/></dct:date>
-              <!-- use temporal once we have the proper timezone.
-                <dct:temporal>
-                <tl:Interval>
-                  <tl:start rdf:datatype="{$xsdDateTime}"><xsl:value-of select="$dateTime"/></tl:start>
-                  <tl:timeline rdf:resource="http://purl.org/NET/c4dm/timeline.owl#universaltimeline"/>
-                </tl:Interval>
-              </dct:temporal -->
-            </dcmit:Event>
-          </xsl:for-each>
-        </xsl:if>
+      <xsl:if test="string-length($yesterday) = 0">
+      	<xsl:message terminate="yes"> Cannot figure out current date. (no //li[@class='multidays_prev']/a/@href) </xsl:message>
       </xsl:if>
+
+			<xsl:for-each select=".//a[contains(@class, 'link_broadcast') and @href]">
+				<xsl:variable name="dateRaw">
+					<xsl:choose>
+						<xsl:when test="../../../@class = 'day_1'"><xsl:value-of select="$yesterday"/></xsl:when>
+						<xsl:when test="../../../@class = 'day_2'"><xsl:value-of select="date:add($yesterday, 'P1D')"/></xsl:when>
+						<xsl:when test="../../../@class = 'day_3'"><xsl:value-of select="date:add($yesterday, 'P2D')"/></xsl:when>
+						<xsl:otherwise>
+							<xsl:message terminate="yes">Cannot figure out which day I'm in current date. (../../../@class = 'day_?') </xsl:message>
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:variable>
+				<!-- some syntactic checks -->
+				<xsl:if test="string-length($dateRaw) != 10">
+					<xsl:message terminate="yes">date must be a http://www.w3.org/2001/XMLSchema#date but was '<xsl:value-of select="$dateRaw"/>' </xsl:message>
+				</xsl:if>
+
+				<xsl:variable name="time"><xsl:value-of select="strong"/>:00</xsl:variable>
+				<!-- some syntactic checks -->
+				<xsl:if test="string-length($time) != 8">
+					<xsl:message terminate="yes">Time must be a http://www.w3.org/2001/XMLSchema#time but was '<xsl:value-of select="$time"/>' </xsl:message>
+				</xsl:if>
+
+				<xsl:variable name="date">
+					<xsl:variable name="time_numeric" select="date:second-in-minute($time) + 100 * (date:minute-in-hour($time) + 100 * date:hour-in-day($time))"/>
+					<xsl:choose>
+						<!-- add one day if between midnight and curfew -->
+						<xsl:when test="number($time_numeric) &lt; number($curfew_numeric)"><xsl:value-of select="date:add($dateRaw, 'P1D')"/></xsl:when>
+						<xsl:otherwise><xsl:value-of select="$dateRaw"/></xsl:otherwise>
+					</xsl:choose>
+				</xsl:variable>
+				<xsl:variable name="dateTime"><xsl:value-of select="$date"/>T<xsl:value-of select="$time"/></xsl:variable>
+				<!-- some syntactic checks -->
+				<xsl:if test="string-length($dateTime) != 19">
+					<xsl:message terminate="yes">dateTime must be a http://www.w3.org/2001/XMLSchema#dateTime but was '<xsl:value-of select="$dateTime"/>' </xsl:message>
+				</xsl:if>
+				<!--
+				<xsl:variable name="year" select="date:year($dateTime)"/>
+				<xsl:variable name="month"><xsl:number value="date:month-in-year($dateTime)" format="01"/></xsl:variable>
+				<xsl:variable name="day"><xsl:number value="date:day-in-month($dateTime)" format="01"/></xsl:variable>
+				<xsl:variable name="hour"><xsl:number value="date:hour-in-day($dateTime)" format="01"/></xsl:variable>
+				<xsl:variable name="minute"><xsl:number value="date:minute-in-hour($dateTime)" format="01"/></xsl:variable>
+				<xsl:variable name="second"><xsl:number value="date:second-in-minute($dateTime)" format="01"/></xsl:variable>
+				<xsl:variable name="identifier"><xsl:value-of select="$year"/>/<xsl:value-of select="$month"/>/<xsl:value-of select="$day"/>/<xsl:value-of select="$hour"/><xsl:value-of select="$minute"/><xsl:value-of select="$second"/></xsl:variable>
+				-->
+				<!--
+				<xsl:variable name="url"><xsl:value-of select="$station_url"/><xsl:value-of select="$identifier"/></xsl:variable>
+				-->
+				<xsl:variable name="title"><xsl:value-of select="normalize-space(strong/following-sibling::text())"/></xsl:variable>
+
+				<dcmit:Event rdf:about="{@href}">
+					<rdfs:label xml:lang="deu">Sendungsseite</rdfs:label>
+					<dct:format rdf:resource="{$mime_html}"/>
+					<dct:title xml:lang="{$language}"><xsl:value-of select="$title"/></dct:title>
+					<!-- dc:identifier><xsl:value-of select="$identifier"/></dc:identifier -->
+					<dct:date rdf:datatype="{$xsdDateTime}"><xsl:value-of select="$dateTime"/></dct:date>
+					<!-- use temporal once we have the proper timezone.
+						<dct:temporal>
+						<tl:Interval>
+							<tl:start rdf:datatype="{$xsdDateTime}"><xsl:value-of select="$dateTime"/></tl:start>
+							<tl:timeline rdf:resource="http://purl.org/NET/c4dm/timeline.owl#universaltimeline"/>
+						</tl:Interval>
+					</dct:temporal -->
+				</dcmit:Event>
+			</xsl:for-each>
     </rdf:RDF>
   </xsl:template>
 </xsl:stylesheet>

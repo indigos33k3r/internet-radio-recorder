@@ -1,4 +1,29 @@
 #!/bin/sh
+#
+# Copyright (c) 2013-2014 Marcus Rohrmoser, https://github.com/mro/radio-pi
+# 
+# All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or without modification, are permitted
+# provided that the following conditions are met:
+# 
+# 1. Redistributions of source code must retain the above copyright notice, this list of conditions
+# and the following disclaimer.
+# 
+# 2. The software must not be used for military or intelligence or related purposes nor
+# anything that's in conflict with human rights as declared in http://www.un.org/en/documents/udhr/ .
+# 
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
+# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+# FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+# IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+# THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+
+#
 
 curl --version      >/dev/null || { echo "sorry, need it." && exit 1; }
 xsltproc --version  >/dev/null || { echo "sorry, need it." && exit 1; }
@@ -33,14 +58,20 @@ if [ ! -f "$tmp_file" ] ; then
   curl --create-dirs --time-cond "$tmp_file" --output "$tmp_file" --remote-time --url "$scrape_url"
 fi
 
-# TODO: check xsltproc for failure? http://stackoverflow.com/a/1550982
-#
-xsltproc --stringparam station_about_url "$station_rdf" --html --encoding utf-8 --novalid "$(basename "$0" .sh).xslt" "$tmp_file" 2>/dev/null \
-| rapper --quiet --input rdfxml --output rdfxml-abbrev --input-uri "$scrape_url" --output-uri '.' - \
+xsltproc --stringparam station_about_url "$station_rdf" --html --encoding utf-8 --novalid --output ../cache/schedule.rdf.raw "$(basename "$0" .sh).xslt" "$tmp_file" 2>/dev/null
+if [ $? -ne 0 ] ; then
+  cat 1>&2 <<HERE
+Failed to run
+  $ xsltproc --stringparam station_about_url "$station_rdf" --html --encoding utf-8 --novalid "$(basename "$0" .sh).xslt" "$tmp_file"
+HERE
+  exit 2
+fi
+rapper --quiet --input rdfxml --output rdfxml-abbrev --input-uri "$scrape_url" --output-uri '.' ../cache/schedule.rdf.raw \
 > ../cache/schedule.rdf \
-&& touch -r "$tmp_file" ../cache/schedule.rdf
+&& ../cache/schedule.rdf.raw \
+&& rm touch -r "$tmp_file" ../cache/schedule.rdf
 
-# rapper --input rdfxml --output turtle ../cache/schedule.rdf
+rapper --input rdfxml --output turtle ../cache/schedule.rdf
 
 sparql=$(cat <<SETVAR
 # http://tldp.org/LDP/abs/html/here-docs.html
@@ -58,7 +89,7 @@ PREFIX dct: <http://purl.org/dc/terms/>
   ORDER BY ASC(?date)
 SETVAR
 )
-roqet --exec "$sparql" --data ../cache/schedule.rdf --results csv --quiet | tail -n +2
+# roqet --exec "$sparql" --data ../cache/schedule.rdf --results csv --quiet | tail -n +2
 
 sparql=$(cat <<SETVAR
 # http://tldp.org/LDP/abs/html/here-docs.html
