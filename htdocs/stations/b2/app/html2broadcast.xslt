@@ -64,15 +64,15 @@
   <xsl:variable name="mime_jpeg">http://purl.org/NET/mediatypes/image/jpeg</xsl:variable>
 
   <xsl:template match="/">
-		<xsl:variable name="language" select="html/head/meta[@name = 'DCTERMS.title']/@lang"/>
-		<xsl:if test="string-length($language) != 2"><xsl:message terminate="yes">FATAL: Couldn't figure out broadcast language</xsl:message></xsl:if>
+    <xsl:variable name="language" select="html/head/meta[@name = 'DCTERMS.title']/@lang"/>
+    <xsl:if test="string-length($language) != 2"><xsl:message terminate="yes">FATAL: Couldn't figure out broadcast language</xsl:message></xsl:if>
 
-		<!-- css 
-			.bcast_head .avPlayer img , .bcast_head .picturebox img , .bcast_serial_picture .picturebox img
-		-->
-		<xsl:variable name="images" select=".//*[contains(@class, 'bcast_head')]//*[contains(@class, 'avPlayer')]//img
-			| .//*[contains(@class, 'bcast_head')]//*[contains(@class, 'picturebox')]//img
-			| .//*[contains(@class, 'bcast_serial_picture')]//*[contains(@class, 'picturebox')]//img"/>
+    <!-- css 
+      .bcast_head .avPlayer img , .bcast_head .picturebox img , .bcast_serial_picture .picturebox img
+    -->
+    <xsl:variable name="images" select=".//*[contains(@class, 'bcast_head')]//*[contains(@class, 'avPlayer')]//img
+      | .//*[contains(@class, 'bcast_head')]//*[contains(@class, 'picturebox')]//img
+      | .//*[contains(@class, 'bcast_serial_picture')]//*[contains(@class, 'picturebox')]//img"/>
 
     <rdf:RDF>    
       <dcmit:Text rdf:about="." xml:lang="{$language}">
@@ -153,7 +153,7 @@
 
       <xsl:for-each select="$images">
         <dcmit:StillImage rdf:about="{@src}">
-        	<dct:format rdf:resource="{$mime_jpeg}"/>
+          <dct:format rdf:resource="{$mime_jpeg}"/>
           <dct:isReferencedBy rdf:resource="."/>
           <xsl:if test="@title">
             <dct:title><xsl:value-of select="@title"/></dct:title>
