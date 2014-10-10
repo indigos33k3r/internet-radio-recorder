@@ -70,9 +70,10 @@
     <!-- css 
       .bcast_head .avPlayer img , .bcast_head .picturebox img , .bcast_serial_picture .picturebox img
     -->
-    <xsl:variable name="images" select=".//*[contains(@class, 'bcast_head')]//*[contains(@class, 'avPlayer')]//img
-      | .//*[contains(@class, 'bcast_head')]//*[contains(@class, 'picturebox')]//img
-      | .//*[contains(@class, 'bcast_serial_picture')]//*[contains(@class, 'picturebox')]//img"/>
+    <xsl:variable name="images" select="((
+      .//*[contains(@class, 'bcast_head')]//*[contains(@class, 'avPlayer') or contains(@class, 'picturebox')]
+      | .//*[contains(@class, 'bcast_serial_picture')]//*[contains(@class, 'picturebox')]
+    )//img)[1]"/>
 
     <rdf:RDF>    
       <dcmit:Text rdf:about="." xml:lang="{$language}">
@@ -146,7 +147,7 @@
           <xsl:value-of select="str:html2ascii(.//p[@class = 'copytext'])"/>
         </dct:description>
       
-        <xsl:for-each select="$images[1]">
+        <xsl:for-each select="$images">
           <dct:references rdf:resource="{@src}"/>
         </xsl:for-each>
       </dcmit:Text>
