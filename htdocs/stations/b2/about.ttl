@@ -1,15 +1,15 @@
 # language (http://wiki.dublincore.org/index.php/User_Guide/Publishing_Metadata#dcterms:language) either
 # - http://psi.oasis-open.org/iso/639/#deu
 # - "de"^^http://purl.org/dc/terms/ISO639-2
-# - http://www.lexvo.org/page/iso639-1/de
+# - http://www.lexvo.org/id/iso639-1/de
 # - ?
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix dc: <http://purl.org/dc/elements/1.1/> .
 @prefix dcmit: <http://purl.org/dc/dcmitype/> .
 @prefix dct: <http://purl.org/dc/terms/> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix iso639-1: <http://www.lexvo.org/page/iso639-1/> .
-@prefix iso639-3: <http://www.lexvo.org/page/iso639-3/> .
+@prefix iso639-1: <http://www.lexvo.org/id/iso639-1/> .
+@prefix iso639-3: <http://www.lexvo.org/id/iso639-3/> .
 @prefix mime: <http://purl.org/NET/mediatypes/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix rec: <http://purl.mro.name/recorder/2014/> .
