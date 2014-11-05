@@ -10,23 +10,26 @@
 -->
 <xsl:stylesheet
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3schools.com/RDF/rdf-schema.xml"
   xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-  xmlns:dc="http://purl.org/dc/elements/1.1/"
   xmlns:dct="http://purl.org/dc/terms/"
   xmlns:dcmit="http://purl.org/dc/dcmitype/"
+  xmlns:freq="http://purl.org/cld/freq/"
   xmlns:foaf="http://xmlns.com/foaf/0.1/"
   xmlns:tl="http://purl.org/NET/c4dm/timeline.owl#"
   xmlns:iso639-1="http://lexvo.org/id/iso639-1/"
   xmlns:mime="http://purl.org/NET/mediatypes/"
   xmlns:rec="../../../../../assets/2013/radio-pi.rdf"
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
   xmlns:ebu="http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   exclude-result-prefixes="rec ebu"
   version="1.0">
   <xsl:output method="xml"/>
   <xsl:template match="rec:broadcast">
-    <rdf:RDF>
-      <rdf:Description rdf:about="" xml:lang="{rec:meta[@name='DC.language']/@content}">
+    <rdf:RDF xml:lang="{rec:meta[@name='DC.language']/@content}">
+      <rdf:Description rdf:about="">
+        <rdfs:label>Sendung</rdfs:label>
         <dct:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">
           <xsl:value-of select="rec:meta[@name='DC.identifier']/@content"/>
         </dct:identifier>
@@ -39,9 +42,9 @@
         <dct:creator><rdf:Description><foaf:name>
           <xsl:value-of select="rec:meta[@name='DC.author']/@content"/>
         </foaf:name></rdf:Description></dct:creator>
-        <dct:description>
+        <dct:abstract>
           <xsl:value-of select="rec:meta[@name='DC.description']/@content"/>
-        </dct:description>
+        </dct:abstract>
         <dct:temporal>
           <tl:Interval>
             <tl:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">
@@ -72,7 +75,7 @@
           <xsl:value-of select="rec:meta[@name='DC.title.series']/@content"/>
         </dc:titleSeries>
         <dct:hasFormat rdf:resource="../../../../../enclosures/{rec:meta[@name='DC.identifier']/@content}.mp3"/>
-        <dct:isPartOf rdf:resource="../../.."/>
+        <dct:isPartOf rdf:resource="."/>
         <!-- dct:references rdf:resource="../../../../../enclosures/"/ -->
         <!-- dct:references>hu
           <xsl:value-of select="base-uri('.')"/>
@@ -81,6 +84,7 @@
           <!-- xsl:value-of select="system-property('xsl:version')"/ -->
           <!-- xsl:value-of select="base-uri()"/ -->
         <!-- dct:isPartOf rdf:resource="../../../../../podcasts/radiowelt/"/ -->
+        <dct:isReferencedBy rdf:resource="../../../../modified.ttl"/>
       </rdf:Description>
       <xsl:if test="string-length(rec:meta[@name='DC.image']/@content) > 0">
         <dcmit:StillImage rdf:about="{rec:meta[@name='DC.image']/@content}">
@@ -92,6 +96,49 @@
         <dct:format rdf:resource="http://purl.org/NET/mediatypes/audio/mp3"/>
         <dct:isFormatOf rdf:resource=""/>
       </dcmit:Sound -->
+      <rdf:Description about=".">
+        <rdfs:label>Tag</rdfs:label>
+        <dct:hasPart rdf:resource=""/>
+        <dct:isPartOf rdf:resource=".."/>
+      </rdf:Description>
+      <rdf:Description about="..">
+        <rdfs:label>Monat</rdfs:label>
+        <dct:hasPart rdf:resource="."/>
+        <dct:isPartOf rdf:resource="../.."/>
+      </rdf:Description>
+      <rdf:Description about="../..">
+        <rdfs:label>Jahr</rdfs:label>
+        <dct:hasPart rdf:resource=".."/>
+        <dct:isPartOf rdf:resource="../../.."/>
+      </rdf:Description>
+      <rdf:Description about="../../..">
+        <rdfs:label>Sender</rdfs:label>
+        <dct:hasPart rdf:resource="../.."/>
+        <dct:isPartOf rdf:resource="../../../.."/>
+      </rdf:Description>
+      <rdf:Description about="../../../..">
+        <dct:hasPart rdf:resource="../../.."/>
+        <dct:isPartOf rdf:resource="../../../../.."/>
+        <dct:relation rdf:resource="../../../../modified.ttl"/>
+      </rdf:Description>
+      <rdf:Description about="../../../../..">
+        <dct:hasPart rdf:resource="../../../.."/>
+        <!-- dct:hasPart rdf:resource="../../../../../podcasts/"/ -->
+      </rdf:Description>
+      <rdf:Description about="../../../../modified.ttl">
+        <rdfs:label>aktualisierte Sendungen</rdfs:label>
+        <dct:accrualPeriodicity>
+          <rdf:Description about="http://purl.org/cld/freq/hourly">
+            <rdfs:label>stündlich</rdfs:label>
+            <dct:extent>
+              <xsl:comment>http://wiki.dublincore.org/index.php/User_Guide/Publishing_Metadata#dcterms:extent</xsl:comment>
+              <rdf:Description>
+                <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT1H</rdfs:label>
+              </rdf:Description>
+            </dct:extent>
+          </rdf:Description>
+        </dct:accrualPeriodicity>
+      </rdf:Description>
     </rdf:RDF>
   </xsl:template>
 </xsl:stylesheet>
