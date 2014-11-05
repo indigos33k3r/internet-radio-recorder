@@ -88,7 +88,7 @@ local function factory(ret)
   local file = assert(ret._title):to_filename()
   local t = os.time(ret)
   ret.dir = table.concat{assert(ret._station).id, '/', os.date('%Y/%m/%d', t)}
-  ret.id  = table.concat{ret.dir, '/', os.date('%H%M', t), ' ',  file}
+  ret.id  = table.concat{ret.dir, '/', os.date('%H%M', t), ' ', file}
   return setmetatable( ret, Broadcast_mt )
 end
 
