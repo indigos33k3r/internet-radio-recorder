@@ -125,7 +125,7 @@
             <xsl:with-param name="str" select="rec:meta[@name='DC.identifier']/@content"/>
           </xsl:call-template>
         </xsl:variable>
-        <dct:hasFormat rdf:resource="../../../../../enclosures/{$identifier_encoded}.mp3"/>
+        <dct:hasFormat rdf:resource="../../../../../enclosures/{rec:meta[@name='DC.identifier']/@content}.mp3"/>
         <dct:isPartOf rdf:resource="."/>
         <!-- dct:references rdf:resource="../../../../../enclosures/"/ -->
         <!-- dct:references>hu
