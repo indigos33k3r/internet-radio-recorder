@@ -227,7 +227,7 @@ end
 
 
 function Enclosure:id3tag_mp3(dry_run)
-  local cmd = table.concat{'nice app/enclosure-tag.rb ', self:filename('mp3'):escape_cmdline()}
+  local cmd = table.concat{'nice bundle exec app/enclosure-tag.rb ', self:filename('mp3'):escape_cmdline()}
   if dry_run then
     io.write('dry-run ', cmd, "\n")
     return true
