@@ -84,13 +84,6 @@ $.ajax({ url: '.', type: 'GET', cache: true, dataType: 'xml', }).done( function(
   $( '#allday' ).show();
 });
 
-// add stream url
-$.ajax({ url: '../../../app/station.cfg', type: 'GET', cache: true, }).done( function(luaCfg) {
-  var stream_url = luaCfg.match( /(stream_url)\s*=\s*'([^']*)'/ );
-  if( stream_url )
-    $( '#stream' ).attr( 'href', stream_url[2] ).show();
-});
-
 // add whatsonnow station list
 $.ajax({ url: '../../../..', type: 'GET', cache: true, dataType: 'xml', }).done( function(xmlBody) {
   // scan all stations/*/
@@ -115,6 +108,6 @@ $.ajax({ url: '../../../..', type: 'GET', cache: true, dataType: 'xml', }).done(
     return this;
   });
   $( '#whatsonnow' ).html( allStations );
-  $( '#whatsonnow a' ).wrap("<li>");
+  $( '#whatsonnow a' ).wrap("<li class='border'>");
 });
 

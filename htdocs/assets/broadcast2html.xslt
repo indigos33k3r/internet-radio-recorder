@@ -27,10 +27,14 @@
 <xsl:stylesheet
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:rec="../../../../../assets/2013/radio-pi.rdf"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:dcmit="http://purl.org/dc/dcmitype/"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   exclude-result-prefixes="rec"
   version="1.0">
 
+  <!-- replace linefeeds with <br> tags -->
   <xsl:template name="linefeed2br">
     <xsl:param name="string" select="''"/>
     <xsl:param name="pattern" select="'&#10;'"/>
@@ -52,6 +56,40 @@
     method="html"
     doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
     doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"/>
+
+  <xsl:variable name="station_about_rdf" select="document('../about.rdf')"/>
+
+  <xsl:template name="broadcast_station_source">
+    <a id="via" class="via" href="{rec:meta[@name='DC.source']/@content}" rel="via">Sendung</a>
+    <xsl:text> </xsl:text>
+  </xsl:template>
+
+  <xsl:template name="station_rdf_name">
+    <xsl:variable name="station_rdf" select="$station_about_rdf/rdf:RDF/rdf:Description[@rdf:about = '']"/>
+    <xsl:choose>
+      <xsl:when test="$station_rdf">
+        <a title="{$station_rdf/foaf:name} Programm" href="{$station_rdf/../dcmit:Text/@rdf:about}">
+          <img alt="Senderlogo {$station_rdf/foaf:name}" src="{$station_rdf/foaf:logo/@rdf:resource}" style="height:30px" class="border"/>
+        </a>
+      </xsl:when>
+      <xsl:otherwise>
+        <span title="No station RDF found at ../../../about.rdf" style="color:red;font-weight:bolder">!</span>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:text> </xsl:text>
+  </xsl:template>
+
+  <xsl:template name="station_rdf_stream">
+    <xsl:variable name="stream_rdf" select="$station_about_rdf/rdf:RDF/dcmit:Sound[@rdf:about]"/>
+    <xsl:choose>
+      <xsl:when test="$stream_rdf"><a style="color:green" href="{$stream_rdf/@rdf:about}">Live Stream</a></xsl:when>
+      <xsl:otherwise>
+        <!-- keep the fallback to jquery + GET station.cfg for now: -->
+        <a id="stream" style="display:none">Live Stream</a>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
   <xsl:template match="rec:broadcast">
     <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{rec:meta[@name='DC.language']/@content}">
       <head>
@@ -81,13 +119,13 @@
         <noscript><p>JavaScript ist aus, es geht zwar (fast) alles auch ohne, aber mit ist's <b>schöner</b>. (Datumsformatierung, Aufnahmen wieder stornieren, Tagesübersicht, Link zum Stream)</p></noscript>
         <ul id="whatsonnow"><li>Dummy</li></ul>
         <p id="navigation" title="Navigation">
-            <a id="prev_week" href="../../../../../app/now.lua?t=P-7D" title="Woche vorher">&lt;&lt;&lt;</a>&#x00A0;
-            <a id="yesterday" href="../../../../../app/now.lua?t=P-1D" title="Tag vorher">&lt;&lt;</a>&#x00A0;
-            <a class="large" href="../../../../../app/prev.lua" rel="prev" title="Sendung vorher">&lt;</a>&#x00A0;
-            <a class="large" href="../../../now">aktuell</a>&#x00A0;
-            <a class="large" href="../../../../../app/next.lua" rel="next" title="Sendung nachher">&gt;</a>&#x00A0;
-            <a id="tomorrow" href="../../../../../app/now.lua?t=P1D" title="Tag nachher">&gt;&gt;</a>&#x00A0;
-            <a id="next_week" href="../../../../../app/now.lua?t=P7D" title="Woche nachher">&gt;&gt;&gt;</a>
+          <a class="border" id="prev_week" href="../../../../../app/now.lua?t=P-7D" title="Woche vorher">&lt;&lt;&lt;</a>&#x00A0;
+          <a class="border" id="yesterday" href="../../../../../app/now.lua?t=P-1D" title="Tag vorher">&lt;&lt;</a>&#x00A0;
+          <a class="border large" href="../../../../../app/prev.lua" rel="prev" title="Sendung vorher">&lt;</a>&#x00A0;
+          <a class="border large" href="../../../now">aktuell</a>&#x00A0;
+          <a class="border large" href="../../../../../app/next.lua" rel="next" title="Sendung nachher">&gt;</a>&#x00A0;
+          <a class="border" id="tomorrow" href="../../../../../app/now.lua?t=P1D" title="Tag nachher">&gt;&gt;</a>&#x00A0;
+          <a class="border" id="next_week" href="../../../../../app/now.lua?t=P7D" title="Woche nachher">&gt;&gt;&gt;</a>
         </p>
         <h2 id="series">
           <xsl:value-of select="rec:meta[@name='DC.title.series']/@content"/>
@@ -99,8 +137,9 @@
           <xsl:value-of select="rec:meta[@name='DC.title.episode']/@content"/>
         </h2>
         <p>
-          <a id="via" class="via" href="{rec:meta[@name='DC.source']/@content}" rel="via">www.br.de</a>,
-          <a id="stream" style="display:none">Live Stream</a>
+          <xsl:call-template name="broadcast_station_source"/>
+          <xsl:call-template name="station_rdf_name"/>
+          <xsl:call-template name="station_rdf_stream"/>
         </p>
         <p id="date">
           <span id="dtstart" title="{rec:meta[@name='DC.format.timestart']/@content}"><xsl:value-of select="rec:meta[@name='DC.format.timestart']/@content"/></span>
@@ -108,7 +147,7 @@
           <span id="dtend" title="{rec:meta[@name='DC.format.timeend']/@content}"><xsl:value-of select="rec:meta[@name='DC.format.timeend']/@content"/></span>
         </p>
         <p class="image">
-          <img alt="Bild zur Sendung" id="image" src="{rec:meta[@name='DC.image']/@content}"/>
+          <img alt="Bild zur Sendung" id="image" class="border" src="{rec:meta[@name='DC.image']/@content}"/>
         </p>
         <div id="content">
           <p>
