@@ -82,6 +82,11 @@ ul.nobullet {
 
 ul >li > a.has_podcast:before { content:"* "; }
 
+/* This is a workaround for Browsers that insert additional <br> tags. 
+ * See http://purl.mro.name/safari-xslt-br-bug */
+br { display:none; }
+br.br { display:inline; }
+
 @media screen and (max-width: 500px) {
   /* http://maddesigns.de/meta-viewport-1817.html */
   .navigation {

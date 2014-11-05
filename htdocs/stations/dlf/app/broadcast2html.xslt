@@ -24,13 +24,44 @@
 
  MIT License http://opensource.org/licenses/MIT
 -->
-<xsl:stylesheet xmlns:rec="../../../../../assets/2013/radio-pi.rdf" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" version="1.0">
-  <xsl:output method="html" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"/>
+<xsl:stylesheet
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:rec="../../../../../assets/2013/radio-pi.rdf"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  exclude-result-prefixes="rec"
+  version="1.0">
+
+  <xsl:template name="linefeed2br">
+    <xsl:param name="string" select="''"/>
+    <xsl:param name="pattern" select="'&#10;'"/>
+    <xsl:choose>
+      <xsl:when test="contains($string, $pattern)">
+        <xsl:value-of select="substring-before($string, $pattern)"/><br class="br"/><xsl:comment>Why do we see 2 br on Safari and output/@method=html here? http://purl.mro.name/safari-xslt-br-bug</xsl:comment>
+        <xsl:call-template name="linefeed2br">
+          <xsl:with-param name="string" select="substring-after($string, $pattern)"/>
+          <xsl:with-param name="pattern" select="$pattern"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$string"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:output
+    method="html"
+    doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
+    doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"/>
   <xsl:template match="rec:broadcast">
     <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{rec:meta[@name='DC.language']/@content}">
       <head>
         <meta content="text/html; charset=utf-8" http-equiv="content-type"/>
-        <meta name="viewport" content="width=device-width"/>
+        <!-- https://developer.apple.com/library/IOS/documentation/AppleApplications/Reference/SafariWebContent/UsingtheViewport/UsingtheViewport.html#//apple_ref/doc/uid/TP40006509-SW26 -->
+        <!-- http://maddesigns.de/meta-viewport-1817.html -->
+        <!-- meta name="viewport" content="width=device-width"/ -->
+        <!-- http://www.quirksmode.org/blog/archives/2013/10/initialscale1_m.html -->
+        <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+        <!-- meta name="viewport" content="width=400"/ -->
         <link href="../../../../../assets/favicon-32x32.png" rel="shortcut icon" type="image/png" />
         <link href="../../../../../assets/favicon-512x512.png" rel="apple-touch-icon" type="image/png" />
         <link href="../../../app/style.css" rel="stylesheet" type="text/css"/>
@@ -47,7 +78,8 @@
         </xsl:for-each>
       </head>
       <body id="broadcast">
-        <ul id="whatsonnow"/>
+        <noscript><p>JavaScript ist aus, es geht zwar (fast) alles auch ohne, aber mit ist's <b>schöner</b>. (Datumsformatierung, Aufnahmen wieder stornieren, Tagesübersicht, Link zum Stream)</p></noscript>
+        <ul id="whatsonnow"><li>Dummy</li></ul>
         <p id="navigation" title="Navigation">
             <a id="prev_week" href="../../../../../app/now.lua?t=P-7D" title="Woche vorher">&lt;&lt;&lt;</a>&#x00A0;
             <a id="yesterday" href="../../../../../app/now.lua?t=P-1D" title="Tag vorher">&lt;&lt;</a>&#x00A0;
@@ -85,7 +117,11 @@
           <img alt="Bild zur Sendung" id="image" src="{rec:meta[@name='DC.image']/@content}"/>
         </p>
         <div id="content">
-          <xsl:value-of select="rec:meta[@name='DC.description']/@content"/>
+          <p>
+          <xsl:call-template name="linefeed2br">
+            <xsl:with-param name="string" select="rec:meta[@name='DC.description']/@content"/>
+          </xsl:call-template>
+          </p>
         </div>
         <h3>Podcast</h3>
         <p id="podcasts" class="podcasts">keiner</p>
@@ -99,8 +135,7 @@
           <!-- audio controls="controls" style="display:none">Doesn't play well with auth...<source type="audio/mpeg" /></audio -->
           <a id="enclosure_link">mp3</a></p>
         <hr/>
-        <ul id="allday" class="nobullet" style="display:none"></ul>
-        <noscript>JavaScript ist aus, es geht zwar (fast) alles auch ohne, aber mit ist's <b>schöner</b>. (Datumsformatierung, Zeilenumbrüche, Aufnahmen wieder stornieren, Tagesübersicht, Link zum Stream)</noscript>
+        <ul id="allday" class="nobullet" style="display:none"><li>Dummy</li></ul>
         <p><a href=".">Verzeichnis Index</a></p>
         <hr/>
         <p id="footer">
@@ -112,7 +147,7 @@
           <img alt="CSS ist valide!" src="http://jigsaw.w3.org/css-validator/images/vcss-blue" style="border:0;width:88px;height:31px"/>
           </a>
           -->
-          Powered by <a href="https://github.com/mro/radio-pi">github.com/mro/radio-pi</a><br />
+          Powered by <a href="https://github.com/mro/radio-pi">github.com/mro/radio-pi</a><br class="br"/>
           RDF: <tt>$ <a href="http://librdf.org/raptor/rapper.html">rapper</a> -i grddl -o rdfxml-abbrev '<span id="my-url">&lt;url from address bar&gt;</span>'</tt>
         </p>
         <script type="text/javascript" src="../../../../../assets/jquery-2.0.0.min.js"/>

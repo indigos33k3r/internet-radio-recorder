@@ -51,20 +51,6 @@ $.ajax({ url: podasts_json_url, cache: true, dataType: 'json' }).done( function(
 $( '#dtstart' ).html( moment(dtstart).format('ddd D[.] MMM YYYY HH:mm') );
 $( '#dtend' ).html( moment(dtend).format('HH:mm') );
 
-// add html linebreaks to description
-var t = $("meta[name='DC.description']").attr("content");
-try {
-  // escape for xml/html
-  t = t.replace(/&/g, "&amp;");
-  t = t.replace(/</g, "&lt;");
-  t = t.replace(/>/g, "&gt;");
-  // linefeeds
-  t = t.replace(/\n/g, "<br/>\n");
-  $( '#content' ).html( t );
-} catch(e) {
-  $( '#content' ).text( 'Aua: "' + e + '": ' + t );
-}
-
 // add today/tomorrow links
 {
   var prev_week = moment(dtstart).subtract('days', 7);
@@ -120,7 +106,7 @@ $.ajax({ url: '../../../..', type: 'GET', cache: true, dataType: 'xml', }).done(
       //me.html('<span class="station">' + me.html() + '</span>' );
       me.wrapInner('<span class="station">');
       if( title )
-        me.append('<br/>', '<span class="broadcast">' + title + '</span>' );
+        me.append('<br class="br"/>', '<span class="broadcast">' + title + '</span>' );
     }).fail( function() {
       // disable broken hrefs
       me.attr('href', null);
