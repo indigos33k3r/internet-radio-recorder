@@ -292,6 +292,11 @@ function Broadcast:log_change(msg)
     f:write("<", self.id:escape_url(), ".xml> <http://purl.org/dc/terms/modified> \"", os.date("!%FT%TZ"), "\" .\n")
     f:close()
   end
+  f,_ = io.open(table.concat({'stations',self:station().id,'modified.ttl'},'/'), 'a+')
+  if f then
+    f:write("<../", self.id:escape_url(), ".xml> <http://purl.org/dc/terms/modified> \"", os.date("!%FT%TZ"), "\" .\n")
+    f:close()
+  end
 end
 
 
