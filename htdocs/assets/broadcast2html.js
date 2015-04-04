@@ -54,16 +54,16 @@ $( '#dtend' ).html( moment(dtend).format('HH:mm') );
 // add today/tomorrow links
 {
   var prev_week = moment(dtstart).subtract('days', 7);
-  $( '#prev_week' ).attr('href', '../../../../../app/now.lua?t=' + prev_week.format() );
+  $( '#prev_week' ).attr('href', '../../../' + prev_week.format() );
 }{
   var yesterday = moment(dtstart).subtract('days', 1);
-  $( '#yesterday' ).attr('href', '../../../../../app/now.lua?t=' + yesterday.format() );
+  $( '#yesterday' ).attr('href', '../../../' + yesterday.format() );
 }{
   var tomorrow = moment(dtstart).add('days', 1);
-  $( '#tomorrow' ).attr('href', '../../../../../app/now.lua?t=' + tomorrow.format() );
+  $( '#tomorrow' ).attr('href', '../../../' + tomorrow.format() );
 }{
   var next_week = moment(dtstart).add('days', 7);
-  $( '#next_week' ).attr('href', '../../../../../app/now.lua?t=' + next_week.format() );
+  $( '#next_week' ).attr('href', '../../../' + next_week.format() );
 }
 
 // add all day broadcasts
