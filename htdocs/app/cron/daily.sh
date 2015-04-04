@@ -1,6 +1,6 @@
 #!/bin/dash
 #
-# Copyright (c) 2013-2014 Marcus Rohrmoser, https://github.com/mro/radio-pi
+# Copyright (c) 2013-2015 Marcus Rohrmoser, https://github.com/mro/radio-pi
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 # associated documentation files (the "Software"), to deal in the Software without restriction,
