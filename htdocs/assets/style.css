@@ -5,33 +5,35 @@
     so each station could provide a custom skin.
 */
 html {
-  background-color: rgb(211,211,220);
 }
+
 #whatsonnow {
   list-style-type: none;
-  padding: 0;
-  margin: 0;
+  padding:    0;
+  margin:     0;
 }
 #whatsonnow li {
-  float:  left;
-  padding: 0.5ex;
-  margin: 0.5ex;
-  margin-bottom: 2ex;
-  text-align: center;
-  height: 6ex;
+  float:      left;
+  padding:    0;
+  margin:     0.5ex;
 
-  overflow: hidden;
-  text-overflow: ellipsis;
-  -o-text-overflow: ellipsis;
-  white-space: nowrap;
-  width: 15%;
+  background-color: rgba(0,0,0,0.061);
+}
+#whatsonnow li a {
+  display:  block;
+  padding: 0.5ex;
+  height: 6ex;
   min-width: 15.5ex;
   max-width: 30ex;
 
-  background-color: #C8C8D1;
+  text-align: center;
+  overflow:   hidden;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .border {
-  border: 1px solid rgb(180,180,190);
+  border: 1px solid rgba(0,0,0,0.1);
   border-radius: 15px;
 }
 
@@ -40,6 +42,12 @@ html {
 }
 #image {
   float:right;
+  margin: 0 -0.5ex 0 0;
+}
+#content {
+  background-color: rgba(0,0,0,0.03);
+  margin: 0 -0.5ex 0 -0.5ex;
+  padding: 0 0.5ex 0 0.5ex;
 }
 fieldset {
   border: 0 none;
@@ -71,14 +79,21 @@ ul.nobullet {
   padding: 0;
 }
 #navigation > a {
-  padding: 10px 5px;
-  background-color: rgb(200,200,209);
+  background-color: rgba(0,0,0,0.061);
+  display: block;
+  float: left;
+  margin: 0 1ex 1ex 1ex;
+  padding: 1ex 0.5ex;
+  text-align: center;
 }
 #navigation > a.large {
-  padding: 10px 3%;
+  padding: 1ex 3%;
+}
+#series {
+  clear:    left;
 }
 #allday {
-	font-size: 12px;
+  font-size: 12px;
 }
 
 ul >li > a.has_podcast:before { content:"* "; }

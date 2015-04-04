@@ -141,15 +141,15 @@
           <xsl:call-template name="station_rdf_name"/>
           <xsl:call-template name="station_rdf_stream"/>
         </p>
-        <p id="date">
+        <h3 id="date">
           <span id="dtstart" title="{rec:meta[@name='DC.format.timestart']/@content}"><xsl:value-of select="rec:meta[@name='DC.format.timestart']/@content"/></span>
           bis
           <span id="dtend" title="{rec:meta[@name='DC.format.timeend']/@content}"><xsl:value-of select="rec:meta[@name='DC.format.timeend']/@content"/></span>
-        </p>
+        </h3>
         <p class="image">
           <img alt="Bild zur Sendung" id="image" class="border" src="{rec:meta[@name='DC.image']/@content}"/>
         </p>
-        <div id="content">
+        <div id="content" class="border">
           <p>
           <xsl:call-template name="linefeed2br">
             <xsl:with-param name="string" select="rec:meta[@name='DC.description']/@content"/>
@@ -181,7 +181,7 @@
           </a>
           -->
           Powered by <a href="https://github.com/mro/radio-pi">github.com/mro/radio-pi</a><br class="br"/>
-          RDF: <tt>$ <a href="http://librdf.org/raptor/rapper.html">rapper</a> -i grddl -o rdfxml-abbrev '<span id="my-url">&lt;url from address bar&gt;</span>'</tt>
+          <a href="http://www.w3.org/RDF/">RDF</a>: <tt>$ <a href="http://librdf.org/raptor/rapper.html">rapper</a> -i grddl -o rdfxml-abbrev '<span id="my-url">&lt;url from address bar&gt;</span>'</tt>
         </p>
         <script type="text/javascript" src="../../../../../assets/jquery-2.0.0.min.js"/>
         <script type="text/javascript" src="../../../../../assets/moment.min.js"/><!-- http://momentjs.com/ -->

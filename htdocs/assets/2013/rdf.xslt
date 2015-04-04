@@ -76,6 +76,7 @@
     <rdf:RDF xml:lang="{rec:meta[@name='DC.language']/@content}">
       <rdf:Description rdf:about="">
         <rdfs:label>Sendung</rdfs:label>
+        <rdfs:label xml:lang="en">broadcast</rdfs:label>
         <dct:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">
           <xsl:value-of select="rec:meta[@name='DC.identifier']/@content"/>
         </dct:identifier>
@@ -149,38 +150,47 @@
       </dcmit:Sound -->
       <rdf:Description about=".">
         <rdfs:label>Tag</rdfs:label>
+        <rdfs:label xml:lang="en">day</rdfs:label>
         <dct:hasPart rdf:resource=""/>
         <dct:isPartOf rdf:resource=".."/>
       </rdf:Description>
       <rdf:Description about="..">
         <rdfs:label>Monat</rdfs:label>
+        <rdfs:label xml:lang="en">month</rdfs:label>
         <dct:hasPart rdf:resource="."/>
         <dct:isPartOf rdf:resource="../.."/>
       </rdf:Description>
       <rdf:Description about="../..">
         <rdfs:label>Jahr</rdfs:label>
+        <rdfs:label xml:lang="en">year</rdfs:label>
         <dct:hasPart rdf:resource=".."/>
         <dct:isPartOf rdf:resource="../../.."/>
       </rdf:Description>
       <rdf:Description about="../../..">
         <rdfs:label>Sender</rdfs:label>
+        <rdfs:label xml:lang="en">broadcasting station</rdfs:label>
         <dct:hasPart rdf:resource="../.."/>
         <dct:isPartOf rdf:resource="../../../.."/>
+        <dct:relation rdf:resource="../../../../../modified.ttl"/>
       </rdf:Description>
       <rdf:Description about="../../../..">
         <dct:hasPart rdf:resource="../../.."/>
         <dct:isPartOf rdf:resource="../../../../.."/>
-        <dct:relation rdf:resource="../../../../modified.ttl"/>
       </rdf:Description>
       <rdf:Description about="../../../../..">
+        <rdfs:label>Internet Radio Rekorder</rdfs:label>
+        <rdfs:label xml:lang="en">Internet Radio Recorder</rdfs:label>
+        <dct:relation rdf:resource="http://purl.mro.name/radio-pi/"/>
         <dct:hasPart rdf:resource="../../../.."/>
         <!-- dct:hasPart rdf:resource="../../../../../podcasts/"/ -->
       </rdf:Description>
       <rdf:Description about="../../../../modified.ttl">
         <rdfs:label>aktualisierte Sendungen</rdfs:label>
+        <rdfs:label xml:lang="en">updated broadcasts</rdfs:label>
         <dct:accrualPeriodicity>
           <rdf:Description about="http://purl.org/cld/freq/hourly">
             <rdfs:label>stündlich</rdfs:label>
+            <rdfs:label xml:lang="en">hourly</rdfs:label>
             <dct:extent>
               <xsl:comment>http://wiki.dublincore.org/index.php/User_Guide/Publishing_Metadata#dcterms:extent</xsl:comment>
               <rdf:Description>
@@ -189,6 +199,7 @@
             </dct:extent>
           </rdf:Description>
         </dct:accrualPeriodicity>
+        <dct:references rdf:resource=""/>
       </rdf:Description>
     </rdf:RDF>
   </xsl:template>
