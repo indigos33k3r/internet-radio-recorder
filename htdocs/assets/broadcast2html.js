@@ -24,6 +24,7 @@ $.ajax({ url: podasts_json_url, cache: true, dataType: 'json' }).done( function(
   $.ajax({ url: enclosure_mp3_url, type: 'HEAD', cache: true, }).done( function() {
     $( 'html' ).addClass('has_enclosure_mp3');
     $( 'a#enclosure_link' ).attr('href', enclosure_mp3_url);
+    $( 'a#enclosure_link' ).attr('title', "Download: Rechte Maustaste + 'Speichern unter...'");
     $( '#enclosure audio source' ).attr('src', enclosure_mp3_url);
     $( '#enclosure' ).attr('style', 'display:block');
   });
