@@ -53,19 +53,10 @@ $( '#dtstart' ).html( moment(dtstart).format('ddd D[.] MMM YYYY HH:mm') );
 $( '#dtend' ).html( moment(dtend).format('HH:mm') );
 
 // add today/tomorrow links
-{
-  var prev_week = moment(dtstart).subtract('days', 7);
-  $( '#prev_week' ).attr('href', '../../../' + prev_week.format() );
-}{
-  var yesterday = moment(dtstart).subtract('days', 1);
-  $( '#yesterday' ).attr('href', '../../../' + yesterday.format() );
-}{
-  var tomorrow = moment(dtstart).add('days', 1);
-  $( '#tomorrow' ).attr('href', '../../../' + tomorrow.format() );
-}{
-  var next_week = moment(dtstart).add('days', 7);
-  $( '#next_week' ).attr('href', '../../../' + next_week.format() );
-}
+$( '#prev_week' ).attr('href', '../../../' + moment(dtstart).subtract('days', 7).format() );
+$( '#yesterday' ).attr('href', '../../../' + moment(dtstart).subtract('days', 1).format() );
+$( '#tomorrow'  ).attr('href', '../../../' + moment(dtstart).add('days', 1).format() );
+$( '#next_week' ).attr('href', '../../../' + moment(dtstart).add('days', 7).format() );
 
 // add all day broadcasts
 $.ajax({ url: '.', type: 'GET', cache: true, dataType: 'xml', }).done( function(xmlBody) {
@@ -93,7 +84,7 @@ $.ajax({ url: '../../../..', type: 'GET', cache: true, dataType: 'xml', }).done(
     var url_ = me.attr('href');
     if( url_.match(/^\.\.\/$/) )
       return null;
-    me.attr('href', '../../../../../../app/now.lua?station=' + url_.replace(/\/$/,''));
+    me.attr('href', '../../../../' + url_.replace(/\/$/,'') + '/now');
  
     $.ajax({ url: me.attr('href'), type: 'GET', cache: true, dataType: 'xml', }).done( function(xmlBody) {
       var title = $(xmlBody).find("meta[name = 'DC.title']").attr('content');
