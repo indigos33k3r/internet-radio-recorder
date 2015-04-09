@@ -91,7 +91,7 @@ module Recorder
                   $stderr.puts "scraped #{broadcast.to_s} (#{t1-t0}s, #{t2-t1}s)"
                 end
               rescue Exception => e
-                sema4.synchronize { $stderr.puts "Exception #{e} #{e.backtrace.join("\n")}" }
+                sema4.synchronize { $stderr.puts "error:  #{broadcast.src_url}\n#{e.class.to_s} #{e} #{e.backtrace.join("\n")}" }
               end
             end
 
@@ -112,10 +112,10 @@ module Recorder
 
   private
 
-    # scrape the url for wek overview and yield urls
+    # scrape the url for week overview and yield urls
     def each_day url, doc=download(url)
-      doc.css('.heading1 a').each do |week_node|
-        doc2 = download(url + week_node[:href])
+    	1.upto(2).collect{|wp_num| url + ('?weekpart=' + wp_num.to_s)}.each do |url2|
+        doc2 = download(url2)
         doc2.css('.wd a').each { |a_wday| yield url + a_wday[:href] }
       end
       doc
@@ -140,13 +140,12 @@ module Recorder
 
           title_node = bc_node.at_css('.descr a')
           title = Scraper.clean( title_node.text )
-          title_href = title_node[:href]
+          title_href = title_node[:href] || "\#"
           title_node.remove
 
-          schedule_node = bc_node.at_css('.bold')
-          schedule_match = /\s+bis\s+(\d+)\s+Uhr/.match schedule_node.text
-          raise "Cannot parse schedule '#{schedule_node}'" if schedule_match.nil?
-          schedule_node.remove
+          bc_node.css('.bold').each do |schedule_node|
+            schedule_node.remove unless /\s+bis\s+(\d+)\s+Uhr/.match( schedule_node.text ).nil?
+          end
 
           bc = Broadcast.new( station, Time.local(year,month,day,time_match[1],time_match[2],0), title, url + title_href )
           bc.DC_title_series = Scraper.clean( bc_node.text )
@@ -154,7 +153,7 @@ module Recorder
         end
         doc
       rescue Exception => e
-        $stderr.puts "Exception #{e} #{e.backtrace.join("\n")}"
+        $stderr.puts $stderr.puts "error:  #{url}\n#{e.class.to_s} #{e} #{e.backtrace.join("\n")}"
       end
     end
 
@@ -174,8 +173,8 @@ module Recorder
       bc.DC_title = Scraper.clean(title_node.text)
 
       dtend_node = doc.at_css('.bold')
-      dtend_match = /von\s+(\d+)\s+bis\s+(\d+)\s+Uhr/.match dtend_node.text
-      raise "Couldn't find start/end in #{dtend_node.text}" if dtend_match.nil?
+      dtend_match = /von\s+(\d+)\s+bis\s+(\d+)\s+Uhr/.match( dtend_node.text ) unless dtend_node.nil?
+      raise "Couldn't find start/end in '#{dtend_node}'\nfor #{bc.dtstart}" if dtend_match.nil?
 
       # $stderr.puts "dtstart: #{bc.dtstart} - #{dtend_match[2]}"
 
@@ -196,7 +195,7 @@ module Recorder
       bc.DC_description.gsub! /\n(\s*\n)+/, "\n\n"
       bc.DC_description.strip!
       
-      image_node = doc.at_css('#col-left img')
+      image_node = doc.at_css('#head_banner img')
       bc.DC_image = bc.src_url + image_node[:src] unless image_node.nil?
     end
   end
