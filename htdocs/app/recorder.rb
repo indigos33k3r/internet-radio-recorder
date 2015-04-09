@@ -145,7 +145,7 @@ module Recorder
       v = v.to_s
       dst << '  ' << k << " = "
       dst << "'"
-      dst << v.gsub("'", "\\\\'").gsub(/\n/, "\\n") # escape ' and \n
+      dst << v.gsub("'", "\\\\'").gsub(/[\r\t ]*\n/, "\\n") # escape ' and \n
       dst << "',\n"
     end
 
