@@ -12,8 +12,8 @@
 - make that xslt return a per-broadcast rdf,
 - test like $ rapper -i grddl -o turtle http://example.com/stations/b2/2013/06/13/0605%20radioWelt.xml
 </dc:description>
-    <dc:subject rdf:resource="https://github.com/mro/radio-pi"/>
-    <dc:conformsTo rdf:resource="https://raw.github.com/mro/radio-pi/master/htdocs/app/pbmi2003-recmod2012/broadcast.rnc"/>
+    <dc:subject rdf:resource="http://purl.mro.name/radio-pi/"/>
+    <dc:conformsTo rdf:resource="http://purl.mro.name/radio-pi/pbmi2003-recmod2012/broadcast.rng"/>
     <dataview:namespaceTransformation rdf:resource="rdf.xslt"/>
   </rdf:Description>
 </rdf:RDF>
