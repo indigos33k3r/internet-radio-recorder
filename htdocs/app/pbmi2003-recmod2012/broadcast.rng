@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<grammar ns="https://raw.github.com/mro/radio-pi/master/htdocs/app/pbmi2003-recmod2012/broadcast.rnc" xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+<!--
+  indeed, a relative default namespace. Unorthodox but useful to avoid a central server 
+  and still enable GRDDL.
+  
+  Find the RelaxNG schema at http://purl.mro.name/radio-pi/pbmi2003-recmod2012/broadcast.rnc
+  
+  About RelaxNG see http://purl.mro.name/relaxng
+-->
+<grammar ns="../../../../../assets/2013/radio-pi.rdf" xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <start>
-    <a:documentation>Copyright (c) 2013-2015 Marcus Rohrmoser, https://github.com/mro/radio-pi
+    <a:documentation>Copyright (c) 2013-2015 Marcus Rohrmoser, http://purl.mro.name/radio-pi/
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -24,7 +32,7 @@ not: Ontology for Media Resources 1.0 http://www.w3.org/TR/mediaont-10/
 not: EBU http://tech.ebu.ch/lang/en/MetadataEbuCore
 
 use e.g.
-$ xmllint --noout --relaxng htdocs/app/pbmi2003-recmod2012/broadcast.rng htdocs/stations/*/????/??/??/*.xml 2&gt;&amp;1 | grep fail
+$ xmllint --noout --relaxng http://purl.mro.name/radio-pi/pbmi2003-recmod2012/broadcast.rng htdocs/stations/*/????/??/??/*.xml 2&gt;&amp;1 | grep fail
 </a:documentation>
     <element name="broadcast">
       <group>
@@ -35,6 +43,7 @@ $ xmllint --noout --relaxng htdocs/app/pbmi2003-recmod2012/broadcast.rng htdocs/
           </data>
         </attribute>
         <group>
+          <ref name="meta.DC.identifier"/>
           <ref name="meta.DC.scheme"/>
           <ref name="meta.DC.language"/>
           <ref name="meta.DC.title"/>
@@ -53,6 +62,7 @@ $ xmllint --noout --relaxng htdocs/app/pbmi2003-recmod2012/broadcast.rng htdocs/
           <optional>
             <ref name="meta.DC.description"/>
           </optional>
+          <ref name="meta.DC.author"/>
           <ref name="meta.DC.publisher"/>
           <ref name="meta.DC.creator"/>
           <ref name="meta.DC.copyright"/>
@@ -62,6 +72,20 @@ $ xmllint --noout --relaxng htdocs/app/pbmi2003-recmod2012/broadcast.rng htdocs/
       <!-- unused , meta.DC.lastmodified -->
     </element>
   </start>
+  <define name="meta.DC.identifier">
+    <element name="meta">
+      <attribute name="name">
+        <value>DC.identifier</value>
+      </attribute>
+      <attribute name="content">
+        <data type="string">
+          <a:documentation>define extremely rigid for now, may become more relaxed one day.
+internal use only.</a:documentation>
+          <param name="pattern">[^/]+/\d{4}/\d{2}/\d{2}/\d{4} [^/]+</param>
+        </data>
+      </attribute>
+    </element>
+  </define>
   <define name="meta.DC.scheme">
     <element name="meta">
       <a:documentation>Dublin Core PBMI http://dcpapers.dublincore.org/pubs/article/view/749</a:documentation>
@@ -176,6 +200,14 @@ $ xmllint --noout --relaxng htdocs/app/pbmi2003-recmod2012/broadcast.rng htdocs/
     <element name="meta">
       <attribute name="name">
         <value>DC.description</value>
+      </attribute>
+      <attribute name="content"/>
+    </element>
+  </define>
+  <define name="meta.DC.author">
+    <element name="meta">
+      <attribute name="name">
+        <value>DC.author</value>
       </attribute>
       <attribute name="content"/>
     </element>
