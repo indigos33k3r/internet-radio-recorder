@@ -100,6 +100,7 @@ function Broadcast.from_meta(meta)
     DC_title            = assert( meta.DC_title ),
     DC_title_series     = meta.DC_title_series,
     DC_title_episode    = meta.DC_title_episode,
+    DC_subject          = meta.DC_subject,
     DC_format_timestart = assert( meta.DC_format_timestart ),
     DC_format_timeend   = assert( meta.DC_format_timeend ),
     DC_format_duration  = assert( meta.DC_format_duration ),
@@ -322,14 +323,15 @@ function Broadcast:save_xml()
   local row = {'    ', '<meta content=\'', self.id:escape_xml_attribute(), '\' name=\'', 'DC.identifier', '\'/>'}
   table.insert( xml, table.concat(row) )
   for _,k in ipairs({
-    'DC.scheme', 'DC.language', 'DC.title', 'DC.title.series', 'DC.title.episode',
+    'DC.scheme', 'DC.language', 'DC.title', 'DC.title.series', 'DC.title.episode', 'DC.subject',
     'DC.format.timestart', 'DC.format.timeend', 'DC.format.duration', 'DC.image',
     'DC.description', 'DC.author', 'DC.publisher', 'DC.creator', 'DC.copyright', 'DC.source',
   }) do
     local v = self:pbmi()[ meta_key_to_lua(k) ]
-    if not v then v = '' end
-    local row = {'    ', '<meta content=\'', v:escape_xml_attribute(), '\' name=\'', k, '\'/>'}
-    table.insert( xml, table.concat(row) )
+    if v then
+      local row = {'    ', '<meta content=\'', v:escape_xml_attribute(), '\' name=\'', k, '\'/>'}
+      table.insert( xml, table.concat(row) )
+    end
   end
   table.insert( xml, '</broadcast>' )
   return io.write_if_changed(self:filename('xml'), table.concat(xml,"\n"))

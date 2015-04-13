@@ -50,6 +50,7 @@ start =
       meta.DC.title,
       meta.DC.title.series?,
       meta.DC.title.episode?,
+      meta.DC.subject?,
       meta.DC.format.timestart,
       meta.DC.format.timeend,
       meta.DC.format.duration,
@@ -103,6 +104,11 @@ meta.DC.title.episode =
   element meta {
     attribute name { "DC.title.episode" },
     attribute content { text }
+  }
+meta.DC.subject =
+  element meta {
+    attribute name { "DC.subject" },
+    attribute content { xsd:anyURI }
   }
 meta.DC.lastmodified =
   element meta {

@@ -117,7 +117,7 @@ module Recorder
 
   class Broadcast
     attr_reader :station, :dtstart, :title, :src_url
-    attr_accessor :DC_language, :DC_copyright, :DC_title_series, :DC_title_episode, :DC_title
+    attr_accessor :DC_language, :DC_copyright, :DC_title_series, :DC_title_episode, :DC_title, :DC_subject
     attr_accessor :DC_format_timestart, :DC_format_timeend, :DC_format_duration, :DC_description, :DC_image
     attr_accessor :DC_author, :DC_creator, :DC_publisher
 
@@ -163,6 +163,7 @@ module Recorder
       kv_to_lua(:DC_title, self.DC_title.nil? ? title : self.DC_title, dst)
       kv_to_lua :DC_title_series, self.DC_title_series, dst
       kv_to_lua :DC_title_episode, self.DC_title_episode, dst
+      kv_to_lua :DC_subject, self.DC_subject, dst
       kv_to_lua(:DC_format_timestart, self.DC_format_timestart.nil? ? dtstart : self.DC_format_timestart, dst)
       kv_to_lua :DC_format_timeend, self.DC_format_timeend, dst
       kv_to_lua :DC_format_duration, self.DC_format_duration, dst

@@ -199,6 +199,9 @@ module Recorder
         end
       end
 
+      subj_node = doc.at_css('a.link_broadcast.link_indexPage')
+      bc.DC_subject = bc.src_url + subj_node[:href].to_s.gsub(/\/index\.html/,'/') unless subj_node.nil?
+
       doc = doc.at_css '.detail_inlay'
   
       title_node = doc.at_css('h1.bcast_headline')

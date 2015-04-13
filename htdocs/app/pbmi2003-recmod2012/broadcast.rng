@@ -53,6 +53,9 @@ $ xmllint --noout --relaxng http://purl.mro.name/radio-pi/pbmi2003-recmod2012/br
           <optional>
             <ref name="meta.DC.title.episode"/>
           </optional>
+          <optional>
+            <ref name="meta.DC.subject"/>
+          </optional>
           <ref name="meta.DC.format.timestart"/>
           <ref name="meta.DC.format.timeend"/>
           <ref name="meta.DC.format.duration"/>
@@ -132,6 +135,16 @@ internal use only.</a:documentation>
         <value>DC.title.episode</value>
       </attribute>
       <attribute name="content"/>
+    </element>
+  </define>
+  <define name="meta.DC.subject">
+    <element name="meta">
+      <attribute name="name">
+        <value>DC.subject</value>
+      </attribute>
+      <attribute name="content">
+        <data type="anyURI"/>
+      </attribute>
     </element>
   </define>
   <define name="meta.DC.lastmodified">
