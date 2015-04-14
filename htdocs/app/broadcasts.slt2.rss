@@ -1,8 +1,16 @@
 #{
 
 local function date_rfc_822(time)
-    if not time then time = os.time() end
-    return os.date('%a, %d %b %Y %H:%M:%S %z', time)
+  if not time then time = os.time() end
+  return os.date('%a, %d %b %Y %H:%M:%S %z', time)
+end
+
+local function x(name,value)
+  if value then
+    return '<'..name..'>'.. value:escape_xml() ..'</'..name..'>'
+  else
+    return ''
+  end
 end
 
 assert(podcast, 'podcast')
@@ -12,10 +20,10 @@ assert(podcast.id, 'podcast id')
 local bcs_all = podcast:broadcasts(function(a,b) return a < b end)
 local bcs = {}
 for num,bc in ipairs(bcs_all) do
-    if 'file' == lfs.attributes(bc:enclosure():filename('mp3'), 'mode') then
-    	bc.number = num			-- add an episode counter
-    	table.insert(bcs, bc)
-    end
+  if 'file' == lfs.attributes(bc:enclosure():filename('mp3'), 'mode') then
+  	bc.number = num			-- add an episode counter
+  	table.insert(bcs, bc)
+  end
 end
 bcs_all = nil
 local bc_most_recent = nil
@@ -60,7 +68,7 @@ if #bcs then bc_most_recent = bcs[1] end
       <guid isPermaLink="true">#{= bc:url('xml') }</guid>
       <itunes:duration>#{= os.difftime(end_,start) }</itunes:duration>
       <itunes:explicit>clean</itunes:explicit>
-      <itunes:author>#{= bc:pbmi().DC_creator:escape_xml() }</itunes:author>
+      #{= x('itunes:author', bc:pbmi().DC_creator) }
       <link>#{= bc:url('xml') }</link>
 #{ if 'mp3' == bc:enclosure().state then
         local file_size = lfs.attributes(bc:enclosure():filename('mp3'), 'size')

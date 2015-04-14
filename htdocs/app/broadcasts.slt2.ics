@@ -32,7 +32,7 @@ END:STANDARD
 END:VTIMEZONE
 #{ for idx,bc in ipairs(broadcasts) do
 	  local summ = {bc:pbmi().DC_title}
-      if bc:pbmi().DC_title_series:len() > 0 then table.insert(summ, 1, bc:pbmi().DC_title_series) end
+      if bc:pbmi().DC_title_series and bc:pbmi().DC_title_series:len() > 0 then table.insert(summ, 1, bc:pbmi().DC_title_series) end
       -- prefix with enclosure state indicator
       if bc:enclosure().state and bc:enclosure().state ~= 'none' then
       	local map = {pending='*', ripping='♪', mp3='@', failed='!!', purged='-'}
