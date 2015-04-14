@@ -21,8 +21,8 @@ local bcs_all = podcast:broadcasts(function(a,b) return a < b end)
 local bcs = {}
 for num,bc in ipairs(bcs_all) do
   if 'file' == lfs.attributes(bc:enclosure():filename('mp3'), 'mode') then
-  	bc.number = num			-- add an episode counter
-  	table.insert(bcs, bc)
+    bc.number = num     -- add an episode counter
+    table.insert(bcs, bc)
   end
 end
 bcs_all = nil
