@@ -83,6 +83,10 @@
         <dct:title>
           <xsl:value-of select="rec:meta[@name='DC.title']/@content"/>
         </dct:title>
+        <xsl:for-each select="rec:meta[@name='DC.subject']/@content">
+          <dct:subject resource="{.}"/>
+          <dct:isPartOf resource="{.}"/>
+        </xsl:for-each>
         <dct:rightsHolder><rdf:Description><foaf:name>
           <xsl:value-of select="rec:meta[@name='DC.copyright']/@content"/>
         </foaf:name></rdf:Description></dct:rightsHolder>
@@ -201,6 +205,16 @@
         </dct:accrualPeriodicity>
         <dct:references rdf:resource=""/>
       </rdf:Description>
+
+      <xsl:for-each select="rec:meta[@name='DC.subject']/@content">
+        <dcmit:Text about="{.}">
+          <rdfs:label>Sendereihe</rdfs:label>
+          <rdfs:label xml:lang="en">Brand</rdfs:label>
+          <dct:hasPart resource=""/>
+          <!-- dct:isReferencedBy resource=""/ -->
+        </dcmit:Text>
+      </xsl:for-each>
+
     </rdf:RDF>
   </xsl:template>
 </xsl:stylesheet>
