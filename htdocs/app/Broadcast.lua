@@ -132,8 +132,12 @@ end
 
 
 function Broadcast.from_file(f)
-  local ok,_,id,ext = f:find('(.+)(%.[^%.]+)$')
+  -- strip prefix, keep id
+  local ok,_,id,ext = f:find('([^/]+/%d%d%d%d/%d%d/%d%d/%d%d%d%d .+)$')
   if not ok then return nil end
+  -- strip extension
+  local ok,_,t,ext = id:find('(.+)(%.[^%.]+)$')
+  if ok and ('.xml' == ext or '.json' == ext) then id = t end
   return Broadcast.from_id(id)
 end
 
@@ -290,12 +294,12 @@ function Broadcast:log_change(msg)
   if 'unchang' == msg then return end
   local f,_ = io.open(table.concat({'stations','modified.ttl'},'/'), 'a+')
   if f then
-    f:write("<", self.id:escape_url(), ".xml> <http://purl.org/dc/terms/modified> \"", os.date("!%FT%TZ"), "\" .\n")
+    f:write('<', self.id:escape_url(), '> <http://purl.org/dc/terms/modified> "', os.date('!%FT%TZ'), "\" .\n")
     f:close()
   end
   f,_ = io.open(table.concat({'stations',self:station().id,'modified.ttl'},'/'), 'a+')
   if f then
-    f:write("<../", self.id:escape_url(), ".xml> <http://purl.org/dc/terms/modified> \"", os.date("!%FT%TZ"), "\" .\n")
+    f:write('<../', self.id:escape_url(), '> <http://purl.org/dc/terms/modified> "', os.date('!%FT%TZ'), "\" .\n")
     f:close()
   end
 end

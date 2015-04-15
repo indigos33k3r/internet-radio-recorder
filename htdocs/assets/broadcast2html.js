@@ -2,8 +2,10 @@
 // the 'if( now < dtstart )' ends up html escaped...
 
 // moment.lang("de");
-$('#my-url').text( window.location );
+var canonical_url = ('' + window.location).replace(/\.xml$/,'');
+$('#my-url').text( canonical_url );
 
+var canonical_path = window.location.pathname.replace(/^.*\//,'').replace(/\.xml$/,'')
 var dtstart = moment( $("meta[name='DC.format.timestart']").attr("content") );
 var dtend = moment( $("meta[name='DC.format.timeend']").attr("content") );
 var now = moment();
@@ -15,12 +17,12 @@ else
   $( 'html' ).addClass('is_past');
 
 // display podcast links
-var podasts_json_url = window.location.pathname.replace(/^.*\//,'').replace(/\.xml$/,'.json');
+var podasts_json_url = canonical_path + '.json';
 $.ajax({ url: podasts_json_url, cache: true, dataType: 'json' }).done( function( data ) {
   // display mp3/enclosure dir link
-  var enclosure_dir_url = window.location.pathname.replace(/\/stations\//,'/enclosures/').replace(/[^\/]+\.xml$/,'');
+  var enclosure_dir_url = canonical_path.replace(/\/stations\//,'/enclosures/').replace(/[^\/]+$/,'');
   $( 'a#enclosure_link' ).attr('href', enclosure_dir_url);
-  var enclosure_mp3_url = window.location.pathname.replace(/\/stations\//,'/enclosures/').replace(/\.xml$/,'.mp3');
+  var enclosure_mp3_url = canonical_path.replace(/\/stations\//,'/enclosures/') + '.mp3';
   $.ajax({ url: enclosure_mp3_url, type: 'HEAD', cache: true, }).done( function() {
     $( 'html' ).addClass('has_enclosure_mp3');
     $( 'a#enclosure_link' ).attr('href', enclosure_mp3_url);
@@ -61,13 +63,17 @@ $( '#next_week' ).attr('href', '../../../' + moment(dtstart).add('days', 7).form
 // add all day broadcasts
 $.ajax({ url: '.', type: 'GET', cache: true, dataType: 'xml', }).done( function(xmlBody) {
   var hasRecording = false;
-  var allLinks = $(xmlBody).find( "a[href $= '.xml'], a[href $= '.json']" ).map( function() {
+  var allLinks = $(xmlBody).find('a').map( function() {
     var me = $(this);
-    var txt = me.text().replace(/^(\d{2})(\d{2})\s+(.*)(\.xml)$/, '$1:$2 $3');
+    var txt = me.text();
+    if( 'Parent Directory' == txt )
+      return null;
+    txt = txt.replace(/^(\d{2})(\d{2})\s+(.*?)(\.xml)?$/, '$1:$2 $3');
     if( hasRecording )
       me.addClass('has_podcast');
     if( hasRecording = me.attr("href").search(/\.json$/i) >= 0 )
       return null;
+    me.attr('href', me.attr('href').replace(/\.xml$/, '') );
     me.text( txt );
     return this;
   });

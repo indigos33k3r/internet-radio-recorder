@@ -39,7 +39,7 @@ if arg[1] == nil or arg[1] == '-?' or arg[1] == '-h'or arg[1] == '--help' then
 	io.write([[re-match
 
 Usage:
-	$ app/podcast-match.lua [--dry-run] enclosures/b2/2013/01/20/1405\ musikWelt.xml
+	$ app/podcast-match.lua [--dry-run] enclosures/b2/2013/01/20/1405\ musikWelt
 
 ]])
 	os.exit(0)

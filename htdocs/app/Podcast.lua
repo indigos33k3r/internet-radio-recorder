@@ -71,17 +71,17 @@ end
 
 
 function Podcast:contains_broadcast(bc)
-  return 'file' == lfs.attributes(table.concat{'podcasts', '/', self.id, '/', bc.id, '.xml'}, 'mode')
+  return 'file' == lfs.attributes(table.concat{'podcasts', '/', self.id, '/', bc.id}, 'mode')
 end
 
 
 function Podcast:add_broadcast(bc)
-  return io.write_if_changed(table.concat{'podcasts', '/', self.id, '/', bc.id, '.xml'}, '')
+  return io.write_if_changed(table.concat{'podcasts', '/', self.id, '/', bc.id}, '')
 end
 
 
 function Podcast:remove_broadcast(bc)
-  return io.write_if_changed(table.concat{'podcasts', '/', self.id, '/', bc.id, '.xml'}, nil)
+  return io.write_if_changed(table.concat{'podcasts', '/', self.id, '/', bc.id}, nil)
 end
 
 
