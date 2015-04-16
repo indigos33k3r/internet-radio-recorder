@@ -5,7 +5,7 @@
 var canonical_url = ('' + window.location).replace(/\.xml$/,'');
 $('#my-url').text( canonical_url );
 
-var canonical_path = window.location.pathname.replace(/^.*\//,'').replace(/\.xml$/,'')
+var canonical_path = window.location.pathname.replace(/\.xml$/,'');
 var dtstart = moment( $("meta[name='DC.format.timestart']").attr("content") );
 var dtend = moment( $("meta[name='DC.format.timeend']").attr("content") );
 var now = moment();
@@ -20,9 +20,9 @@ else
 var podasts_json_url = canonical_path + '.json';
 $.ajax({ url: podasts_json_url, cache: true, dataType: 'json' }).done( function( data ) {
   // display mp3/enclosure dir link
-  var enclosure_dir_url = canonical_path.replace(/\/stations\//,'/enclosures/').replace(/[^\/]+$/,'');
-  $( 'a#enclosure_link' ).attr('href', enclosure_dir_url);
   var enclosure_mp3_url = canonical_path.replace(/\/stations\//,'/enclosures/') + '.mp3';
+  var enclosure_dir_url = enclosure_mp3_url.replace(/[^\/]+$/,'');
+  $( 'a#enclosure_link' ).attr('href', enclosure_dir_url);
   $.ajax({ url: enclosure_mp3_url, type: 'HEAD', cache: true, }).done( function() {
     $( 'html' ).addClass('has_enclosure_mp3');
     $( 'a#enclosure_link' ).attr('href', enclosure_mp3_url);
