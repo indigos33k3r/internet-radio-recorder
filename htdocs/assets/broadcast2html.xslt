@@ -116,17 +116,17 @@
         </xsl:for-each>
       </head>
       <body id="broadcast">
-        <noscript><p>JavaScript ist aus, es geht zwar (fast) alles auch ohne, aber mit ist's <b>schöner</b>. (Datumsformatierung, Aufnahmen wieder stornieren, Tagesübersicht, Link zum Stream)</p></noscript>
-        <ul id="whatsonnow"><li>Dummy</li></ul>
-        <p id="navigation" title="Navigation">
-          <a class="border" id="prev_week" href="../../../../../app/now.lua?t=P-7D" title="Woche vorher">&lt;&lt;&lt;</a>&#x00A0;
-          <a class="border" id="yesterday" href="../../../../../app/now.lua?t=P-1D" title="Tag vorher">&lt;&lt;</a>&#x00A0;
-          <a class="border large" href="../../../../../app/prev.lua" rel="prev" title="Sendung vorher">&lt;</a>&#x00A0;
-          <a class="border large" href="../../../now">aktuell</a>&#x00A0;
-          <a class="border large" href="../../../../../app/next.lua" rel="next" title="Sendung nachher">&gt;</a>&#x00A0;
-          <a class="border" id="tomorrow" href="../../../../../app/now.lua?t=P1D" title="Tag nachher">&gt;&gt;</a>&#x00A0;
-          <a class="border" id="next_week" href="../../../../../app/now.lua?t=P7D" title="Woche nachher">&gt;&gt;&gt;</a>
-        </p>
+        <noscript><p>JavaScript ist aus, es geht zwar (fast) alles auch ohne, aber mit ist's <b>schöner</b>. (Zeitgleiche Sendungen anderer Sender, Datumsformatierung, Aufnahmen wieder stornieren, Tagesübersicht, RDF Url)</p></noscript>
+        <ul id="whatsonnow" class="buttongroup"><li>Dummy</li></ul>
+        <ul id="navigation" class="buttongroup" title="Navigation">
+          <li><a id="prev_week" href="../../../../../app/now.lua?t=P-7D" title="Woche vorher">&lt;&lt;&lt;</a></li>
+          <li><a id="yesterday" href="../../../../../app/now.lua?t=P-1D" title="Tag vorher">&lt;&lt;</a></li>
+          <li><a href="../../../../../app/prev.lua" rel="prev" title="Sendung vorher">&lt;</a></li>
+          <li><a href="../../../now">aktuell</a></li>
+          <li><a href="../../../../../app/next.lua" rel="next" title="Sendung nachher">&gt;</a></li>
+          <li><a id="tomorrow" href="../../../../../app/now.lua?t=P1D" title="Tag nachher">&gt;&gt;</a></li>
+          <li><a id="next_week" href="../../../../../app/now.lua?t=P7D" title="Woche nachher">&gt;&gt;&gt;</a></li>
+        </ul>
         <h2 id="series">
           <xsl:value-of select="rec:meta[@name='DC.title.series']/@content"/>
         </h2>
@@ -142,9 +142,9 @@
           <xsl:call-template name="station_rdf_stream"/>
         </p>
         <h3 id="date">
-          <span id="dtstart" title="{rec:meta[@name='DC.format.timestart']/@content}"><xsl:value-of select="rec:meta[@name='DC.format.timestart']/@content"/></span>
+          <span id="dtstart" title="{rec:meta[@name='DC.format.timestart']/@content}"><xsl:value-of select="translate(rec:meta[@name='DC.format.timestart']/@content, 'T', ' ')"/></span>
           bis
-          <span id="dtend" title="{rec:meta[@name='DC.format.timeend']/@content}"><xsl:value-of select="rec:meta[@name='DC.format.timeend']/@content"/></span>
+          <span id="dtend" title="{rec:meta[@name='DC.format.timeend']/@content}"><xsl:value-of select="substring-after(rec:meta[@name='DC.format.timeend']/@content, 'T')"/></span>
         </h3>
         <p class="image">
           <img alt="Bild zur Sendung" id="image" class="border" src="{rec:meta[@name='DC.image']/@content}"/>

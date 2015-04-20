@@ -6,8 +6,8 @@ var canonical_url = ('' + window.location).replace(/\.xml$/,'');
 $('#my-url').text( canonical_url );
 
 var canonical_path = window.location.pathname.replace(/\.xml$/,'');
-var dtstart = moment( $("meta[name='DC.format.timestart']").attr("content") );
-var dtend = moment( $("meta[name='DC.format.timeend']").attr("content") );
+var dtstart = moment( $("meta[name='DC.format.timestart']").attr('content') );
+var dtend = moment( $("meta[name='DC.format.timeend']").attr('content') );
 var now = moment();
 if( now < dtstart )
   $( 'html' ).addClass('is_future');
@@ -106,6 +106,6 @@ $.ajax({ url: '../../../..', type: 'GET', cache: true, dataType: 'xml', }).done(
     return this;
   });
   $( '#whatsonnow' ).html( allStations );
-  $( '#whatsonnow a' ).wrap("<li class='border'>");
+  $( '#whatsonnow a' ).wrap( '<li>' );
 });
 

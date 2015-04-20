@@ -23,8 +23,13 @@ for num,bc in ipairs(bcs_all) do
   if 'file' == lfs.attributes(bc:enclosure():filename('mp3'), 'mode') then
     bc.number = num     -- add an episode counter
     table.insert(bcs, bc)
+    -- io.stderr:write('  +', num, ' ', bc.id, "\n")
+  --   io.stderr:write('*')
+  -- else
+  --   io.stderr:write('.')
   end
 end
+-- io.stderr:write("\n")
 bcs_all = nil
 local bc_most_recent = nil
 -- then sort reverse, most recent first as rss wants it:
@@ -59,7 +64,7 @@ if #bcs then bc_most_recent = bcs[1] end
         local end_ = assert(bc:dtend())
  }    <item>
       <title>##{= bc.number } #{= bc:pbmi().DC_title:escape_xml() }</title>
-      <itunes:subtitle>#{= bc:pbmi().DC_title_episode:escape_xml() }</itunes:subtitle>
+      #{= x('itunes:subtitle', bc:pbmi().DC_title_episode) }
       <description>#{= bc:pbmi().DC_description:escape_xml() }</description>
 #{   if bc:pbmi().DC_image and bc:pbmi().DC_image:len() > 0 then }
       <itunes:image href="#{= bc:pbmi().DC_image }"/>

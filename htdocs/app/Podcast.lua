@@ -131,13 +131,15 @@ function Podcast:purge_outdated(dry_run)
   local kept = 0
   for _,bc in ipairs(bcs) do
       if 'mp3' == bc:enclosure().state then
-      -- io.stderr:write(bc.id, "\n")
+      -- io.stderr:write('purge_outdated ', bc.id, "\n")
       if kept < self.episodes_to_keep then
         kept = kept + 1
       else
         local ok,msg = bc:enclosure():purge(dry_run)
         if ok then
           io.stderr:write('purged ', bc.id, "\n")
+        else
+          io.stderr:write('purge failed ', bc.id, ' ', msg, "\n")
         end
       end
       elseif 'pending' == bc:enclosure().state then
