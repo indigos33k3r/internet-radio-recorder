@@ -93,7 +93,7 @@ function Enclosure:schedule()
   if not at_job then
     local params_unsafe = {
     	assert(Recorder.app_root) .. '/app/enclosure-rip.lua',
-    	self.broadcast:filename('xml')
+    	self.id
     }
     local cmd = table.concat(escape_cmdline(params_unsafe), ' ')
     cmd = cmd .. ' 1>> ' .. Recorder.app_root .. '/log/atd.stdout.log 2>> ' .. Recorder.app_root .. '/log/atd.stderr.log'
