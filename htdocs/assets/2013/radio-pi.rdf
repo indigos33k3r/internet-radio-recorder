@@ -14,6 +14,6 @@
 </dc:description>
     <dc:subject rdf:resource="http://purl.mro.name/radio-pi/"/>
     <dc:conformsTo rdf:resource="http://purl.mro.name/radio-pi/pbmi2003-recmod2012/broadcast.rng"/>
-    <dataview:namespaceTransformation rdf:resource="rdf.xslt"/>
+    <dataview:namespaceTransformation rdf:resource="xml2rdf.xslt"/>
   </rdf:Description>
 </rdf:RDF>

@@ -7,6 +7,8 @@
   
   http://wiki.dublincore.org/index.php/User_Guide/Publishing_Metadata#dcterms:date
   Literals & Languages: http://www.w3.org/TR/rdf11-concepts/#section-Graph-Literal
+  
+  http://www.w3.org/TR/xslt/
 -->
 <xsl:stylesheet
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
@@ -74,6 +76,7 @@
 
   <xsl:template match="rec:broadcast">
     <rdf:RDF xml:lang="{rec:meta[@name='DC.language']/@content}">
+    	<xsl:if test="$canonical_url"><xsl:attribute name="xml:base"><xsl:value-of select="$canonical_url"/></xsl:attribute></xsl:if>
       <rdf:Description rdf:about="">
         <rdfs:label>Sendung</rdfs:label>
         <rdfs:label xml:lang="en">broadcast</rdfs:label>

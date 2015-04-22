@@ -3,7 +3,8 @@
 
 // moment.lang("de");
 var canonical_url = ('' + window.location).replace(/\.xml$/,'');
-$('#my-url').text( canonical_url );
+$('.canonical-url').text( canonical_url );
+$('.base-url').text( canonical_url.replace(/\/stations\/[^\/]+\/\d{4}\/\d{2}\/\d{2}\/\d{4}.+$/, '') );
 
 var canonical_path = window.location.pathname.replace(/\.xml$/,'');
 var dtstart = moment( $("meta[name='DC.format.timestart']").attr('content') );
