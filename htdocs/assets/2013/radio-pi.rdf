@@ -10,10 +10,10 @@
 - use a (relative, cough) namespace that points to a rdf: &lt;../../../../../assets/2013/radio-pi.rdf&gt;
 - make that rdf point to a xslt,
 - make that xslt return a per-broadcast rdf,
-- test like $ rapper -i grddl -o turtle http://example.com/stations/b2/2013/06/13/0605%20radioWelt.xml
+- test like $ rapper -i grddl -o turtle http://example.com/stations/b2/2013/06/13/0605%20radioWelt
 </dc:description>
     <dc:subject rdf:resource="http://purl.mro.name/radio-pi/"/>
     <dc:conformsTo rdf:resource="http://purl.mro.name/radio-pi/pbmi2003-recmod2012/broadcast.rng"/>
-    <dataview:namespaceTransformation rdf:resource="xml2rdf.xslt"/>
+    <dataview:namespaceTransformation rdf:resource="broadcast2rdf.xslt"/>
   </rdf:Description>
 </rdf:RDF>

@@ -184,7 +184,7 @@
           <a href="http://www.w3.org/RDF/">RDF</a>:<br class="br"/>
           <tt>$ <a href="http://librdf.org/raptor/rapper.html">rapper</a> -i grddl -o turtle '<span class="canonical-url">&lt;url from address bar&gt;</span>'</tt><br class="br"/>
           <tt>$ <a href="http://librdf.org/raptor/rapper.html">rapper</a> -i grddl -o rdfxml-abbrev '<span class="canonical-url">&lt;url from address bar&gt;</span>'</tt><br class="br"/>
-          <tt>$ <a href="http://xmlsoft.org/XSLT/xsltproc.html">xsltproc</a> --stringparam canonical_url '<span class="canonical-url">&lt;url from address bar&gt;</span>' '<span class="base-url">&lt;url from address bar&gt;/../../../../../..</span>/assets/2013/xml2rdf.xslt' '<span class="canonical-url">&lt;url from address bar&gt;</span>.xml'</tt>
+          <tt>$ <a href="http://xmlsoft.org/XSLT/xsltproc.html">xsltproc</a> --stringparam canonical_url '<span class="canonical-url">&lt;url from address bar&gt;</span>' '<span class="base-url">&lt;url from address bar&gt;/../../../../../..</span>/assets/2013/broadcast2rdf.xslt' '<span class="canonical-url">&lt;url from address bar&gt;</span>.xml'</tt>
         </p>
         <script type="text/javascript" src="../../../../../assets/jquery-2.0.0.min.js"/>
         <script type="text/javascript" src="../../../../../assets/moment.min.js"/><!-- http://momentjs.com/ -->
