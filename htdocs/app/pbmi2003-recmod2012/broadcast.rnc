@@ -36,33 +36,60 @@ namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
 ## $ xmllint --noout --relaxng http://purl.mro.name/radio-pi/pbmi2003-recmod2012/broadcast.rng htdocs/stations/*/????/??/??/*.xml 2>&1 | grep fail
 ##
 start =
-  element broadcast {
-    (attribute xml:lang {
-       xsd:NCName {
-         
-         ## ISO 639-1 2-letter language code
-         pattern = "[a-z]{2}"
-       }
-     },
-     (meta.DC.identifier,
-      meta.DC.scheme,
-      meta.DC.language,
-      meta.DC.title,
-      meta.DC.title.series?,
-      meta.DC.title.episode?,
-      meta.DC.subject?,
-      meta.DC.format.timestart,
-      meta.DC.format.timeend,
-      meta.DC.format.duration,
-      meta.DC.image?,
-      meta.DC.description?,
-      meta.DC.author,
-      meta.DC.publisher,
-      meta.DC.creator,
-      meta.DC.copyright,
-      meta.DC.source))
-    # unused , meta.DC.lastmodified
+  
+  ## either a single broadcast (without 'modified' attribute)
+  broadcast
+  | element broadcasts {
+      attribute date { isoDate },
+      
+      ## or multiple broadcast elements (with 'modified' attribute each)
+      broadcast*
+    }
+
+## subset of http://www.w3.org/TR/xmlschema-2/#date-lexical-representation
+isoDate = xsd:date { pattern = "\d{4}-\d{2}-\d{2}" }
+
+## compliant to atom feed timestamps, http://www.faqs.org/rfcs/rfc3339.html
+## Subset of http://www.w3.org/TR/xmlschema-2/#dateTime-lexical-representation
+isoDateTime =
+  xsd:dateTime {
+    pattern = "\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+\-]\d{2}:\d{2}"
+  }
+  | # xsd:date { pattern = "\d{4}-\d{2}-\d{2}" },
     
+    ## I want to allow 24:00:00 conforming http://www.w3.org/TR/xmlschema-2/#dateTime-lexical-representation.
+    ## But xmllint v20900 refuses to validate. So I rather sacrifice the date check and do a mere lexical check 
+    ## than see 24:00 invalid in such cases.
+    xsd:string {
+      pattern = "\d{4}-\d{2}-\d{2}T24:00:00[+\-]\d{2}:\d{2}"
+    }
+broadcast =
+  element broadcast {
+    attribute modified { isoDateTime }?,
+    attribute xml:lang {
+      xsd:NCName {
+        
+        ## ISO 639-1 2-letter language code
+        pattern = "[a-z]{2}"
+      }
+    }?,
+    meta.DC.identifier,
+    meta.DC.scheme,
+    meta.DC.language,
+    meta.DC.title,
+    meta.DC.title.series?,
+    meta.DC.title.episode?,
+    meta.DC.subject?,
+    meta.DC.format.timestart,
+    meta.DC.format.timeend,
+    meta.DC.format.duration,
+    meta.DC.image?,
+    meta.DC.description?,
+    meta.DC.author?,
+    meta.DC.publisher?,
+    meta.DC.creator?,
+    meta.DC.copyright?,
+    meta.DC.source
   }
 meta.DC.identifier =
   element meta {
@@ -110,38 +137,15 @@ meta.DC.subject =
     attribute name { "DC.subject" },
     attribute content { xsd:anyURI }
   }
-meta.DC.lastmodified =
-  element meta {
-    attribute name { "DC.lastmodified" },
-    attribute content {
-      xsd:dateTime {
-        
-        ## compliant to atom feed timestamps, http://www.faqs.org/rfcs/rfc3339.html
-        pattern = "\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+\-]\d{2}:\d{2}"
-      }
-    }
-  }
 meta.DC.format.timestart =
   element meta {
     attribute name { "DC.format.timestart" },
-    attribute content {
-      xsd:dateTime {
-        
-        ## compliant to atom feed timestamps, http://www.faqs.org/rfcs/rfc3339.html
-        pattern = "\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+\-]\d{2}:\d{2}"
-      }
-    }
+    attribute content { isoDateTime }
   }
 meta.DC.format.timeend =
   element meta {
     attribute name { "DC.format.timeend" },
-    attribute content {
-      xsd:dateTime {
-        
-        ## compliant to atom feed timestamps, http://www.faqs.org/rfcs/rfc3339.html
-        pattern = "\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+\-]\d{2}:\d{2}"
-      }
-    }
+    attribute content { isoDateTime }
   }
 meta.DC.format.duration =
   element meta {

@@ -23,6 +23,9 @@
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
  MIT License http://opensource.org/licenses/MIT
+ 
+ 
+ http://www.w3.org/TR/xslt/
 -->
 <xsl:stylesheet
   xmlns="http://www.w3.org/1999/xhtml"
@@ -90,7 +93,7 @@
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template match="rec:broadcast">
+  <xsl:template match="/rec:broadcast">
     <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{rec:meta[@name='DC.language']/@content}">
       <head>
         <meta content="text/html; charset=utf-8" http-equiv="content-type"/>
@@ -193,4 +196,62 @@
       </body>
     </html>
   </xsl:template>
+
+  <xsl:template match="/rec:broadcasts">
+    <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{rec:meta[@name='DC.language']/@content}">
+      <head>
+        <meta content="text/html; charset=utf-8" http-equiv="content-type"/>
+        <!-- https://developer.apple.com/library/IOS/documentation/AppleApplications/Reference/SafariWebContent/UsingtheViewport/UsingtheViewport.html#//apple_ref/doc/uid/TP40006509-SW26 -->
+        <!-- http://maddesigns.de/meta-viewport-1817.html -->
+        <!-- meta name="viewport" content="width=device-width"/ -->
+        <!-- http://www.quirksmode.org/blog/archives/2013/10/initialscale1_m.html -->
+        <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+        <!-- meta name="viewport" content="width=400"/ -->
+        <link href="../../../../../assets/favicon-32x32.png" rel="shortcut icon" type="image/png" />
+        <link href="../../../../../assets/favicon-512x512.png" rel="apple-touch-icon" type="image/png" />
+        <link href="../../../app/style.css" rel="stylesheet" type="text/css"/>
+      </head>
+      <body>
+        <noscript><p>JavaScript ist aus, es geht zwar (fast) alles auch ohne, aber mit ist's <b>schöner</b>. (Zeitgleiche Sendungen anderer Sender, Datumsformatierung, Aufnahmen wieder stornieren, Tagesübersicht, RDF Url)</p></noscript>
+        <h1 title="{@date}"><xsl:value-of select="@date"/></h1>
+        <ol style='list-style-type: none;'>
+          <xsl:for-each select="rec:broadcast">
+            <xsl:variable name="rowid" select="translate(substring(rec:meta[@name='DC.format.timestart']/@content, 11, 6), ':', '_')"/>
+            <xsl:variable name="duration_minutes" select="number(rec:meta[@name='DC.format.duration']/@content) div 60"/>
+            <li class="broadcast" id="{$rowid}">
+              <a class="dtstart" href="#{$rowid}" title="{rec:meta[@name='DC.format.timestart']/@content}"><xsl:value-of select="substring(rec:meta[@name='DC.format.timestart']/@content, 12, 5)"/></a>
+              <xsl:text> </xsl:text>
+              <a href="../../../../{rec:meta[@name='DC.identifier']/@content}">.</a>
+              <xsl:text> </xsl:text>
+              <span class="duration" title="PT{$duration_minutes}M"><xsl:value-of select="$duration_minutes"/>"</span>
+              <xsl:text> </xsl:text>
+              <span class="title" title="{rec:meta[@name='DC.description']/@content}"><xsl:value-of select="rec:meta[@name='DC.title']/@content"/></span>
+            </li>
+          </xsl:for-each>
+        </ol>
+        <p><a href=".">Verzeichnis Index</a></p>
+        <hr/>
+        <p id="footer">
+          <!--
+          <a style="display:none" href="http://validator.w3.org/check?uri=referer">
+          <img alt="Valid XHTML 1.0 Strict" height="31" src="http://www.w3.org/Icons/valid-xhtml10-blue.png" width="88"/>
+          </a>
+          <a style="display:none" href="http://jigsaw.w3.org/css-validator/check/referer?profile=css3&amp;usermedium=screen&amp;warning=2&amp;vextwarning=false&amp;lang=de">
+          <img alt="CSS ist valide!" src="http://jigsaw.w3.org/css-validator/images/vcss-blue" style="border:0;width:88px;height:31px"/>
+          </a>
+          -->
+          Powered by <a href="https://github.com/mro/radio-pi">github.com/mro/radio-pi</a><br class="br"/>
+          <a href="http://www.w3.org/RDF/">RDF</a>:<br class="br"/>
+          <tt>$ <a href="http://librdf.org/raptor/rapper.html">rapper</a> -i grddl -o turtle '<span class="canonical-url">&lt;url from address bar&gt;</span>'</tt><br class="br"/>
+          <tt>$ <a href="http://librdf.org/raptor/rapper.html">rapper</a> -i grddl -o rdfxml-abbrev '<span class="canonical-url">&lt;url from address bar&gt;</span>'</tt><br class="br"/>
+          <tt>$ <a href="http://xmlsoft.org/XSLT/xsltproc.html">xsltproc</a> --stringparam canonical_url '<span class="canonical-url">&lt;url from address bar&gt;</span>' '<span class="base-url">&lt;url from address bar&gt;/../../../../../..</span>/assets/2013/broadcast2rdf.xslt' '<span class="canonical-url">&lt;url from address bar&gt;</span>.xml'</tt>
+        </p>
+        <script type="text/javascript" src="../../../../../assets/jquery-2.0.0.min.js"/>
+        <script type="text/javascript" src="../../../../../assets/moment.min.js"/><!-- http://momentjs.com/ -->
+        <script type="text/javascript" src="../../../../../assets/lang/de.js"/><!-- https://github.com/timrwood/moment/blob/develop/min/lang/de.js -->
+        <script type="text/javascript" src="../../../../../assets/broadcast2html.js" />
+      </body>
+    </html>
+  </xsl:template>
+
 </xsl:stylesheet>

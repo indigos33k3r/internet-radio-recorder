@@ -34,47 +34,96 @@ not: EBU http://tech.ebu.ch/lang/en/MetadataEbuCore
 use e.g.
 $ xmllint --noout --relaxng http://purl.mro.name/radio-pi/pbmi2003-recmod2012/broadcast.rng htdocs/stations/*/????/??/??/*.xml 2&gt;&amp;1 | grep fail
 </a:documentation>
+    <choice>
+      <ref name="broadcast">
+        <a:documentation>either a single broadcast (without 'modified' attribute)</a:documentation>
+      </ref>
+      <element name="broadcasts">
+        <attribute name="date">
+          <ref name="isoDate"/>
+        </attribute>
+        <zeroOrMore>
+          <ref name="broadcast">
+            <a:documentation>or multiple broadcast elements (with 'modified' attribute each)</a:documentation>
+          </ref>
+        </zeroOrMore>
+      </element>
+    </choice>
+  </start>
+  <define name="isoDate">
+    <a:documentation>subset of http://www.w3.org/TR/xmlschema-2/#date-lexical-representation</a:documentation>
+    <data type="date">
+      <param name="pattern">\d{4}-\d{2}-\d{2}</param>
+    </data>
+  </define>
+  <define name="isoDateTime">
+    <a:documentation>compliant to atom feed timestamps, http://www.faqs.org/rfcs/rfc3339.html
+Subset of http://www.w3.org/TR/xmlschema-2/#dateTime-lexical-representation</a:documentation>
+    <choice>
+      <data type="dateTime">
+        <param name="pattern">\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+\-]\d{2}:\d{2}</param>
+      </data>
+      <!-- xsd:date { pattern = "\d{4}-\d{2}-\d{2}" }, -->
+      <data type="string">
+        <a:documentation>I want to allow 24:00:00 conforming http://www.w3.org/TR/xmlschema-2/#dateTime-lexical-representation.
+But xmllint v20900 refuses to validate. So I rather sacrifice the date check and do a mere lexical check 
+than see 24:00 invalid in such cases.</a:documentation>
+        <param name="pattern">\d{4}-\d{2}-\d{2}T24:00:00[+\-]\d{2}:\d{2}</param>
+      </data>
+    </choice>
+  </define>
+  <define name="broadcast">
     <element name="broadcast">
-      <group>
+      <optional>
+        <attribute name="modified">
+          <ref name="isoDateTime"/>
+        </attribute>
+      </optional>
+      <optional>
         <attribute name="xml:lang">
           <data type="NCName">
             <param name="pattern">[a-z]{2}</param>
             <a:documentation>ISO 639-1 2-letter language code</a:documentation>
           </data>
         </attribute>
-        <group>
-          <ref name="meta.DC.identifier"/>
-          <ref name="meta.DC.scheme"/>
-          <ref name="meta.DC.language"/>
-          <ref name="meta.DC.title"/>
-          <optional>
-            <ref name="meta.DC.title.series"/>
-          </optional>
-          <optional>
-            <ref name="meta.DC.title.episode"/>
-          </optional>
-          <optional>
-            <ref name="meta.DC.subject"/>
-          </optional>
-          <ref name="meta.DC.format.timestart"/>
-          <ref name="meta.DC.format.timeend"/>
-          <ref name="meta.DC.format.duration"/>
-          <optional>
-            <ref name="meta.DC.image"/>
-          </optional>
-          <optional>
-            <ref name="meta.DC.description"/>
-          </optional>
-          <ref name="meta.DC.author"/>
-          <ref name="meta.DC.publisher"/>
-          <ref name="meta.DC.creator"/>
-          <ref name="meta.DC.copyright"/>
-          <ref name="meta.DC.source"/>
-        </group>
-      </group>
-      <!-- unused , meta.DC.lastmodified -->
+      </optional>
+      <ref name="meta.DC.identifier"/>
+      <ref name="meta.DC.scheme"/>
+      <ref name="meta.DC.language"/>
+      <ref name="meta.DC.title"/>
+      <optional>
+        <ref name="meta.DC.title.series"/>
+      </optional>
+      <optional>
+        <ref name="meta.DC.title.episode"/>
+      </optional>
+      <optional>
+        <ref name="meta.DC.subject"/>
+      </optional>
+      <ref name="meta.DC.format.timestart"/>
+      <ref name="meta.DC.format.timeend"/>
+      <ref name="meta.DC.format.duration"/>
+      <optional>
+        <ref name="meta.DC.image"/>
+      </optional>
+      <optional>
+        <ref name="meta.DC.description"/>
+      </optional>
+      <optional>
+        <ref name="meta.DC.author"/>
+      </optional>
+      <optional>
+        <ref name="meta.DC.publisher"/>
+      </optional>
+      <optional>
+        <ref name="meta.DC.creator"/>
+      </optional>
+      <optional>
+        <ref name="meta.DC.copyright"/>
+      </optional>
+      <ref name="meta.DC.source"/>
     </element>
-  </start>
+  </define>
   <define name="meta.DC.identifier">
     <element name="meta">
       <attribute name="name">
@@ -147,29 +196,13 @@ internal use only.</a:documentation>
       </attribute>
     </element>
   </define>
-  <define name="meta.DC.lastmodified">
-    <element name="meta">
-      <attribute name="name">
-        <value>DC.lastmodified</value>
-      </attribute>
-      <attribute name="content">
-        <data type="dateTime">
-          <param name="pattern">\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+\-]\d{2}:\d{2}</param>
-          <a:documentation>compliant to atom feed timestamps, http://www.faqs.org/rfcs/rfc3339.html</a:documentation>
-        </data>
-      </attribute>
-    </element>
-  </define>
   <define name="meta.DC.format.timestart">
     <element name="meta">
       <attribute name="name">
         <value>DC.format.timestart</value>
       </attribute>
       <attribute name="content">
-        <data type="dateTime">
-          <param name="pattern">\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+\-]\d{2}:\d{2}</param>
-          <a:documentation>compliant to atom feed timestamps, http://www.faqs.org/rfcs/rfc3339.html</a:documentation>
-        </data>
+        <ref name="isoDateTime"/>
       </attribute>
     </element>
   </define>
@@ -179,10 +212,7 @@ internal use only.</a:documentation>
         <value>DC.format.timeend</value>
       </attribute>
       <attribute name="content">
-        <data type="dateTime">
-          <param name="pattern">\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+\-]\d{2}:\d{2}</param>
-          <a:documentation>compliant to atom feed timestamps, http://www.faqs.org/rfcs/rfc3339.html</a:documentation>
-        </data>
+        <ref name="isoDateTime"/>
       </attribute>
     </element>
   </define>
