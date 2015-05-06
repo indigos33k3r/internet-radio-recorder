@@ -35,7 +35,7 @@
   xmlns:rdfs="http://www.w3schools.com/RDF/rdf-schema.xml"
   xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
   xmlns:dct="http://purl.org/dc/terms/"
-  xmlns:dctype="http://purl.org/dc/dctypeype/"
+  xmlns:dctype="http://purl.org/dc/dcmitype/"
   xmlns:freq="http://purl.org/cld/freq/"
   xmlns:foaf="http://xmlns.com/foaf/0.1/"
   xmlns:tl="http://purl.org/NET/c4dm/timeline.owl#"

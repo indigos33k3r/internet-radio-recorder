@@ -31,7 +31,7 @@
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:rec="../../../../../assets/2013/radio-pi.rdf"
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-  xmlns:dctype="http://purl.org/dc/dctypeype/"
+  xmlns:dctype="http://purl.org/dc/dcmitype/"
   xmlns:foaf="http://xmlns.com/foaf/0.1/"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   exclude-result-prefixes="rec"
