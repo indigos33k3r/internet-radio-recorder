@@ -29,7 +29,7 @@
   version="1.0">
   <xsl:output method="xml"/>
 
-	<xsl:param name="canonical_url"></xsl:param>
+  <xsl:param name="canonical_url"></xsl:param>
 
   <!-- http://skew.org/xml/stylesheets/url-encode/url-encode.xsl via http://stackoverflow.com/a/3518109 -->
   <xsl:template name="url-encode">
@@ -78,153 +78,168 @@
 
   <xsl:template match="/">
     <rdf:RDF>
-    	<xsl:if test="$canonical_url"><xsl:attribute name="xml:base"><xsl:value-of select="$canonical_url"/></xsl:attribute></xsl:if>
-    	<xsl:apply-templates match=".//rec:broadcast"/>
+      <xsl:if test="$canonical_url"><xsl:attribute name="xml:base"><xsl:value-of select="$canonical_url"/></xsl:attribute></xsl:if>
+      <xsl:apply-templates match="rec:broadcast|rec:broadcasts/rec:broadcast"/>
     </rdf:RDF>
   </xsl:template>
 
   <xsl:template match="rec:broadcast">
-		<!-- -->
-		<xsl:variable name="identifier_encoded">
-			<xsl:call-template name="url-encode">
-				<xsl:with-param name="str" select="rec:meta[@name='DC.identifier']/@content"/>
-			</xsl:call-template>
-		</xsl:variable>
-		<xsl:variable name="me_uri" select="concat('../../../../',$identifier_encoded)"/>
-		<rdf:Description rdf:about="{$me_uri}" xml:lang="{rec:meta[@name='DC.language']/@content}">
-			<rdfs:label>Sendung</rdfs:label>
-			<rdfs:label xml:lang="en">broadcast</rdfs:label>
-			<dct:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">
-				<xsl:value-of select="rec:meta[@name='DC.identifier']/@content"/>
-			</dct:identifier>
-			<dct:title>
-				<xsl:value-of select="rec:meta[@name='DC.title']/@content"/>
-			</dct:title>
-			<xsl:for-each select="rec:meta[@name='DC.subject']/@content">
-				<dct:subject resource="{.}"/>
-				<dct:isPartOf resource="{.}"/>
-			</xsl:for-each>
-			<dct:rightsHolder><rdf:Description><foaf:name>
-				<xsl:value-of select="rec:meta[@name='DC.copyright']/@content"/>
-			</foaf:name></rdf:Description></dct:rightsHolder>
-			<dct:creator><rdf:Description><foaf:name>
-				<xsl:value-of select="rec:meta[@name='DC.author']/@content"/>
-			</foaf:name></rdf:Description></dct:creator>
-			<dct:abstract>
-				<xsl:value-of select="rec:meta[@name='DC.description']/@content"/>
-			</dct:abstract>
-			<dct:temporal>
-				<tl:Interval>
-					<tl:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">
-						<xsl:value-of select="rec:meta[@name='DC.format.timestart']/@content"/>
-					</tl:start>
-					<tl:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">
-						<xsl:value-of select="rec:meta[@name='DC.format.timeend']/@content"/>
-					</tl:end>
-					<tl:durationXSD rdf:datatype="http://www.w3.org/2001/XMLSchema#duration"><!--
-						-->PT<xsl:value-of select="format-number(rec:meta[@name='DC.format.duration']/@content,0)"/>S<!--
-					--></tl:durationXSD>
-					<tl:durationInt rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">
-						<xsl:value-of select="format-number(rec:meta[@name='DC.format.duration']/@content,0)"/>
-					</tl:durationInt>
-					<tl:timeline rdf:resource="http://purl.org/NET/c4dm/timeline.owl#universaltimeline"/>
-				</tl:Interval>
-			</dct:temporal>
-			<dct:references rdf:resource="{rec:meta[@name='DC.image']/@content}"/>
-			<dct:language rdf:resource="http://lexvo.org/id/iso639-1/{rec:meta[@name='DC.language']/@content}"/>
-			<dct:publisher><rdf:Description><foaf:name>
-				<xsl:value-of select="rec:meta[@name='DC.publisher']/@content"/>
-			</foaf:name></rdf:Description></dct:publisher>
-			<dct:source rdf:resource="{rec:meta[@name='DC.source']/@content}"/>
-			<dct:alternative>
-				<xsl:value-of select="rec:meta[@name='DC.title.episode']/@content"/>
-			</dct:alternative>
-			<dc:titleSeries>
-				<xsl:value-of select="rec:meta[@name='DC.title.series']/@content"/>
-			</dc:titleSeries>
-			<dct:hasFormat rdf:resource="../../../../../enclosures/{$identifier_encoded}.mp3"/>
-			<dct:isPartOf rdf:resource="{$me_uri}/.."/>
-			<!-- dct:references rdf:resource="../../../../../enclosures/"/ -->
-			<!-- dct:references>hu
-				<xsl:value-of select="base-uri('.')"/>
-			</dct:references -->
-				<!-- http://stackoverflow.com/questions/582957/get-file-name-using-xsl -->
-				<!-- xsl:value-of select="system-property('xsl:version')"/ -->
-				<!-- xsl:value-of select="base-uri()"/ -->
-			<!-- dct:isPartOf rdf:resource="../../../../../podcasts/radiowelt/"/ -->
-			<dct:isReferencedBy rdf:resource="../../../../modified.ttl"/>
-		</rdf:Description>
-		<xsl:if test="string-length(rec:meta[@name='DC.image']/@content) > 0">
-			<dcmit:StillImage rdf:about="{rec:meta[@name='DC.image']/@content}">
-				<dct:format rdf:resource="http://purl.org/NET/mediatypes/image/jpeg"/>
-				<dct:isReferencedBy rdf:resource="{$me_uri}"/>
-			</dcmit:StillImage>
-		</xsl:if>
-		<!-- dcmit:Sound rdf:about="../../../../../enclosures/{rec:meta[@name='DC.identifier']/@content}.mp3">
-			<dct:format rdf:resource="http://purl.org/NET/mediatypes/audio/mp3"/>
-			<dct:isFormatOf rdf:resource=""/>
-		</dcmit:Sound -->
-		<rdf:Description about="{$me_uri}/..">
-			<rdfs:label xml:lang="de">Tag</rdfs:label>
-			<rdfs:label xml:lang="en">day</rdfs:label>
-			<dct:hasPart rdf:resource="{$me_uri}"/>
-			<dct:isPartOf rdf:resource="{$me_uri}/../.."/>
-		</rdf:Description>
-		<rdf:Description about="{$me_uri}/../..">
-			<rdfs:label xml:lang="de">Monat</rdfs:label>
-			<rdfs:label xml:lang="en">month</rdfs:label>
-			<dct:hasPart rdf:resource="{$me_uri}/.."/>
-			<dct:isPartOf rdf:resource="{$me_uri}/../.."/>
-		</rdf:Description>
-		<rdf:Description about="{$me_uri}/../../..">
-			<rdfs:label xml:lang="de">Jahr</rdfs:label>
-			<rdfs:label xml:lang="en">year</rdfs:label>
-			<dct:hasPart rdf:resource="{$me_uri}/../.."/>
-			<dct:isPartOf rdf:resource="{$me_uri}/../../../.."/>
-		</rdf:Description>
-		<rdf:Description about="{$me_uri}/../../../..">
-			<rdfs:label xml:lang="de">Sender</rdfs:label>
-			<rdfs:label xml:lang="en">broadcasting station</rdfs:label>
-			<dct:hasPart rdf:resource="{$me_uri}/../../.."/>
-			<dct:isPartOf rdf:resource="{$me_uri}/../../../../.."/>
-			<dct:relation rdf:resource="{$me_uri}/../../../../../../modified.ttl"/>
-		</rdf:Description>
-		<rdf:Description about="{$me_uri}/../../../../..">
-			<dct:hasPart rdf:resource="{$me_uri}/../../../.."/>
-			<dct:isPartOf rdf:resource="{$me_uri}/../../../../../.."/>
-		</rdf:Description>
-		<rdf:Description about="{$me_uri}/../../../../../..">
-			<rdfs:label xml:lang="de">Internet Radio Rekorder</rdfs:label>
-			<rdfs:label xml:lang="en">Internet Radio Recorder</rdfs:label>
-			<dct:relation rdf:resource="http://purl.mro.name/radio-pi/"/>
-			<dct:hasPart rdf:resource="{$me_uri}/../../../../.."/>
-			<!-- dct:hasPart rdf:resource="../../../../../podcasts/"/ -->
-		</rdf:Description>
-		<rdf:Description about="{$me_uri}/../../../../../modified.ttl">
-			<rdfs:label xml:lang="de">aktualisierte Sendungen</rdfs:label>
-			<rdfs:label xml:lang="en">updated broadcasts</rdfs:label>
-			<dct:accrualPeriodicity>
-				<rdf:Description about="http://purl.org/cld/freq/hourly">
-					<rdfs:label xml:lang="de">stündlich</rdfs:label>
-					<rdfs:label xml:lang="en">hourly</rdfs:label>
-					<dct:extent>
-						<xsl:comment>http://wiki.dublincore.org/index.php/User_Guide/Publishing_Metadata#dcterms:extent</xsl:comment>
-						<rdf:Description>
-							<rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT1H</rdfs:label>
-						</rdf:Description>
-					</dct:extent>
-				</rdf:Description>
-			</dct:accrualPeriodicity>
-			<dct:references rdf:resource="{$me_uri}"/>
-		</rdf:Description>
+    <!-- -->
+    <xsl:variable name="identifier_encoded">
+      <xsl:call-template name="url-encode">
+        <xsl:with-param name="str" select="rec:meta[@name='DC.identifier']/@content"/>
+      </xsl:call-template>
+    </xsl:variable>
+    <xsl:variable name="me_uri" select="concat('../../../../',$identifier_encoded)"/>
+    <rdf:Description rdf:about="{$me_uri}" xml:lang="{rec:meta[@name='DC.language']/@content}">
+      <rdfs:label>Sendung</rdfs:label>
+      <rdfs:label xml:lang="en">broadcast</rdfs:label>
+      <dct:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">
+        <xsl:value-of select="rec:meta[@name='DC.identifier']/@content"/>
+      </dct:identifier>
+      <dct:title>
+        <xsl:value-of select="rec:meta[@name='DC.title']/@content"/>
+      </dct:title>
+      <xsl:for-each select="rec:meta[@name='DC.subject']/@content">
+        <dct:subject resource="{.}"/>
+        <dct:isPartOf resource="{.}"/>
+      </xsl:for-each>
+      <dct:rightsHolder><rdf:Description><foaf:name>
+        <xsl:value-of select="rec:meta[@name='DC.copyright']/@content"/>
+      </foaf:name></rdf:Description></dct:rightsHolder>
+      <dct:creator><rdf:Description><foaf:name>
+        <xsl:value-of select="rec:meta[@name='DC.author']/@content"/>
+      </foaf:name></rdf:Description></dct:creator>
+      <dct:abstract>
+        <xsl:value-of select="rec:meta[@name='DC.description']/@content"/>
+      </dct:abstract>
+      <dct:temporal>
+        <tl:Interval>
+          <tl:start rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">
+            <xsl:value-of select="rec:meta[@name='DC.format.timestart']/@content"/>
+          </tl:start>
+          <tl:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">
+            <xsl:value-of select="rec:meta[@name='DC.format.timeend']/@content"/>
+          </tl:end>
+          <tl:durationXSD rdf:datatype="http://www.w3.org/2001/XMLSchema#duration"><!--
+            -->PT<xsl:value-of select="format-number(rec:meta[@name='DC.format.duration']/@content,0)"/>S<!--
+          --></tl:durationXSD>
+          <tl:durationInt rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">
+            <xsl:value-of select="format-number(rec:meta[@name='DC.format.duration']/@content,0)"/>
+          </tl:durationInt>
+          <tl:timeline rdf:resource="http://purl.org/NET/c4dm/timeline.owl#universaltimeline"/>
+        </tl:Interval>
+      </dct:temporal>
+      <dct:references rdf:resource="{rec:meta[@name='DC.image']/@content}"/>
+      <dct:language rdf:resource="http://lexvo.org/id/iso639-1/{rec:meta[@name='DC.language']/@content}"/>
+      <dct:publisher><rdf:Description><foaf:name>
+        <xsl:value-of select="rec:meta[@name='DC.publisher']/@content"/>
+      </foaf:name></rdf:Description></dct:publisher>
+      <dct:source rdf:resource="{rec:meta[@name='DC.source']/@content}"/>
+      <dct:alternative>
+        <xsl:value-of select="rec:meta[@name='DC.title.episode']/@content"/>
+      </dct:alternative>
+      <dc:titleSeries>
+        <xsl:value-of select="rec:meta[@name='DC.title.series']/@content"/>
+      </dc:titleSeries>
+      <dct:hasFormat rdf:resource="../../../../../enclosures/{$identifier_encoded}.mp3"/>
+      <dct:isPartOf rdf:resource="{$me_uri}/.."/>
+      <!-- dct:references rdf:resource="../../../../../enclosures/"/ -->
+      <!-- dct:references>hu
+        <xsl:value-of select="base-uri('.')"/>
+      </dct:references -->
+        <!-- http://stackoverflow.com/questions/582957/get-file-name-using-xsl -->
+        <!-- xsl:value-of select="system-property('xsl:version')"/ -->
+        <!-- xsl:value-of select="base-uri()"/ -->
+      <!-- dct:isPartOf rdf:resource="../../../../../podcasts/radiowelt/"/ -->
+      <dct:isReferencedBy rdf:resource="../../../../modified.ttl"/>
+    </rdf:Description>
+    <xsl:if test="string-length(rec:meta[@name='DC.image']/@content) > 0">
+      <dcmit:StillImage rdf:about="{rec:meta[@name='DC.image']/@content}">
+        <dct:format rdf:resource="http://purl.org/NET/mediatypes/image/jpeg"/>
+        <dct:isReferencedBy rdf:resource="{$me_uri}"/>
+      </dcmit:StillImage>
+    </xsl:if>
+    <dcmit:Sound rdf:about="../../../../../enclosures/{$identifier_encoded}.mp3">
+      <rdfs:label xml:lang="de">mögliche Aufnahme</rdfs:label>
+      <rdfs:label xml:lang="en">potential recording</rdfs:label>
+      <dct:format rdf:resource="http://purl.org/NET/mediatypes/audio/mp3"/>
+      <dct:isFormatOf rdf:resource="{$me_uri}"/>
+    </dcmit:Sound>
+    <rdf:Description about="{$me_uri}/..">
+      <rdfs:label xml:lang="de">Tag</rdfs:label>
+      <rdfs:label xml:lang="en">day</rdfs:label>
+      <dct:hasPart rdf:resource="{$me_uri}"/>
+      <dct:isPartOf rdf:resource="{$me_uri}/../.."/>
+      <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">
+        <xsl:value-of select="substring(rec:meta[@name='DC.format.timestart']/@content,1,10)"/>P1D<xsl:text/>
+      </dct:date>
+    </rdf:Description>
+    <rdf:Description about="{$me_uri}/../..">
+      <rdfs:label xml:lang="de">Monat</rdfs:label>
+      <rdfs:label xml:lang="en">month</rdfs:label>
+      <dct:hasPart rdf:resource="{$me_uri}/.."/>
+      <dct:isPartOf rdf:resource="{$me_uri}/../.."/>
+      <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">
+        <xsl:value-of select="substring(rec:meta[@name='DC.format.timestart']/@content,1,7)"/>-01P1M<xsl:text/>
+      </dct:date>
+    </rdf:Description>
+    <rdf:Description about="{$me_uri}/../../..">
+      <rdfs:label xml:lang="de">Jahr</rdfs:label>
+      <rdfs:label xml:lang="en">year</rdfs:label>
+      <dct:hasPart rdf:resource="{$me_uri}/../.."/>
+      <dct:isPartOf rdf:resource="{$me_uri}/../../../.."/>
+      <dct:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date">
+        <xsl:value-of select="substring(rec:meta[@name='DC.format.timestart']/@content,1,4)"/>-01-01P1Y<xsl:text/>
+      </dct:date>
+    </rdf:Description>
+    <rdf:Description about="{$me_uri}/../../../..">
+      <rdfs:label xml:lang="de">Sender</rdfs:label>
+      <rdfs:label xml:lang="en">broadcasting station</rdfs:label>
+      <dct:hasPart rdf:resource="{$me_uri}/../../.."/>
+      <dct:isPartOf rdf:resource="{$me_uri}/../../../../.."/>
+      <rdfs:isDefinedBy rdf:resource="{$me_uri}/../../../../about.rdf"/>
+      <dct:relation rdf:resource="{$me_uri}/../../../../../modified.ttl"/>
+    </rdf:Description>
+    <foaf:Document about="{$me_uri}/../../../../about.rdf">
+      <foaf:primaryTopic rdf:resource="{$me_uri}/../../../.."/>
+    </foaf:Document>
+    <rdf:Description about="{$me_uri}/../../../../..">
+      <dct:hasPart rdf:resource="{$me_uri}/../../../.."/>
+      <dct:isPartOf rdf:resource="{$me_uri}/../../../../../.."/>
+    </rdf:Description>
+    <rdf:Description about="{$me_uri}/../../../../../..">
+      <rdfs:label xml:lang="de">Internet Radio Rekorder</rdfs:label>
+      <rdfs:label xml:lang="en">Internet Radio Recorder</rdfs:label>
+      <dct:relation rdf:resource="http://purl.mro.name/radio-pi/"/>
+      <dct:hasPart rdf:resource="{$me_uri}/../../../../.."/>
+      <!-- dct:hasPart rdf:resource="../../../../../podcasts/"/ -->
+    </rdf:Description>
+    <foaf:Document about="{$me_uri}/../../../../../modified.ttl">
+      <rdfs:label xml:lang="de">aktualisierte Sendungen</rdfs:label>
+      <rdfs:label xml:lang="en">updated broadcasts</rdfs:label>
+      <dct:accrualPeriodicity>
+        <rdf:Description about="http://purl.org/cld/freq/hourly">
+          <rdfs:label xml:lang="de">stündlich</rdfs:label>
+          <rdfs:label xml:lang="en">hourly</rdfs:label>
+          <dct:extent>
+            <xsl:comment>http://wiki.dublincore.org/index.php/User_Guide/Publishing_Metadata#dcterms:extent</xsl:comment>
+            <rdf:Description about="http://purl.org/cld/freq/hourly/PT1H">
+              <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT1H</rdfs:label>
+            </rdf:Description>
+          </dct:extent>
+        </rdf:Description>
+      </dct:accrualPeriodicity>
+      <dct:references rdf:resource="{$me_uri}"/>
+    </foaf:Document>
 
-		<xsl:for-each select="rec:meta[@name='DC.subject']/@content">
-			<dcmit:Text about="{.}">
-				<rdfs:label xml:lang="de">Sendereihe</rdfs:label>
-				<rdfs:label xml:lang="en">Brand</rdfs:label>
-				<dct:hasPart resource="{$me_uri}"/>
-				<!-- dct:isReferencedBy resource=""/ -->
-			</dcmit:Text>
-		</xsl:for-each>
+    <xsl:for-each select="rec:meta[@name='DC.subject']/@content">
+      <dcmit:Text about="{.}">
+        <rdfs:label xml:lang="de">Sendereihe</rdfs:label>
+        <rdfs:label xml:lang="en">Brand</rdfs:label>
+        <dct:hasPart resource="{$me_uri}"/>
+        <!-- dct:isReferencedBy resource=""/ -->
+      </dcmit:Text>
+    </xsl:for-each>
   </xsl:template>
 </xsl:stylesheet>
