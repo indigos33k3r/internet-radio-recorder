@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
+
+  Copyright (c) 2015 Marcus Rohrmoser, https://github.com/mro/radio-pi
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+  associated documentation files (the "Software"), to deal in the Software without restriction,
+  including without limitation the rights to use, copy, modify, merge, publish, distribute,
+  sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all copies or
+  substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+  NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+  OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+  MIT License http://opensource.org/licenses/MIT
+
   Turn broadcast xml into rdf
 
   built following http://www.w3.org/TR/grddl-tests/#sq2
@@ -15,7 +35,7 @@
   xmlns:rdfs="http://www.w3schools.com/RDF/rdf-schema.xml"
   xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
   xmlns:dct="http://purl.org/dc/terms/"
-  xmlns:dcmit="http://purl.org/dc/dcmitype/"
+  xmlns:dctype="http://purl.org/dc/dctypeype/"
   xmlns:freq="http://purl.org/cld/freq/"
   xmlns:foaf="http://xmlns.com/foaf/0.1/"
   xmlns:tl="http://purl.org/NET/c4dm/timeline.owl#"
@@ -155,17 +175,17 @@
       <dct:isReferencedBy rdf:resource="../../../../modified.ttl"/>
     </rdf:Description>
     <xsl:if test="string-length(rec:meta[@name='DC.image']/@content) > 0">
-      <dcmit:StillImage rdf:about="{rec:meta[@name='DC.image']/@content}">
+      <dctype:StillImage rdf:about="{rec:meta[@name='DC.image']/@content}">
         <dct:format rdf:resource="http://purl.org/NET/mediatypes/image/jpeg"/>
         <dct:isReferencedBy rdf:resource="{$me_uri}"/>
-      </dcmit:StillImage>
+      </dctype:StillImage>
     </xsl:if>
-    <dcmit:Sound rdf:about="../../../../../enclosures/{$identifier_encoded}.mp3">
+    <dctype:Sound rdf:about="../../../../../enclosures/{$identifier_encoded}.mp3">
       <rdfs:label xml:lang="de">mögliche Aufnahme</rdfs:label>
       <rdfs:label xml:lang="en">potential recording</rdfs:label>
       <dct:format rdf:resource="http://purl.org/NET/mediatypes/audio/mp3"/>
       <dct:isFormatOf rdf:resource="{$me_uri}"/>
-    </dcmit:Sound>
+    </dctype:Sound>
     <rdf:Description about="{$me_uri}/..">
       <rdfs:label xml:lang="de">Tag</rdfs:label>
       <rdfs:label xml:lang="en">day</rdfs:label>
@@ -234,12 +254,12 @@
     </foaf:Document>
 
     <xsl:for-each select="rec:meta[@name='DC.subject']/@content">
-      <dcmit:Text about="{.}">
+      <dctype:Text about="{.}">
         <rdfs:label xml:lang="de">Sendereihe</rdfs:label>
         <rdfs:label xml:lang="en">Brand</rdfs:label>
         <dct:hasPart resource="{$me_uri}"/>
         <!-- dct:isReferencedBy resource=""/ -->
-      </dcmit:Text>
+      </dctype:Text>
     </xsl:for-each>
   </xsl:template>
 </xsl:stylesheet>

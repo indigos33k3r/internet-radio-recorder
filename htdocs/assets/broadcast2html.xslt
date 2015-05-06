@@ -31,7 +31,7 @@
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:rec="../../../../../assets/2013/radio-pi.rdf"
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-  xmlns:dcmit="http://purl.org/dc/dcmitype/"
+  xmlns:dctype="http://purl.org/dc/dctypeype/"
   xmlns:foaf="http://xmlns.com/foaf/0.1/"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   exclude-result-prefixes="rec"
@@ -71,7 +71,7 @@
     <xsl:variable name="station_rdf" select="$station_about_rdf/rdf:RDF/rdf:Description[@rdf:about = '']"/>
     <xsl:choose>
       <xsl:when test="$station_rdf">
-        <a title="{$station_rdf/foaf:name} Programm" href="{$station_rdf/../dcmit:Text/@rdf:about}">
+        <a title="{$station_rdf/foaf:name} Programm" href="{$station_rdf/../dctype:Text/@rdf:about}">
           <img alt="Senderlogo {$station_rdf/foaf:name}" src="{$station_rdf/foaf:logo/@rdf:resource}" style="height:30px" class="border"/>
         </a>
       </xsl:when>
@@ -83,7 +83,7 @@
   </xsl:template>
 
   <xsl:template name="station_rdf_stream">
-    <xsl:variable name="stream_rdf" select="$station_about_rdf/rdf:RDF/dcmit:Sound[@rdf:about]"/>
+    <xsl:variable name="stream_rdf" select="$station_about_rdf/rdf:RDF/dctype:Sound[@rdf:about]"/>
     <xsl:choose>
       <xsl:when test="$stream_rdf"><a style="color:green" href="{$stream_rdf/@rdf:about}">Live Stream</a></xsl:when>
       <xsl:otherwise>
