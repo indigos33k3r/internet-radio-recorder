@@ -121,7 +121,9 @@ than see 24:00 invalid in such cases.</a:documentation>
       <optional>
         <ref name="meta.DC.copyright"/>
       </optional>
-      <ref name="meta.DC.source"/>
+      <optional>
+        <ref name="meta.DC.source"/>
+      </optional>
     </element>
   </define>
   <define name="meta.DC.identifier">

@@ -89,7 +89,7 @@ broadcast =
     meta.DC.publisher?,
     meta.DC.creator?,
     meta.DC.copyright?,
-    meta.DC.source
+    meta.DC.source?
   }
 meta.DC.identifier =
   element meta {
