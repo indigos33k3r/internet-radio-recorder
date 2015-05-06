@@ -64,6 +64,9 @@ END_OF_XML_PREAMBLE
     done
     echo "</broadcasts>" >> "$dst"~
 
+    # timezone fix resulting xml - add colon in case
+    sed --in-place --posix --regexp-extended --expression 's/([0-9]{4}-[0-9]{2}-[0-9]{2})[T ]([0-9]{2}:[0-9]{2}:[0-9]{2}[+-][0-9]{2})00/\1T\2:00/g' "$dst"~
+
     printf "%s/" "$1" 1>&2
     xmllint --nowarning --nsclean --format --encode UTF-8 --relaxng ../../../../../app/pbmi2003-recmod2012/broadcast.rng --output "$dst" "$dst"~ && rm "$dst"~
     if [ $? -eq 0 ] ; then
