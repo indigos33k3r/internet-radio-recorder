@@ -47,6 +47,7 @@ else
   while [ "$1" != "" ]
   do
     cd "$cwd" && cd "$1"
+    prefix="$(pwd | egrep -hoe '[^/]+/[0-9]{4}/[0-9]{2}/[0-9]{2}')"
     date="$(pwd | egrep -hoe '[0-9]{4}/[0-9]{2}/[0-9]{2}' | tr '/' '-')"
 
     dst="index.xml"
@@ -58,9 +59,14 @@ else
 END_OF_XML_PREAMBLE
     for xml in ????\ *.xml
     do
+      xmllint --nowarning --noout "$xml" || { echo "not well-formed: $xml" 1>&2 && continue ; }
+      # timezone fix each xml in place?
       grep -hoe "^\s*<broadcast\s[^>]*" "$xml" >> "$dst"~               # start tag without closing >
       echo " modified='$(date --reference="$xml" +\%F'T'\%T\%:z)'>" >> "$dst"~  # additional attribute: file modification time
-      grep -v '^<!-- '  "$xml" | tail -n +4 >> "$dst"~                                      # rest of the broadcast xml file
+      grep 'DC.identifier' "$xml" 1>/dev/null 2>/dev/null || {          # amend identifier if missing.
+        echo "  <meta content='$prefix/$(basename "$xml" .xml | sed -e "s/&/\&amp;/g" -e "s/'/\&apos;/g")' name='DC.identifier'/>" >> "$dst"~
+      }
+      grep -v '^<!-- ' "$xml" | grep -v "<meta content='' " | tail -n +4 >> "$dst"~ # rest of the broadcast xml file
     done
     echo "</broadcasts>" >> "$dst"~
 
