@@ -4,7 +4,7 @@
 // moment.lang("de");
 var canonical_url = ('' + window.location).replace(/\.xml$/,'');
 $('.canonical-url').text( canonical_url );
-$('.base-url').text( canonical_url.replace(/\/stations\/[^\/]+\/\d{4}\/\d{2}\/\d{2}\/(index|\d{4} .+)$/, '') );
+$('.base-url').text( canonical_url.replace(/\/stations\/[^\/]+\/\d{4}\/\d{2}\/\d{2}\/(index|\d{4}%20.+)$/, '') );
 
 var canonical_path = window.location.pathname.replace(/\.xml$/,'');
 var dtstart = moment( $("meta[name='DC.format.timestart']").attr('content') );
