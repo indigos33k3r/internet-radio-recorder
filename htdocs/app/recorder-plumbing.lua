@@ -115,6 +115,8 @@ end
 function http_400_bad_request(...)
   io.write('HTTP/1.1 400 Bad Request', '\n')
   io.write('Content-Type: text/plain', '\n')
+  -- http://www.w3.org/TR/CSP/#example-policies
+  io.write("Content-Security-Policy: default-src 'none'", '\n')
   io.write('Server: RadioPi 2013/lua', '\n')
   io.write('\n')
   io.write(...)
@@ -126,6 +128,8 @@ end
 function http_303_see_other(uri, msg, expires)
   io.write('HTTP/1.1 303 See Other', '\n')
   io.write('Content-Type: text/plain', '\n')
+  -- http://www.w3.org/TR/CSP/#example-policies
+  io.write("Content-Security-Policy: default-src 'none'; ", '\n')
   io.write('Server: RadioPi 2013/lua', '\n')
   if expires then
     io.write('Expires: ', expires, '\n')
