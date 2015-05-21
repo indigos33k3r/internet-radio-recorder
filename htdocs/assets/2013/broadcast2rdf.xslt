@@ -34,6 +34,7 @@
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
   xmlns:rdfs="http://www.w3schools.com/RDF/rdf-schema.xml"
   xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xmlns:xdt="http://www.w3.org/2005/xpath-datatypes#"
   xmlns:dct="http://purl.org/dc/terms/"
   xmlns:dctype="http://purl.org/dc/dcmitype/"
   xmlns:freq="http://purl.org/cld/freq/"
@@ -141,7 +142,7 @@
           <tl:end rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">
             <xsl:value-of select="rec:meta[@name='DC.format.timeend']/@content"/>
           </tl:end>
-          <tl:durationXSD rdf:datatype="http://www.w3.org/2001/XMLSchema#duration"><!--
+          <tl:durationXSD rdf:datatype="http://www.w3.org/2005/xpath-datatypes#dayTimeDuration"><!--
             -->PT<xsl:value-of select="format-number(rec:meta[@name='DC.format.duration']/@content,0)"/>S<!--
           --></tl:durationXSD>
           <tl:durationInt rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">
@@ -245,7 +246,7 @@
           <dct:extent>
             <xsl:comment>http://wiki.dublincore.org/index.php/User_Guide/Publishing_Metadata#dcterms:extent</xsl:comment>
             <rdf:Description about="http://purl.org/cld/freq/hourly/PT1H">
-              <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#duration">PT1H</rdfs:label>
+              <rdfs:label rdf:datatype="http://www.w3.org/2005/xpath-datatypes#dayTimeDuration">PT1H</rdfs:label>
             </rdf:Description>
           </dct:extent>
         </rdf:Description>
