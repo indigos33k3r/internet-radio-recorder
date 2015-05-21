@@ -26,9 +26,9 @@ ul.buttongroup li {
 }
 ul.buttongroup li a {
   display:    block;
-  padding:    0.5ex;
+  padding:    0.45ex;
   text-align: center;
-  min-width:  3.5ex;
+  min-width:  3.25ex;
   min-height: 4.5ex;
 }
 ul#whatsonnow li a {
