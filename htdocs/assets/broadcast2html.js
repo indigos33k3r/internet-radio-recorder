@@ -19,12 +19,12 @@ else
 
 // display podcast links
 var podasts_json_url = canonical_path + '.json';
-$.ajax({ url: podasts_json_url, cache: true, dataType: 'json' }).done( function( data ) {
+$.ajax({ url: podasts_json_url, cache: true, dataType: 'json' }).success( function( data ) {
   // display mp3/enclosure dir link
   var enclosure_mp3_url = canonical_path.replace(/\/stations\//,'/enclosures/') + '.mp3';
   var enclosure_dir_url = enclosure_mp3_url.replace(/[^\/]+$/,'');
   $( 'a#enclosure_link' ).attr('href', enclosure_dir_url);
-  $.ajax({ url: enclosure_mp3_url, type: 'HEAD', cache: true, }).done( function() {
+  $.ajax({ url: enclosure_mp3_url, type: 'HEAD', cache: true, }).success( function() {
     $( 'html' ).addClass('has_enclosure_mp3');
     $( 'a#enclosure_link' ).attr('href', enclosure_mp3_url);
     $( 'a#enclosure_link' ).attr('title', "Download: Rechte Maustaste + 'Speichern unter...'");
@@ -62,7 +62,7 @@ $( '#tomorrow'  ).attr('href', '../../../' + moment(dtstart).add('days', 1).form
 $( '#next_week' ).attr('href', '../../../' + moment(dtstart).add('days', 7).format() );
 
 // add all day broadcasts
-$.ajax({ url: '.', type: 'GET', cache: true, dataType: 'xml', }).done( function(xmlBody) {
+$.ajax({ url: '.', type: 'GET', cache: true, dataType: 'xml', }).success( function(xmlBody) {
   var hasRecording = false;
   var allLinks = $(xmlBody).find('a').map( function() {
     var me = $(this);
@@ -84,7 +84,7 @@ $.ajax({ url: '.', type: 'GET', cache: true, dataType: 'xml', }).done( function(
 });
 
 // add whatsonnow station list
-$.ajax({ url: '../../../..', type: 'GET', cache: true, dataType: 'xml', }).done( function(xmlBody) {
+$.ajax({ url: '../../../..', type: 'GET', cache: true, dataType: 'xml', }).success( function(xmlBody) {
   // scan all stations/*/
   var allStations = $(xmlBody).find( "a[href $= '/']" ).map( function() {
     var me = $(this);
@@ -93,7 +93,7 @@ $.ajax({ url: '../../../..', type: 'GET', cache: true, dataType: 'xml', }).done(
       return null;
     me.attr('href', '../../../../' + url_.replace(/\/$/,'') + '/now');
  
-    $.ajax({ url: me.attr('href'), type: 'GET', cache: true, dataType: 'xml', }).done( function(xmlBody) {
+    $.ajax({ url: me.attr('href'), type: 'GET', cache: true, dataType: 'xml', }).success( function(xmlBody) {
       var title = $(xmlBody).find("meta[name = 'DC.title']").attr('content');
       //me.html('<span class="station">' + me.html() + '</span>' );
       me.wrapInner('<span class="station">');
