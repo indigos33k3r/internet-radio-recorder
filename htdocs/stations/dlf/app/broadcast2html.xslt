@@ -43,6 +43,6 @@
     <xsl:variable name="day" select="substring($dtstart, 9, 2)"/>
     <xsl:variable name="hour" select="substring($dtstart, 12, 2)"/>
     <xsl:variable name="minute" select="substring($dtstart, 15, 2)"/>
-    <a id="via" class="via" href="http://www.deutschlandfunk.de/programmvorschau.281.de.html?drsm:date={$day}.{$month}.{$year}#anc{$hour}{$minute}">Sendung</a>,
+    <a id="via" class="via" href="http://www.deutschlandfunk.de/programmvorschau.281.de.html?drbm:date={$day}.{$month}.{$year}#anc{$hour}{$minute}">Sendung</a>,
   </xsl:template>
 </xsl:stylesheet>
