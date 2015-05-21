@@ -41,7 +41,7 @@ local ref = os.getenv('HTTP_REFERER')
 if not station_name and ref        then station_name = ref:match('stations/([^/]+)') end
 
 local st = Station.from_id( station_name )
-if not st then http_400_bad_request('Cannot guess station. Give me either\n', '- GET param station=...\n', '- GET param uri=...\n', '- a referer\n\n') end
+if not st then http_400_bad_request('Unknown station \'', station_name, '\'. Give me either\n', '- GET param station=...\n', '- GET param uri=...\n', '- a referer\n\n') end
 
 local t = parse_iso8601( params.t )
 local bc = st:broadcast_now(t or os.time(), true, false)
