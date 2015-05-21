@@ -2,8 +2,13 @@
 <!--
   Turn broadcast xml into html, used client-side, by the browser.
 
-  Supposed to be either linked to from or located in station/<name>/app/broadcast2html.xslt,
-  so each station could provide a custom skin.
+  Supposed to be either
+  - linked to (ln -s) from stations/<name>/app/broadcast2html.xslt
+  - xsl:import-ed from a custom stations/<name>/app/broadcast2html.xslt,
+  - automatically rewritten to from stations/<name>/app/broadcast2html.xslt
+  so each station can provide a custom skin but uses the generic one as a fallback.
+
+  See stations/dlf/app/broadcast2html.xslt for an example for xsl:import.
 
  Copyright (c) 2013-2015 Marcus Rohrmoser, https://github.com/mro/radio-pi
 
@@ -68,7 +73,11 @@
   </xsl:template>
 
   <xsl:template name="station_rdf_name">
-    <xsl:variable name="station_rdf" select="$station_about_rdf/rdf:RDF/rdf:Description[@rdf:about = '']"/>
+    <xsl:variable name="station_rdf0" select="$station_about_rdf/rdf:RDF/foaf:Document[ '' = @rdf:about ]"/>
+    <xsl:variable name="station_rdf1" select="$station_about_rdf/rdf:RDF/*[ $station_rdf0/foaf:primaryTopic/@rdf:resource = @rdf:about ]"/>
+    <xsl:variable name="station_rdf" select="$station_about_rdf/rdf:RDF/rdf:Description">
+      <!-- currently there's only 1 rdf:Description, all others are of different dctype -->
+    </xsl:variable>
     <xsl:choose>
       <xsl:when test="$station_rdf">
         <a title="{$station_rdf/foaf:name} Programm" href="{$station_rdf/../dctype:Text/@rdf:about}">
@@ -85,7 +94,9 @@
   <xsl:template name="station_rdf_stream">
     <xsl:variable name="stream_rdf" select="$station_about_rdf/rdf:RDF/dctype:Sound[@rdf:about]"/>
     <xsl:choose>
-      <xsl:when test="$stream_rdf"><a style="color:green" href="{$stream_rdf/@rdf:about}">Live Stream</a></xsl:when>
+      <xsl:when test="$stream_rdf">
+      	<a style="color:green" class="location" title="{$stream_rdf/@rdf:about}" href="{$stream_rdf/@rdf:about}">Live Stream</a>
+      </xsl:when>
       <xsl:otherwise>
         <!-- keep the fallback to jquery + GET station.cfg for now: -->
         <a id="stream" style="display:none">Live Stream</a>
@@ -118,41 +129,43 @@
           <meta content="{@content}" name="{@name}"/>
         </xsl:for-each>
       </head>
-      <body id="broadcast">
+      <body id="broadcast" class="vevent">
         <noscript><p>JavaScript ist aus, es geht zwar (fast) alles auch ohne, aber mit ist's <b>schöner</b>. (Zeitgleiche Sendungen anderer Sender, Datumsformatierung, Aufnahmen wieder stornieren, Tagesübersicht, RDF Url)</p></noscript>
         <ul id="whatsonnow" class="buttongroup"><li>Dummy</li></ul>
         <ul id="navigation" class="buttongroup" title="Navigation">
           <li><a id="prev_week" href="../../../../../app/now.lua?t=P-7D" title="Woche vorher">&lt;&lt;&lt;</a></li>
           <li><a id="yesterday" href="../../../../../app/now.lua?t=P-1D" title="Tag vorher">&lt;&lt;</a></li>
           <li><a href="../../../../../app/prev.lua" rel="prev" title="Sendung vorher">&lt;</a></li>
-          <li><a href="../../../now">aktuell</a></li>
+          <li class="now"><a href="../../../now">aktuell</a></li>
           <li><a href="../../../../../app/next.lua" rel="next" title="Sendung nachher">&gt;</a></li>
           <li><a id="tomorrow" href="../../../../../app/now.lua?t=P1D" title="Tag nachher">&gt;&gt;</a></li>
           <li><a id="next_week" href="../../../../../app/now.lua?t=P7D" title="Woche nachher">&gt;&gt;&gt;</a></li>
         </ul>
-        <h2 id="series">
-          <xsl:value-of select="rec:meta[@name='DC.title.series']/@content"/>
-        </h2>
-        <h1 id="title">
-          <xsl:value-of select="rec:meta[@name='DC.title']/@content"/>
-        </h1>
-        <h2 id="summary">
-          <xsl:value-of select="rec:meta[@name='DC.title.episode']/@content"/>
-        </h2>
+        <div class="summary">
+        	<h2 id="series">
+          	<xsl:value-of select="rec:meta[@name='DC.title.series']/@content"/>
+        	</h2><xsl:text> </xsl:text>
+        	<h1 id="title">
+          	<xsl:value-of select="rec:meta[@name='DC.title']/@content"/>
+        	</h1>
+        </div>
+        	<h2 id="summary">
+          	<xsl:value-of select="rec:meta[@name='DC.title.episode']/@content"/>
+        	</h2>
         <p>
           <xsl:call-template name="broadcast_station_source"/>
           <xsl:call-template name="station_rdf_name"/>
           <xsl:call-template name="station_rdf_stream"/>
         </p>
         <h3 id="date">
-          <span id="dtstart" title="{rec:meta[@name='DC.format.timestart']/@content}"><xsl:value-of select="translate(rec:meta[@name='DC.format.timestart']/@content, 'T', ' ')"/></span>
+          <span id="dtstart" class="dtstart" title="{rec:meta[@name='DC.format.timestart']/@content}"><xsl:value-of select="translate(rec:meta[@name='DC.format.timestart']/@content, 'T', ' ')"/></span>
           bis
-          <span id="dtend" title="{rec:meta[@name='DC.format.timeend']/@content}"><xsl:value-of select="substring-after(rec:meta[@name='DC.format.timeend']/@content, 'T')"/></span>
+          <span id="dtend" class="dtend" title="{rec:meta[@name='DC.format.timeend']/@content}"><xsl:value-of select="substring-after(rec:meta[@name='DC.format.timeend']/@content, 'T')"/></span>
         </h3>
         <p class="image">
           <img alt="Bild zur Sendung" id="image" class="border" src="{rec:meta[@name='DC.image']/@content}"/>
         </p>
-        <div id="content" class="border">
+        <div id="content" class="description border">
           <p>
           <xsl:call-template name="linefeed2br">
             <xsl:with-param name="string" select="rec:meta[@name='DC.description']/@content"/>
@@ -185,7 +198,7 @@
           -->
           Powered by <a href="https://github.com/mro/radio-pi">github.com/mro/radio-pi</a><br class="br"/>
           <a href="http://www.w3.org/RDF/">RDF</a>:<br class="br"/>
-          <tt>$ <a href="http://librdf.org/raptor/rapper.html">rapper</a> -i grddl -o turtle '<span class="canonical-url">&lt;url from address bar&gt;</span>'</tt><br class="br"/>
+          <tt>$ <a href="http://librdf.org/raptor/rapper.html">rapper</a> -i grddl -o turtle '<span class="canonical-url url">&lt;url from address bar&gt;</span>'</tt><br class="br"/>
           <tt>$ <a href="http://librdf.org/raptor/rapper.html">rapper</a> -i grddl -o rdfxml-abbrev '<span class="canonical-url">&lt;url from address bar&gt;</span>'</tt><br class="br"/>
           <tt>$ <a href="http://xmlsoft.org/XSLT/xsltproc.html">xsltproc</a> --stringparam canonical_url '<span class="canonical-url">&lt;url from address bar&gt;</span>' '<span class="base-url">&lt;url from address bar&gt;/../../../../../..</span>/assets/2013/broadcast2rdf.xslt' '<span class="canonical-url">&lt;url from address bar&gt;</span>.xml'</tt>
         </p>
@@ -210,6 +223,7 @@
         <link href="../../../../../assets/favicon-32x32.png" rel="shortcut icon" type="image/png" />
         <link href="../../../../../assets/favicon-512x512.png" rel="apple-touch-icon" type="image/png" />
         <link href="../../../app/style.css" rel="stylesheet" type="text/css"/>
+        <link rel="profile" href="http://microformats.org/profile/hcalendar"/>
       </head>
       <body>
         <noscript><p>JavaScript ist aus, es geht zwar (fast) alles auch ohne, aber mit ist's <b>schöner</b>. (Zeitgleiche Sendungen anderer Sender, Datumsformatierung, Aufnahmen wieder stornieren, Tagesübersicht, RDF Url)</p></noscript>
@@ -218,14 +232,16 @@
           <xsl:for-each select="rec:broadcast">
             <xsl:variable name="rowid" select="translate(substring(rec:meta[@name='DC.format.timestart']/@content, 11, 6), ':', '_')"/>
             <xsl:variable name="duration_minutes" select="number(rec:meta[@name='DC.format.duration']/@content) div 60"/>
-            <li class="broadcast" id="{$rowid}">
+            <li class="broadcast vevent" id="{$rowid}">
               <a class="dtstart" href="#{$rowid}" title="{rec:meta[@name='DC.format.timestart']/@content}"><xsl:value-of select="substring(rec:meta[@name='DC.format.timestart']/@content, 12, 5)"/></a>
+              <span class="dtend" title="{rec:meta[@name='DC.format.timeend']/@content}"/>
               <xsl:text> </xsl:text>
-              <a href="../../../../{rec:meta[@name='DC.identifier']/@content}">.</a>
+              <a class="url" href="../../../../{rec:meta[@name='DC.identifier']/@content}">.</a>
               <xsl:text> </xsl:text>
               <span class="duration" title="PT{$duration_minutes}M"><xsl:value-of select="$duration_minutes"/>"</span>
               <xsl:text> </xsl:text>
-              <span class="title" title="{rec:meta[@name='DC.description']/@content}"><xsl:value-of select="rec:meta[@name='DC.title']/@content"/></span>
+              <span class="title summary" title="{rec:meta[@name='DC.description']/@content}"><xsl:value-of select="rec:meta[@name='DC.title']/@content"/></span>
+              <span class="description" style="display:none"><xsl:value-of select="rec:meta[@name='DC.description']/@content"/></span>
             </li>
           </xsl:for-each>
         </ol>
@@ -240,7 +256,7 @@
           <img alt="CSS ist valide!" src="http://jigsaw.w3.org/css-validator/images/vcss-blue" style="border:0;width:88px;height:31px"/>
           </a>
           -->
-          Powered by <a href="https://github.com/mro/radio-pi">github.com/mro/radio-pi</a><br class="br"/>
+          Powered by <a href="http://purl.mro.name/radio-pi/">github.com/mro/radio-pi</a><br class="br"/>
           <a href="http://www.w3.org/RDF/">RDF</a>:<br class="br"/>
           <tt>$ <a href="http://librdf.org/raptor/rapper.html">rapper</a> -i grddl -o turtle '<span class="canonical-url">&lt;url from address bar&gt;</span>'</tt><br class="br"/>
           <tt>$ <a href="http://librdf.org/raptor/rapper.html">rapper</a> -i grddl -o rdfxml-abbrev '<span class="canonical-url">&lt;url from address bar&gt;</span>'</tt><br class="br"/>
