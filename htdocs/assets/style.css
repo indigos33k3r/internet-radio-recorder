@@ -89,6 +89,17 @@ input[type="submit"] {
 #allday {
   font-size: 12px;
 }
+#allday a.is_current > span {
+  background: none repeat scroll 0 0 orange;
+  color: #262626;
+  border-radius: 3px;
+  padding: 4px;
+  margin: 0 0 0 1ex;
+  text-decoration: blink;
+}
+*.is_current *.now {
+  background: none repeat scroll 0 0 orange;
+}
 
 ul > li > a.has_podcast:before { content:"* "; }
 

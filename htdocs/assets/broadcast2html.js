@@ -61,25 +61,50 @@ $( '#yesterday' ).attr('href', '../../../' + moment(dtstart).subtract('days', 1)
 $( '#tomorrow'  ).attr('href', '../../../' + moment(dtstart).add('days', 1).format() );
 $( '#next_week' ).attr('href', '../../../' + moment(dtstart).add('days', 7).format() );
 
+function finishAlldayCurrentEntry(a) {
+  a.removeClass('is_past').addClass('is_current').append( jQuery('<span/>').text('jetzt') );
+  // pastBC.append('<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="150" height="150"><rect width="90" height="90" x="30" y="30" style="fill:#0000ff;fill-opacity:0.75;stroke:#000000"/></svg>');
+}
+
 // add all day broadcasts
 $.ajax({ url: '.', type: 'GET', cache: true, dataType: 'xml', }).success( function(xmlBody) {
   var hasRecording = false;
+  var pastBC = null;
   var allLinks = $(xmlBody).find('a').map( function() {
     var me = $(this);
-    var txt = me.text();
-    if( 'Parent Directory' == txt )
+    if( '../' == me.attr('href') )                    // ignore parent link
       return null;
-    txt = txt.replace(/^(\d{2})(\d{2})\s+(.*?)(\.xml)?$/, '$1:$2 $3');
-    if( hasRecording )
+    if( hasRecording )                                // previous entry was a .json recording marker
       me.addClass('has_podcast');
-    if( hasRecording = me.attr("href").search(/\.json$/i) >= 0 )
+    if( hasRecording = me.attr('href').search(/\.json$/i) >= 0 ) // remember and swallow .json
       return null;
-    me.attr('href', me.attr('href').replace(/\.xml$/, '') );
-    me.text( txt );
+    var txt = me.text().replace(/\.xml$/, '');
+    var ma = txt.match(/^(\d{2})(\d{2})\s+(.*?)$/);   // extract time and title
+    if( ma ) {
+      var t0 = dtstart.hours(ma[1]).minutes(ma[2]).seconds(0); // assumes same day
+      me.attr('title', t0.format());
+      me.text( t0.format('HH:mm') + ' ' + ma[3] );
+      // set past/current/future class
+      if( now < t0 ) {
+        if(pastBC) {
+          finishAlldayCurrentEntry(pastBC);
+          pastBC = null;
+        }
+        me.addClass('is_future');
+      } else {
+        pastBC = me;
+        me.addClass('is_past');
+      }
+    } else {
+      me.text(txt);                                   // index usually.
+    }
+    me.attr('href', me.attr('href').replace(/\.xml$/, '') );  // make canonical url
     return this;
   });
+  if( pastBC && now < dtstart.hours(24).minutes(0).seconds(0) )
+    finishAlldayCurrentEntry(pastBC);
   $( '#allday' ).html( allLinks );
-  $( '#allday a' ).wrap("<li>");
+  $( '#allday a' ).wrap('<li>');
   $( '#allday' ).show();
 });
 
@@ -91,19 +116,18 @@ $.ajax({ url: '../../../..', type: 'GET', cache: true, dataType: 'xml', }).succe
     var url_ = me.attr('href');
     if( url_.match(/^\.\.\/$/) )
       return null;
+    // url cosmetic
     me.attr('href', '../../../../' + url_.replace(/\/$/,'') + '/now');
- 
+    // query current broadcast
     $.ajax({ url: me.attr('href'), type: 'GET', cache: true, dataType: 'xml', }).success( function(xmlBody) {
       var title = $(xmlBody).find("meta[name = 'DC.title']").attr('content');
-      //me.html('<span class="station">' + me.html() + '</span>' );
       me.wrapInner('<span class="station">');
       if( title )
-        me.append('<br class="br"/>', '<span class="broadcast">' + title + '</span>' );
-    }).fail( function() {
-      // disable broken hrefs
-      me.attr('href', null);
+        me.append('<br class="br"/>', jQuery('<span class="broadcast"/>').text(title) );
+    }).error( function() {
+      // me.attr('href', null);  // disable broken
+      me.parent().remove();      // remove broken
     });
-
     return this;
   });
   $( '#whatsonnow' ).html( allStations );
