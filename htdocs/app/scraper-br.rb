@@ -154,7 +154,7 @@ module Recorder
         doc.css('div.day_123 div h4').each do |day_node|
           day_match = /(\d{2})\.(\d{2})/.match Scraper.clean(day_node.text)
           raise "Cannot parse day '#{day_node}'" if day_match.nil?
-          day_node.parent.css('a.link_broadcast').each do |bc_node|
+          day_node.parent.css('a.link_broadcastScheduleSlot').each do |bc_node|
             time_node = bc_node.at_css('strong')
             time_match = /(\d{2}):(\d{2})/.match( time_node.text )
             raise "Cannot parse time '#{time_node}'" if time_match.nil?
