@@ -79,7 +79,7 @@ class Thread
 end
 
 
-require 'uri'
+require 'addressable/uri'
 
 module Recorder
 
@@ -94,8 +94,8 @@ module Recorder
         file.each_line do |line|
           case line
           when /title\s*=\s*'(.*)'/   then @title = $1
-          when /program_url\s*=\s*'(.*)'/ then @program_url = URI::parse($1)
-          when /stream_url\s*=\s*'(.*)'/  then @stream_url = URI::parse($1)
+          when /program_url\s*=\s*'(.*)'/ then @program_url = Addressable::URI::parse($1)
+          when /stream_url\s*=\s*'(.*)'/  then @stream_url = Addressable::URI::parse($1)
           when /day_start\s*=\s*'(\d{4})'/ then @day_start = $1
           when /timezone\s*=\s*'(.*)'/  then @timezone = $1
           end

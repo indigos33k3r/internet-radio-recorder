@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    addressable (2.3.8)
     nokogiri (1.5.11)
     taglib-ruby (0.4.0)
 
@@ -8,5 +9,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  addressable
   nokogiri (~> 1.5)
   taglib-ruby (~> 0.4)
