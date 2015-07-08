@@ -63,6 +63,8 @@ if arg[1] == '--stdin' then
   end
   -- table.sort(metas, function(a,b) return a.DC_format_timestart < b.DC_format_timestart end)
   local time_limit_min = os.time()
+  -- DO only overwrite already started or past broadcasts if explicitely told
+  if arg[2] == '--update-past' then time_limit_min = 0 end
   local process = function(meta)
     local bc = Broadcast.from_meta(meta)
     if bc:dtstart() <= time_limit_min then return bc:filename('xml'),'ignored' end -- never overwrite already started or past broadcasts
