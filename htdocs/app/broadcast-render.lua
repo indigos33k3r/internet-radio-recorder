@@ -74,7 +74,7 @@ if arg[1] == '--stdin' then
   for _,meta in ipairs(metas) do
     local ok,file,msg,err = pcall(process, meta)
     if ok then
-      io.stderr:write(msg, ' ', file, "\n")
+      -- io.stderr:write(msg, ' ', file, "\n")
     else
       io.stderr:write('error: ', file, "\n")
     end
