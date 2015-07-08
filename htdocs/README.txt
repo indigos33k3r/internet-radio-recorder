@@ -5,7 +5,7 @@ Scrapes the websites to get proper descriptions, then does a match and schedules
 
 Built lightweight to run nicely on a raspi - http://www.raspberrypi.org/ - or any other debian-like system.
 
-https://github.com/mro/radio-pi
+http://purl.mro.name/radio-pi/
 
 
 INSTALLATION
