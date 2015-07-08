@@ -274,15 +274,9 @@ module Recorder
         when :future
           self.update_broadcasts_between Time.now, Time.now + 10*365*24*60*60, true
         when :incremental
-          # rescrape next hour
-          tmin = Time.now.localtime
-          self.update_broadcasts_between tmin, tmin + 65 * 60, true
-          # rescrape +12
-          tmin = Time.now.localtime + 12*60*60 + 5*60
-          self.update_broadcasts_between tmin, tmin + 65 * 60, true
-          # rescrape next hour three days ahead
-          tmin = Time.now.localtime + 3*24*60*60 + 5*60
-          self.update_broadcasts_between tmin, tmin + 65 * 60, true
+          [0, 12, 3*24, 7*24, 49*24].collect{|dt| Time.now.localtime + dt*60*60}.peach(4) do |tmin|
+            self.update_broadcasts_between tmin, tmin + 65 * 60, true
+          end
         else
           display_updatebroadcast_help if opts.error?
         end
