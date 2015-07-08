@@ -236,6 +236,7 @@ end
 ##  the actual commandline script interface impl.
 ###############################################################################
 require 'getoptlong'
+require 'peach'
 
 module Recorder
   class Scraper

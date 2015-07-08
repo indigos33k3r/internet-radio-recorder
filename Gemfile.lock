@@ -3,6 +3,7 @@ GEM
   specs:
     addressable (2.3.8)
     nokogiri (1.5.11)
+    peach (0.5.1)
     taglib-ruby (0.4.0)
 
 PLATFORMS
@@ -11,4 +12,5 @@ PLATFORMS
 DEPENDENCIES
   addressable
   nokogiri (~> 1.5)
+  peach
   taglib-ruby (~> 0.4)
