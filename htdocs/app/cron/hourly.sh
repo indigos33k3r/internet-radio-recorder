@@ -19,6 +19,8 @@
 #
 # MIT License http://opensource.org/licenses/MIT
 
+parallel --version >/dev/null || { echo "install 'parallel'" && exit 1;}
+
 cd "$(dirname "$0")"/../..
 me="$(basename "$0")"
 
@@ -27,13 +29,16 @@ for scraper in stations/*/app/scraper.??
 do
   case "$scraper" in
     *.rb)
-      nice bundle exec $scraper --incremental 2>> log/"$me".stderr.log | app/broadcast-render.lua --stdin 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log
+      echo "bundle exec $scraper --incremental"
     ;;
     *)
-      nice $scraper --incremental 2>> log/"$me".stderr.log | app/broadcast-render.lua --stdin 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log
+      echo "$scraper --incremental"
     ;;
   esac
-done
+done \
+| parallel 2>> log/"$me".stderr.log \
+| app/broadcast-render.lua --stdin 2>> log/"$me".stderr.log \
+1>> log/"$me".stdout.log
 
 nice app/calendar.lua stations/* podcasts/* 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log
 
