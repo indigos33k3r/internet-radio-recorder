@@ -35,175 +35,111 @@
 require File.join(File.dirname(File.expand_path(__FILE__)),'..','..','..','app','recorder')
 
 require 'open-uri'
-require 'rubygems'
-require 'nokogiri'
 
 module Recorder
+  class BroadcastM945 < Broadcast
+
+    @@PAT_TIME = /^\s*([0-2]\d):(\d\d)\s*$/
+
+    def self.dtstart t0, tr
+      t = tr.at_css('div.time')
+      return nil if t.nil?
+      m = @@PAT_TIME.match(t.text)
+      m.nil? ? nil : Time.mktime(t0.year, t0.month, t0.day, m[1], m[2])
+    end
+
+    def initialize station, t0, url0, tr
+      title = tr.at_css('a')
+      dts = BroadcastM945::dtstart(t0, tr)
+      tr.at_css('div.time').remove
+      # def initialize station, dtstart, title, src_url
+      super(station, dts, title.text_clean, url0)
+
+      @DC_language = 'de'
+      @DC_copyright =  "© #{Time.now.year} http://www.m945.de/"
+      @DC_title = title.text_clean
+      @DC_subject = url0 + title[:href] unless title[:href].nil? || '' == title[:href]
+      @DC_format_timestart = dts
+
+      title.remove
+      txt = tr.text_clean_br
+      @DC_description = txt || ''
+
+      @DC_publisher =  'http://www.m945.de/'
+    end
+
+    # attr_accessor :DC_title_series, :DC_title_episode
+    # attr_accessor :DC_image
+    # attr_accessor :DC_author, :DC_creator
+  end
+
+  # scraping actually happens in BroadcastM945.initialize
   class ScraperM945 < Scraper
 
+    def initialize
+      super(Station.new( File.dirname(File.dirname(File.expand_path(__FILE__))) ))
+    end
+
+    # should go into recorder.rb
     def download url
       Nokogiri::HTML(open(url))
     end
 
-    def initialize
-      super(Station.new( File.dirname(File.dirname(File.expand_path(__FILE__))) ))
-      @year_for_month = {}
+    def url_for_day t0
+      @station.program_url + "?daterequest=#{t0.strftime('%F')}"
     end
 
-    def update_broadcasts_between t_min, t_max, force
-      $stderr.puts "#{self.class}.update_index_between  #{t_min}  -  #{t_max}"
-      $stdout.puts "-- #{__FILE__}"
-
-      t_min_day = station.day_start_for_day t_min
-      t_max_day = station.day_start_for_day t_max
-
-      # $stderr.puts "t_min_day: #{t_min_day}    for   #{t_min}"
-      # $stderr.puts "t_max_day: #{t_max_day}    for   #{t_max}"
-
-      day_queue = Queue.new
-      bc_queue = Queue.new
-      sema4 = Mutex.new
-
-      # scrape calendar from program page
-      day_count = 0
-      each_day(@station.program_url) do |url|
-        day_count += 1
-        # queue up each (day) page to scrape:
-        day_queue << proc do
-          sema4.synchronize { $stderr.puts url }
-          each_broadcast(url) do |broadcast|
-            # TODO apply tmin/tmax filter
-            if broadcast.dtstart < t_min || broadcast.dtstart > t_max
-              # $stderr.puts "skip   #{broadcast.to_s}"
-              next
-            end
-            next unless force || ! broadcast.exists?
-            # queue up each (broadcast) page to scrape:
-            bc_queue << proc do
-              begin
-                t0 = Time.now
-                doc = download(broadcast.src_url) # if force || ! broadcast.exists?
-                t1 = Time.now
-                scrape_broadcast( broadcast, doc ) unless doc.nil?
-                t2 = Time.now
-                sema4.synchronize do
-                  broadcast.to_lua $stdout, t0, t1, t2
-                  $stderr.puts "scraped #{broadcast.to_s} (#{t1-t0}s, #{t2-t1}s)"
-                end
-              rescue Exception => e
-                sema4.synchronize { $stderr.puts "error:  #{broadcast.src_url}\n#{e.class.to_s} #{e} #{e.backtrace.join("\n")}" }
-              end
-            end
-
-          end
-        end
-      end
-
-      # $stderr.puts "STARTING DAY scrape workers"
-      day_queue << Thread::END_OF_QUEUE
-      Thread.prepare_workers(10, day_queue).each {|w| w.join}
-
-      # $stderr.puts "STARTING BROADCAST scrape workers"
-      bc_queue << Thread::END_OF_QUEUE
-      Thread.prepare_workers(10, bc_queue).each {|w| w.join}
-
-      $stdout.flush
-    end
-
-  private
-
-    # scrape the url for week overview and yield urls
-    def each_day url, doc=download(url)
-    	1.upto(2).collect{|wp_num| url + ('?weekpart=' + wp_num.to_s)}.each do |url2|
-        doc2 = download(url2)
-        doc2.css('.wd a').each { |a_wday| yield url + a_wday[:href] }
-      end
-      doc
-    end
-
-    # scrape the url for broadcasts and yield times, titles, urls
-    def each_broadcast url, doc=download(url)
-      # $stderr.puts "#{self.class}.each_broadcast #{url}"
+    # scrape one day's program schedule
+    def scrape_day t0
+      url = url_for_day(t0)
+      $stderr.puts url
       begin
-        day_node = doc.at_css('#col-left h1')
-        day_match = /\s+(\d+)\.(\d+)\.(\d+)/.match day_node.text
-        raise "Cannot parse day '#{day_node}'" if day_match.nil?
-        day = day_match[1]
-        month = day_match[2]
-        year = day_match[3].to_i
-        year += 2000 if year < 1000
-        doc.css('#col-left .item').each do |bc_node|
-          time_node = bc_node.at_css('.time')
-          next if time_node.nil?
-          time_match = /(\d+):(\d+)/.match time_node.text
-          raise "Cannot parse time '#{time_node}'" if time_match.nil?
-
-          title_node = bc_node.at_css('.descr a')
-          title = Scraper.clean( title_node.text )
-          title_href = title_node[:href] || "\#"
-          title_node.remove
-
-          bc_node.css('.bold').each do |schedule_node|
-            schedule_node.remove unless /\s+bis\s+(\d+)\s+Uhr/.match( schedule_node.text ).nil?
+        doc = download url
+        prev_bc = nil					# lookahead: start time of next entry is end time of previous
+        doc.css('div.list > div.item').each do |tr|
+          dtstart = BroadcastM945::dtstart(t0, tr)
+          next if dtstart.nil?
+          bc = BroadcastM945.new @station, t0, url, tr
+          unless prev_bc.nil?
+            raise "oh" if bc.DC_format_timestart.nil?
+            prev_bc.DC_format_timeend = bc.DC_format_timestart
+            prev_bc.to_lua $stdout
           end
-
-          bc = Broadcast.new( station, Time.local(year,month,day,time_match[1],time_match[2],0), title, url + title_href )
-          bc.DC_title_series = Scraper.clean( bc_node.text )
-          yield bc
+          prev_bc = bc
         end
-        doc
+        raise "ouch" if prev_bc.nil?
+        prev_bc.DC_format_timeend = @station.curfew_for_day t0
+        prev_bc.to_lua $stdout
       rescue Exception => e
-        $stderr.puts $stderr.puts "error:  #{url}\n#{e.class.to_s} #{e} #{e.backtrace.join("\n")}"
+        $stderr.puts e
       end
     end
 
-    # scrape broadcast page
-    def scrape_broadcast bc, doc
-      bc.DC_language = doc.at_css('html > head > meta[http-equiv="Content-Language"]')['content']
-      raise "Couldn't find language in #{bc.to_s}" if bc.DC_language.nil?
-      #   broadcast[:last_modified] = Time.local(doc.at_css('html > head > meta[name="Last-Modified"]')['content'])
-      #   raise "Couldn't find last_modified in #{uri}" if broadcast[:last_modified].nil?
-      bc.DC_publisher = doc.at_css('html > head > meta[name="publisher"]')['content']
-      raise "Couldn't find publisher in #{uri}" if bc.DC_publisher.nil?
-      bc.DC_copyright = doc.at_css('html > head > meta[name="copyright"]')['content']
-      raise "Couldn't find copyright in #{uri}" if bc.DC_copyright.nil?
-
-      title_node = doc.at_css('#col-left h1')
-      raise "Couldn't find title in #{bc.to_s}" if title_node.nil?
-      bc.DC_title = Scraper.clean(title_node.text)
-
-      dtend_node = doc.at_css('.bold')
-      dtend_match = /von\s+(\d+)\s+bis\s+(\d+)\s+Uhr/.match( dtend_node.text ) unless dtend_node.nil?
-      raise "Couldn't find start/end in '#{dtend_node}'\nfor #{bc.dtstart}" if dtend_match.nil?
-
-      # $stderr.puts "dtstart: #{bc.dtstart} - #{dtend_match[2]}"
-
-      bc.DC_format_timestart = bc.dtstart
-      bc.DC_format_timeend = Time.local bc.dtstart.year, bc.dtstart.month, bc.dtstart.day, dtend_match[2].to_i, 0
-      bc.DC_format_timeend = bc.DC_format_timeend.add_one_day if bc.DC_format_timeend < bc.DC_format_timestart
-      bc.DC_format_duration = bc.DC_format_timeend - bc.DC_format_timestart
-
-      bc.DC_description = ''
-      doc.css('.floating').each do |p_node|
-        # http://rubyforge.org/pipermail/nokogiri-talk/2009-January/000031.html
-        p_node.search('br').each{ |br| br.replace(Nokogiri::XML::Text.new("\n", p_node.document))}
-        c = p_node.content
-        c.gsub! /[ \t]+/, ' '
-        bc.DC_description << c.strip << "\n\n"
-      end
-      bc.DC_description.gsub! /[ \t]*\n[ \t]*/, "\n"
-      bc.DC_description.gsub! /\n(\s*\n)+/, "\n\n"
-      bc.DC_description.strip!
-      
-      image_node = doc.at_css('#head_banner img')
-      bc.DC_image = bc.src_url + image_node[:src] unless image_node.nil?
+    def scrape_incremental
+      [0, 1, 7].collect{|dt| Time.now + dt*24*60*60}.each{|t0| scrape_day t0}
     end
   end
 end
 
 
-###############################################################################
-##  the actual commandline script interface
-###############################################################################
+case ARGV[0]
+  when '--incremental'
+    Recorder::ScraperM945.new.scrape_incremental
+    exit 0
+  when nil
+    $stdout.puts <<EOF_OF_HERE
+Rescrape broadcasts.
 
-Recorder::ScraperM945.new.run_update_broadcast
+  --new         all missing broadcasts (actually: all future broadcasts) (not implemented !!!)
+  --total       all broadcasts                                           (not implemented !!!)
+  --future      all future broadcasts                                    (not implemented !!!)
+  --incremental next hour, next hour tomorrow, +1 week (actually: all today, tomorrow, +1 week)
+
+EOF_OF_HERE
+    exit 0
+  else
+    $stderr.puts <<EOF_OF_HERE
+#{__FILE__} #{ARGV.join(' ')} not implemented.
+EOF_OF_HERE
+end
+exit 1

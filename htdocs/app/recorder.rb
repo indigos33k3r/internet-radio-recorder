@@ -78,6 +78,28 @@ class Thread
   end
 end
 
+require 'nokogiri'
+
+class Nokogiri::XML::Element
+  def text_clean
+    txt = self.text
+    txt.nil? ? txt : txt.gsub(/\s+/, ' ').strip
+  end
+
+  def text_clean_br
+    self.search('br').each{|br| br.replace(Nokogiri::XML::Text.new("\n", self.document))}
+    c = self.content
+    c.gsub! /[ \t]+/, ' '
+    c.strip
+  end
+
+  def text_clean_par
+    txt = ''
+    self.css('>p').each{|p_node| txt << p_node.text_clean_br << "\n\n"}
+    txt
+  end
+end
+
 
 require 'addressable/uri'
 
@@ -108,6 +130,12 @@ module Recorder
       raise "'timezone' not found in #{cfg_file}"   if @timezone.nil?
     end
 
+    def curfew_for_day day
+      m = /(\d{2})(\d{2})/.match self.day_start
+      raise "Ouch" if m.nil?
+      Time.local(day.year, day.month, day.day, m[1], m[2], 0).add_one_day
+    end
+
     def day_start_for_day day
       m = /(\d{2})(\d{2})/.match self.day_start
       raise "Ouch" if m.nil?
@@ -126,6 +154,11 @@ module Recorder
       @dtstart = dtstart
       @title = title
       @src_url = src_url
+    end
+
+    def DC_format_timeend= t
+      @DC_format_duration = (t - self.DC_format_timestart).to_i
+      @DC_format_timeend = t
     end
 
     def to_s
