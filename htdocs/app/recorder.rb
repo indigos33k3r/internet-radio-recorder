@@ -83,12 +83,13 @@ require 'nokogiri'
 class Nokogiri::XML::Element
   def text_clean
     txt = self.text
-    txt.nil? ? txt : txt.gsub(/\s+/, ' ').strip
+    txt.nil? ? txt : txt.gsub("\u00A0",' ').gsub(/\s+/, ' ').strip
   end
 
   def text_clean_br
     self.search('br').each{|br| br.replace(Nokogiri::XML::Text.new("\n", self.document))}
     c = self.content
+    c.gsub! "\u00A0", ' '	# nbsp
     c.gsub! /[ \t]+/, ' '
     c.strip
   end
@@ -96,7 +97,8 @@ class Nokogiri::XML::Element
   def text_clean_par
     txt = ''
     self.css('>p').each{|p_node| txt << p_node.text_clean_br << "\n\n"}
-    txt
+    txt.gsub! /\s*\n\s*\n\s*/, "\n\n"
+    txt.strip
   end
 end
 

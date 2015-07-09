@@ -90,13 +90,13 @@ module Recorder
           next if dtstart.nil?
           bc = BroadcastDLF.new @station, t0, url, tr
           unless prev_bc.nil?
-            raise "oh" if bc.DC_format_timestart.nil?
+            raise "DC_format_timestart nil" if bc.DC_format_timestart.nil?
             prev_bc.DC_format_timeend = bc.DC_format_timestart
             prev_bc.to_lua $stdout
           end
           prev_bc = bc
         end
-        raise "ouch" if prev_bc.nil?
+        raise "Finished but still no previous broadcast" if prev_bc.nil?
         prev_bc.DC_format_timeend = @station.curfew_for_day t0
         prev_bc.to_lua $stdout
       rescue Exception => e

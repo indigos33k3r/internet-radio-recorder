@@ -316,11 +316,11 @@ function Broadcast:remove(dry_run)
   io.write_if_changed(self:filename('xml'), nil)
 end
 
--- todo: merge with save_xml
 function Broadcast:to_xml(xml)
   -- TODO check time overlaps?
   if not xml then xml = {} end
-  table.insert( xml, '<broadcast>' )
+  table.insert( xml, '<!-- unorthodox relative namespace to enable http://www.w3.org/TR/grddl-tests/#sq2 without a central server -->' )
+  table.insert( xml, '<broadcast xml:lang="de" xmlns="../../../../../assets/2013/radio-pi.rdf">' )
   local row = {'    ', '<meta content=\'', self.id:escape_xml_attribute(), '\' name=\'', 'DC.identifier', '\'/>'}
   table.insert( xml, table.concat(row) )
   for _,k in ipairs({
@@ -343,23 +343,8 @@ function Broadcast:save_xml()
   local xml = {
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<?xml-stylesheet type="text/xsl" href="../../../app/broadcast2html.xslt"?>',
-    '<!-- unorthodox relative namespace to enable http://www.w3.org/TR/grddl-tests/#sq2 without a central server -->',
-    '<broadcast xml:lang="de" xmlns="../../../../../assets/2013/radio-pi.rdf">',
   }
-  local row = {'    ', '<meta content=\'', self.id:escape_xml_attribute(), '\' name=\'', 'DC.identifier', '\'/>'}
-  table.insert( xml, table.concat(row) )
-  for _,k in ipairs({
-    'DC.scheme', 'DC.language', 'DC.title', 'DC.title.series', 'DC.title.episode', 'DC.subject',
-    'DC.format.timestart', 'DC.format.timeend', 'DC.format.duration', 'DC.image',
-    'DC.description', 'DC.author', 'DC.publisher', 'DC.creator', 'DC.copyright', 'DC.source',
-  }) do
-    local v = self:pbmi()[ meta_key_to_lua(k) ]
-    if v then
-      local row = {'    ', '<meta content=\'', v:escape_xml_attribute(), '\' name=\'', k, '\'/>'}
-      table.insert( xml, table.concat(row) )
-    end
-  end
-  table.insert( xml, '</broadcast>' )
+  self:to_xml(xml)
   return io.write_if_changed(self:filename('xml'), table.concat(xml,"\n"))
 end
 
