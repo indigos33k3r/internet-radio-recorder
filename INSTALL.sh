@@ -90,7 +90,7 @@ else
 fi
 
 echo "$echo_prefix Prerequisites - apt packages"
-pkgs="adduser make"
+pkgs="adduser make parallel"
 
 ### job scheduler cron + at:
   pkgs="$pkgs cron at"
