@@ -176,39 +176,41 @@ module Recorder
       return nil if v.nil?
       v = v.to_iso8601 if v.kind_of? Time
       v = v.to_s
-      dst << '  ' << k << " = "
+      dst << "  #{k} = "
       dst << "'"
       dst << v.gsub("'", "\\\\'").gsub(/[\r\t ]*\n/, "\\n") # escape ' and \n
       dst << "',\n"
     end
 
     def to_lua dst,t_download_start=nil,t_scrape_start=nil,t_scrape_end=nil
-      dst << "-- comma separated lua tables, one per broadcast:\n"
-      dst << "{\n"
-      kv_to_lua(:t_download_start, t_download_start.to_f, dst) unless t_download_start.nil?
-      kv_to_lua(:t_scrape_start, t_scrape_start.to_f, dst) unless t_scrape_start.nil?
-      kv_to_lua(:t_scrape_end, t_scrape_end.to_f, dst) unless t_scrape_end.nil?
+      tmp = ''
+      tmp << "-- comma separated lua tables, one per broadcast:\n"
+      tmp << "{\n"
+      kv_to_lua(:t_download_start, t_download_start.to_f, tmp) unless t_download_start.nil?
+      kv_to_lua(:t_scrape_start, t_scrape_start.to_f, tmp) unless t_scrape_start.nil?
+      kv_to_lua(:t_scrape_end, t_scrape_end.to_f, tmp) unless t_scrape_end.nil?
 
-      kv_to_lua :station, station.name, dst
-      kv_to_lua :title, title, dst
-      kv_to_lua :DC_scheme, '/app/pbmi2003-recmod2012/', dst
-      kv_to_lua :DC_language, self.DC_language, dst
-      kv_to_lua(:DC_title, self.DC_title.nil? ? title : self.DC_title, dst)
-      kv_to_lua :DC_title_series, self.DC_title_series, dst
-      kv_to_lua :DC_title_episode, self.DC_title_episode, dst
-      kv_to_lua :DC_subject, self.DC_subject, dst
-      kv_to_lua(:DC_format_timestart, self.DC_format_timestart.nil? ? dtstart : self.DC_format_timestart, dst)
-      kv_to_lua :DC_format_timeend, self.DC_format_timeend, dst
-      kv_to_lua :DC_format_duration, self.DC_format_duration, dst
-      kv_to_lua :DC_image, self.DC_image, dst
-      kv_to_lua :DC_description, self.DC_description, dst
-      kv_to_lua :DC_author, self.DC_author, dst
-      kv_to_lua :DC_publisher, self.DC_publisher, dst
-      kv_to_lua :DC_creator, self.DC_creator, dst
-      kv_to_lua :DC_copyright, self.DC_copyright, dst
-      kv_to_lua :DC_source, self.src_url, dst
-      dst << "},\n"
-      dst << "\n"
+      kv_to_lua :station, station.name, tmp
+      kv_to_lua :title, title, tmp
+      kv_to_lua :DC_scheme, '/app/pbmi2003-recmod2012/', tmp
+      kv_to_lua :DC_language, self.DC_language, tmp
+      kv_to_lua(:DC_title, self.DC_title.nil? ? title : self.DC_title, tmp)
+      kv_to_lua :DC_title_series, self.DC_title_series, tmp
+      kv_to_lua :DC_title_episode, self.DC_title_episode, tmp
+      kv_to_lua :DC_subject, self.DC_subject, tmp
+      kv_to_lua(:DC_format_timestart, self.DC_format_timestart.nil? ? dtstart : self.DC_format_timestart, tmp)
+      kv_to_lua :DC_format_timeend, self.DC_format_timeend, tmp
+      kv_to_lua :DC_format_duration, self.DC_format_duration, tmp
+      kv_to_lua :DC_image, self.DC_image, tmp
+      kv_to_lua :DC_description, self.DC_description, tmp
+      kv_to_lua :DC_author, self.DC_author, tmp
+      kv_to_lua :DC_publisher, self.DC_publisher, tmp
+      kv_to_lua :DC_creator, self.DC_creator, tmp
+      kv_to_lua :DC_copyright, self.DC_copyright, tmp
+      kv_to_lua :DC_source, self.src_url, tmp
+      tmp << "},\n"
+      tmp << "\n"
+      dst << tmp
     end
   end
 

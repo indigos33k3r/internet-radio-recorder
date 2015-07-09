@@ -35,6 +35,7 @@
 require File.join(File.dirname(File.expand_path(__FILE__)),'..','..','..','app','recorder')
 
 require 'open-uri'
+require 'peach'
 
 module Recorder
   class BroadcastM945 < Broadcast
@@ -116,7 +117,7 @@ module Recorder
     end
 
     def scrape_incremental
-      [0, 1, 7].collect{|dt| Time.now + dt*24*60*60}.each{|t0| scrape_day t0}
+      [0, 1, 7].collect{|dt| Time.now + dt*24*60*60}.peach{|t0| scrape_day t0}
     end
   end
 end
