@@ -316,6 +316,28 @@ function Broadcast:remove(dry_run)
   io.write_if_changed(self:filename('xml'), nil)
 end
 
+-- todo: merge with save_xml
+function Broadcast:to_xml(xml)
+  -- TODO check time overlaps?
+  if not xml then xml = {} end
+  table.insert( xml, '<broadcast>' )
+  local row = {'    ', '<meta content=\'', self.id:escape_xml_attribute(), '\' name=\'', 'DC.identifier', '\'/>'}
+  table.insert( xml, table.concat(row) )
+  for _,k in ipairs({
+    'DC.scheme', 'DC.language', 'DC.title', 'DC.title.series', 'DC.title.episode', 'DC.subject',
+    'DC.format.timestart', 'DC.format.timeend', 'DC.format.duration', 'DC.image',
+    'DC.description', 'DC.author', 'DC.publisher', 'DC.creator', 'DC.copyright', 'DC.source',
+  }) do
+    local v = self:pbmi()[ meta_key_to_lua(k) ]
+    if v then
+      local row = {'    ', '<meta content=\'', v:escape_xml_attribute(), '\' name=\'', k, '\'/>'}
+      table.insert( xml, table.concat(row) )
+    end
+  end
+  table.insert( xml, '</broadcast>' )
+  return table.concat(xml,"\n")
+end
+
 function Broadcast:save_xml()
   -- TODO check time overlaps?
   local xml = {

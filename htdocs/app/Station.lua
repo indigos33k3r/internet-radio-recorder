@@ -24,6 +24,20 @@
 Station = {}              -- methods table
 Station_mt = { __index = Station }    -- metatable
 
+function Station.each()
+  if not Station._each then
+    local ret = {}
+    for st_id in lfs.dir('stations') do
+    	s = Station.from_id(st_id)
+      if s then
+      	ret[st_id] = Station.from_id(st_id)
+      end
+    end
+    Station._each = ret
+  end
+  return Station._each
+end
+
 Station._stations = {}
 
 function Station.from_id(id)
@@ -111,6 +125,24 @@ function lfs.files_between(base, tmin, tmax, callback, future)
   end
 end
 
+
+-- find first one smaller or equal t
+function Station:broadcast_now_path(t,onlyfirst,future)
+  if t == nil then t = os.time() end
+  local tmin,tmax = nil,t
+  if future then tmin,tmax = tmax,tmin end
+  local candidate = nil
+  lfs.files_between(table.concat({'stations',self.id},'/'), tmin, tmax,
+    function(path)
+      if '.xml' == path:sub(-4) then
+        candidate = path
+        return true
+      end
+    end,
+    future
+  )
+  return candidate
+end
 
 -- find first one smaller or equal t
 function Station:broadcast_now(t,onlyfirst,future)

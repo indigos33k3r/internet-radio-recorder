@@ -57,6 +57,16 @@ function parse_iso8601(iso)
   return utc2local(os.time(date))
 end
 
+-- http://stackoverflow.com/a/4105340
+function parse_date_rfc1123(s,default_)
+  if not s or '' == s then return default_ end
+  local p = '%a+,%s+(%d+)%s+(%a+)%s+(%d+)%s+(%d+):(%d+):(%d+)%s+(%a+)'
+  local day,month,year,hour,min,sec,tz = s:match(p)
+  if not tz then return default_ end
+  local MON={Jan=1,Feb=2,Mar=3,Apr=4,May=5,Jun=6,Jul=7,Aug=8,Sep=9,Oct=10,Nov=11,Dec=12}
+  return os.time({tz=tz,day=day,month=MON[month],year=year,hour=hour,min=min,sec=sec,isdst=false})
+end
+
 
 -------------------------------------------------------------------------------
 -- filesystem -----------------------------------------------------------------
@@ -125,6 +135,14 @@ function http_400_bad_request(...)
   os.exit(0)
 end
 
+function http_304_unmodified(head)
+  io.write('HTTP/1.1 304 unmodified', '\n')
+  io.write('Server: RadioPi 2013/lua', '\n')
+  for k,v in pairs(head) do io.write(k, ': ', v, '\n') end
+  io.write('\n')
+  io.flush()
+end
+
 function http_303_see_other(uri, msg, expires)
   io.write('HTTP/1.1 303 See Other', '\n')
   io.write('Content-Type: text/plain', '\n')
@@ -137,6 +155,18 @@ function http_303_see_other(uri, msg, expires)
   io.write('Location: ', uri, '\n')
   io.write('\n')
   if msg then io.write(msg, '\n') end
+  io.flush()
+end
+
+function http_200_ok(head,...)
+  io.write('HTTP/1.1 200 ok', '\n')
+  for k,v in pairs(head) do io.write(k, ': ', v, '\n') end
+  -- http://www.w3.org/TR/CSP/#example-policies
+  io.write("Content-Security-Policy: default-src 'none'; ", '\n')
+  io.write('Server: RadioPi 2013/lua', '\n')
+  io.write('\n')
+  io.write(...)
+  io.write('\n')
   io.flush()
 end
 
@@ -225,4 +255,58 @@ function string:unescape_xml_text()
     return entities[s] or s:gsub('&#(%x%x);', function(h) return string.char(tonumber(h,16)) end)
   end
   return self:gsub('(&[^;]+;)', subf)
+end
+
+
+-------------------------------------------------------------------------------
+-- table sorted pairs http://lua-users.org/wiki/SortedIteration ---------------
+-------------------------------------------------------------------------------
+
+--[[
+Ordered table iterator, allow to iterate on the natural order of the keys of a
+table.
+
+Example:
+]]
+function __genOrderedIndex( t )
+  local orderedIndex = {}
+  for key in pairs(t) do
+    table.insert( orderedIndex, key )
+  end
+  table.sort( orderedIndex )
+  return orderedIndex
+end
+
+function orderedNext(t, state)
+  -- Equivalent of the next function, but returns the keys in the alphabetic
+  -- order. We use a temporary ordered key table that is stored in the
+  -- table being iterated.
+  key = nil
+  --print("orderedNext: state = "..tostring(state) )
+  if state == nil then
+    -- the first time, generate the index
+    t.__orderedIndex = __genOrderedIndex( t )
+    key = t.__orderedIndex[1]
+  else
+    -- fetch the next value
+    for i = 1,table.getn(t.__orderedIndex) do
+      if t.__orderedIndex[i] == state then
+        key = t.__orderedIndex[i+1]
+      end
+    end
+  end
+
+  if key then
+    return key, t[key]
+  end
+
+  -- no more value to return, cleanup
+  t.__orderedIndex = nil
+  return
+end
+
+function orderedPairs(t)
+  -- Equivalent of the pairs() function on tables. Allows to iterate
+  -- in order
+  return orderedNext, t, nil
 end

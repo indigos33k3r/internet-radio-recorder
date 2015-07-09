@@ -109,28 +109,17 @@ $.ajax({ url: '.', type: 'GET', cache: true, dataType: 'xml', }).success( functi
 });
 
 // add whatsonnow station list
-$.ajax({ url: '../../../..', type: 'GET', cache: true, dataType: 'xml', }).success( function(xmlBody) {
-  // scan all stations/*/
-  var allStations = $(xmlBody).find( "a[href $= '/']" ).map( function() {
-    var me = $(this);
-    var url_ = me.attr('href');
-    if( url_.match(/^\.\.\/$/) )
-      return null;
-    // url cosmetic
-    me.attr('href', '../../../../' + url_.replace(/\/$/,'') + '/now');
-    // query current broadcast
-    $.ajax({ url: me.attr('href'), type: 'GET', cache: true, dataType: 'xml', }).success( function(xmlBody) {
-      var title = $(xmlBody).find("meta[name = 'DC.title']").attr('content');
-      me.wrapInner('<span class="station">');
-      if( title )
-        me.append('<br class="br"/>', jQuery('<span class="broadcast"/>').text(title) );
-    }).error( function() {
-      // me.attr('href', null);  // disable broken
-      me.parent().remove();      // remove broken
-    });
-    return this;
+$.ajax({ url: '../../../../../app/now.lua', type: 'GET', cache: true, dataType: 'xml', }).success( function(xmlBody) {
+  $( '#whatsonnow' ).html('');
+  $(xmlBody).find( 'broadcast' ).map( function() {
+    var bc = $(this);
+    var title = bc.find("meta[name = 'DC.title']").attr('content');
+    var iden  = bc.find("meta[name = 'DC.identifier']").attr('content');
+    a = $('<a></a>').append( $('<span class="station">').text(iden.replace(/\/.*$/,'')) );
+    a.attr('href', '../../../../' + iden);
+    if( title )
+      a.append('<br class="br"/>', $('<span class="broadcast"/>').text(title) );
+    $( '#whatsonnow' ).append(a);
   });
-  $( '#whatsonnow' ).html( allStations );
   $( '#whatsonnow a' ).wrap( '<li>' );
 });
-

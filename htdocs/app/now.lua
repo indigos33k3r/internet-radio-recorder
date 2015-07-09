@@ -37,18 +37,52 @@ end end
 local station_name = nil
 if not station_name and params.station then station_name = params.station end
 if not station_name and params.uri     then station_name = params.uri:match('stations/([^/]+)') end
-local ref = os.getenv('HTTP_REFERER')
-if not station_name and ref        then station_name = ref:match('stations/([^/]+)') end
 
-local st = Station.from_id( station_name )
-if not st then http_400_bad_request('Unknown station \'', station_name, '\'. Give me either\n', '- GET param station=...\n', '- GET param uri=...\n', '- a referer\n\n') end
+local fmt_date_rfc1123_2utc = '!' .. '%a, %d %b %Y %H:%M:%S GMT'
 
-local t = parse_iso8601( params.t )
-local bc = st:broadcast_now(t or os.time(), true, false)
-if bc then
-  -- RFC 2616 http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1
-  local fmt_date_rfc1123 = '!%a, %d %b %Y %H:%M:%S GMT'
-  http_303_see_other('../stations/' .. bc.id:escape_url() .. '', nil, os.date(fmt_date_rfc1123, bc:dtend()))
+if station_name then
+  -- redirect to one dedicated station/broadcast
+  local st = Station.from_id( station_name )
+  if not st then http_400_bad_request('Unknown station \'', station_name, '\'. Give me either\n', '- GET param station=...\n', '- GET param uri=...\n', '- a referer\n\n') end
+
+  local t = parse_iso8601( params.t )
+  local bc = st:broadcast_now(t or os.time(), true, false)
+  if bc then
+    -- RFC 2616 http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1
+    http_303_see_other('../stations/' .. bc.id:escape_url() .. '', nil, os.date(fmt_date_rfc1123_2utc, bc:dtend()))
+  else
+    http_400_bad_request('Ouch, cannot find current broadcast for station: \'', station_name, '\'')
+  end
 else
-  http_400_bad_request('Ouch, cannot find current broadcast for station: \'', station_name, '\'')
+  -- list all stations' current broadcasts
+  local t = parse_iso8601( params.t ) or os.time()
+  local ifmod = parse_date_rfc1123( os.getenv('HTTP_IF_MODIFIED_SINCE'), 0 )
+  local xml = {
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<?xml-stylesheet type="text/xsl" href="../assets/broadcasts2html-now.xslt"?>',
+    '<!-- unorthodox relative namespace to enable http://www.w3.org/TR/grddl-tests/#sq2 without a central server -->',
+    '<broadcasts xml:lang="de" xmlns="../assets/2013/radio-pi.rdf">',
+  }
+  -- can we set the last-modified header?
+  -- we may have to go down to the file level.
+  local file_mod = 0
+  for _,st in orderedPairs(Station.each()) do
+    local path = st:broadcast_now_path(t, true, false)
+    local tmod_ = lfs.attributes(path, 'modification')
+    if tmod_ > file_mod then file_mod = tmod_ end
+    local bc = st:broadcast_now(t, true, false)
+    if bc then bc:to_xml(xml) end
+  end
+  table.insert( xml, '</broadcasts>' )
+  local head = {
+    ['Content-Type']  = 'text/xml',
+    ['Last-Modified'] = os.date(fmt_date_rfc1123_2utc, file_mod),
+    ['Expires']       = os.date(fmt_date_rfc1123_2utc, os.time() + 10),
+  }
+  file_mod = os.time(os.date('!*t', file_mod))
+  if file_mod > ifmod then
+    http_200_ok(head, table.concat(xml, "\n") )
+  else
+    http_304_unmodified(head)
+  end
 end
