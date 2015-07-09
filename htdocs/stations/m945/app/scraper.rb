@@ -60,6 +60,16 @@ module Recorder
       @DC_copyright =  "© #{Time.now.year} http://www.m945.de/"
       @DC_title = title.text_clean
       @DC_subject = url0 + title[:href] unless title[:href].nil? || '' == title[:href]
+      begin
+        unless @DC_subject.nil?
+          doc = Nokogiri::HTML(open(@DC_subject))
+          # m945 has broken og:image images
+          # image_node = doc.at_xpath('/html/head/meta[@property="og:image"]')
+          image_node = doc.at_css('#head_banner img')
+          @DC_image = url0 + image_node[:src] unless image_node.nil?
+        end
+      rescue Exception => e
+      end
       @DC_format_timestart = dts
 
       title.remove
@@ -96,7 +106,7 @@ module Recorder
       $stderr.puts url
       begin
         doc = download url
-        prev_bc = nil					# lookahead: start time of next entry is end time of previous
+        prev_bc = nil         # lookahead: start time of next entry is end time of previous
         doc.css('div.list > div.item').each do |tr|
           dtstart = BroadcastM945::dtstart(t0, tr)
           next if dtstart.nil?
