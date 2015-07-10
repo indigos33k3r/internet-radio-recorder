@@ -97,7 +97,7 @@
     <xsl:variable name="stream_rdf" select="$station_about_rdf/rdf:RDF/dctype:Sound[@rdf:about]"/>
     <xsl:choose>
       <xsl:when test="$stream_rdf">
-      	<a style="color:green" class="location" title="{$stream_rdf/@rdf:about}" href="{$stream_rdf/@rdf:about}">Live Stream</a>
+        <a style="color:green" class="location" title="{$stream_rdf/@rdf:about}" href="{$stream_rdf/@rdf:about}">Live Stream</a>
       </xsl:when>
       <xsl:otherwise>
         <!-- keep the fallback to jquery + GET station.cfg for now: -->
@@ -153,16 +153,16 @@
           <li><a id="next_week" href="../../../../../app/now.lua?t=P7D" title="Woche nachher">&gt;&gt;&gt;</a></li>
         </ul>
         <div class="summary">
-        	<h2 id="series">
-          	<xsl:value-of select="rec:meta[@name='DC.title.series']/@content"/>
-        	</h2><xsl:text> </xsl:text>
-        	<h1 id="title">
-          	<xsl:value-of select="rec:meta[@name='DC.title']/@content"/>
-        	</h1>
+          <h2 id="series">
+            <xsl:value-of select="rec:meta[@name='DC.title.series']/@content"/>
+          </h2><xsl:text> </xsl:text>
+          <h1 id="title">
+            <xsl:value-of select="rec:meta[@name='DC.title']/@content"/>
+          </h1>
         </div>
-        	<h2 id="summary">
-          	<xsl:value-of select="rec:meta[@name='DC.title.episode']/@content"/>
-        	</h2>
+          <h2 id="summary">
+            <xsl:value-of select="rec:meta[@name='DC.title.episode']/@content"/>
+          </h2>
         <p>
           <xsl:call-template name="broadcast_station_source"/>
           <xsl:call-template name="station_rdf_name"/>

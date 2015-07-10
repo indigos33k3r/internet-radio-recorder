@@ -5,6 +5,7 @@
   so each station could provide a custom skin.
 */
 html {
+  min-width:  319px;
 }
 
 ul.buttongroup {
@@ -108,7 +109,7 @@ ul > li > a.has_podcast:before { content:"* "; }
 br { display:none; }
 br.br { display:inline; }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 581px) {
   /* http://maddesigns.de/meta-viewport-1817.html */
   .navigation {
     line-height: 3.5ex;
@@ -116,5 +117,8 @@ br.br { display:inline; }
   #image {
     width:  50%;
     height: auto;
+  }
+  ul#whatsonnow li a {
+    max-width:  136px;
   }
 }
