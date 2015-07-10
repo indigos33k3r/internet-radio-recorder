@@ -87,10 +87,11 @@ class Nokogiri::XML::Element
   end
 
   def text_clean_br
-    self.search('br').each{|br| br.replace(Nokogiri::XML::Text.new("\n", self.document))}
-    c = self.content
-    c.gsub! "\u00A0", ' '	# nbsp
-    c.gsub! /[ \t]+/, ' '
+    marker = "{~<>&\"'Q^eS/uC~yg$CC7d%Llj`k}ujzn|PQr:5^~h?c:<WC5`#a'~R&HTPmViT1{"
+    self.search('br').each{|br| br.replace(Nokogiri::XML::Text.new(marker, self.document))}
+    c = self.text_clean
+    c.gsub! marker, "\n"
+    c.gsub! /\s*\n\s*/, "\n"  # collapse multiple (explicit) br's to distinguish from p's
     c.strip
   end
 
