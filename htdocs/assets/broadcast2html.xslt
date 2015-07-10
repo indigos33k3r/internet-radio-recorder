@@ -48,7 +48,7 @@
     <xsl:param name="pattern" select="'&#10;'"/>
     <xsl:choose>
       <xsl:when test="contains($string, $pattern)">
-        <xsl:value-of select="substring-before($string, $pattern)"/><br class="br"/><xsl:comment>Why do we see 2 br on Safari and output/@method=html here? http://purl.mro.name/safari-xslt-br-bug</xsl:comment>
+        <xsl:value-of select="substring-before($string, $pattern)"/><br class="br"/><xsl:comment> Why do we see 2 br on Safari and output/@method=html here? http://purl.mro.name/safari-xslt-br-bug </xsl:comment>
         <xsl:call-template name="linefeed2br">
           <xsl:with-param name="string" select="substring-after($string, $pattern)"/>
           <xsl:with-param name="pattern" select="$pattern"/>
@@ -263,6 +263,7 @@
           <tt>$ <a href="http://xmlsoft.org/XSLT/xsltproc.html">xsltproc</a> --stringparam canonical_url '<span class="canonical-url">&lt;url from address bar&gt;</span>' '<span class="base-url">&lt;url from address bar&gt;/../../../../../..</span>/assets/2013/broadcast2rdf.xslt' '<span class="canonical-url">&lt;url from address bar&gt;</span>.xml'</tt>
         </p>
         <script type="text/javascript" src="../../../../../assets/jquery-2.0.0.min.js"/>
+        <script type="text/javascript" src="../../../../../assets/broadcast2html.early.js" />
         <script type="text/javascript" src="../../../../../assets/moment.min.js"/><!-- http://momentjs.com/ -->
         <script type="text/javascript" src="../../../../../assets/lang/de.js"/><!-- https://github.com/timrwood/moment/blob/develop/min/lang/de.js -->
         <script type="text/javascript" src="../../../../../assets/broadcast2html.js" />

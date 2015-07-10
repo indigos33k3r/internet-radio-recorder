@@ -1,6 +1,22 @@
 // sadly embedding this into broadcast2html.xslt doesn't work for Opera - 
 // the 'if( now < dtstart )' ends up html escaped...
 
+function amendClickableURLs(element) {
+	if( null == element )
+		return;
+  // inspired by http://stackoverflow.com/a/3809435
+  // Does not pick up naked domains, because they're hard to distinguish from domains in email addresses (see below).
+  // Also requires a 2-4 character TLD, so the new 'hip' domains fail.
+  var pat = /[-_.a-z0-9]{2,256}\.[a-z]{2,4}(?:\/[-a-z0-9:%_\+.~#?&\/=]*)/;
+  var url_pat = new RegExp(/(?:http(s)?:\/\/)?/.source + '(' + pat.source + ')', 'gi');
+  element.innerHTML = element.innerHTML.replace(url_pat, '<a href="http$1://$2" class="magic">$&</a>');
+
+  var pat1 = /[-a-zA-Z0-9%_\+.~#\/=]+@[-a-z0-9%_\+.~#?&\/=]{2,256}\.[a-z]{2,4}(?:\?[-a-z0-9:%_\+.~#?&\/=]*)?/;
+  var mail_pat = new RegExp(/(?:mailto:)?/.source + '(' + pat1.source + ')', 'gi');
+  element.innerHTML = element.innerHTML.replace(mail_pat, '<a href="mailto:$1?subject=' + encodeURI(document.location) + '" class="magic">$&</a>');  
+}
+amendClickableURLs(document.getElementById('content'));
+
 // moment.lang("de");
 var canonical_url = ('' + window.location).replace(/\.xml$/,'');
 $('.canonical-url').text( canonical_url );
