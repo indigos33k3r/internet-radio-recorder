@@ -65,7 +65,9 @@
     doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
     doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"/>
 
+  <!-- load external additional xml documents -->
   <xsl:variable name="station_about_rdf" select="document('../about.rdf')"/>
+  <xsl:variable name="now_fellows_xml" select="document('../../../../app/now.lua')"/>
 
   <xsl:template name="broadcast_station_source">
     <a id="via" class="via" href="{rec:meta[@name='DC.source']/@content}" rel="via">Sendung</a>
@@ -130,8 +132,17 @@
         </xsl:for-each>
       </head>
       <body id="broadcast" class="vevent">
-        <noscript><p>JavaScript ist aus, es geht zwar (fast) alles auch ohne, aber mit ist's <b>schöner</b>. (Zeitgleiche Sendungen anderer Sender, Datumsformatierung, Aufnahmen wieder stornieren, Tagesübersicht, RDF Url)</p></noscript>
-        <ul id="whatsonnow" class="buttongroup"><li>Dummy</li></ul>
+        <noscript><p>JavaScript ist aus, es geht zwar (fast) alles auch ohne, aber mit ist's <b>schöner</b>. (Datumsformatierung, Aufnahmen wieder stornieren, Tagesübersicht, RDF Urls in der Fußzeile)</p></noscript>
+        <ul id="whatsonnow" class="buttongroup">
+          <xsl:for-each select="$now_fellows_xml/*/rec:broadcast">
+            <xsl:variable name="fellow_station_name" select="substring-before(rec:meta[@name='DC.identifier']/@content, '/')"/> 
+            <li><a href="../../../../{rec:meta[@name='DC.identifier']/@content}">
+              <span class="station"><xsl:value-of select="$fellow_station_name"/></span>
+              <br class='br'/>
+              <span class="broadcast"><xsl:value-of select="rec:meta[@name='DC.title']/@content"/></span>
+            </a></li>
+          </xsl:for-each>
+        </ul>
         <ul id="navigation" class="buttongroup" title="Navigation">
           <li><a id="prev_week" href="../../../../../app/now.lua?t=P-7D" title="Woche vorher">&lt;&lt;&lt;</a></li>
           <li><a id="yesterday" href="../../../../../app/now.lua?t=P-1D" title="Tag vorher">&lt;&lt;</a></li>

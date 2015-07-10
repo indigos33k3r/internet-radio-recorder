@@ -123,19 +123,3 @@ $.ajax({ url: '.', type: 'GET', cache: true, dataType: 'xml', }).success( functi
   $( '#allday a' ).wrap('<li>');
   $( '#allday' ).show();
 });
-
-// add whatsonnow station list
-$.ajax({ url: '../../../../../app/now.lua', type: 'GET', cache: true, dataType: 'xml', }).success( function(xmlBody) {
-  $( '#whatsonnow' ).html('');
-  $(xmlBody).find( 'broadcast' ).map( function() {
-    var bc = $(this);
-    var title = bc.find("meta[name = 'DC.title']").attr('content');
-    var iden  = bc.find("meta[name = 'DC.identifier']").attr('content');
-    a = $('<a></a>').append( $('<span class="station">').text(iden.replace(/\/.*$/,'')) );
-    a.attr('href', '../../../../' + iden);
-    if( title )
-      a.append('<br class="br"/>', $('<span class="broadcast"/>').text(title) );
-    $( '#whatsonnow' ).append(a);
-  });
-  $( '#whatsonnow a' ).wrap( '<li>' );
-});
