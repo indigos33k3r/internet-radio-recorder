@@ -33,20 +33,23 @@ if qs then for k,v in qs:gmatch('([^?&=]+)=([^&]*)') do
   params[k:unescape_url_param()] = v:unescape_url_param()
 end end
 
--- guess station from GET params or referer:
+-- guess station from GET params or url:
 local station_name = nil
 if not station_name and params.station then station_name = params.station end
 if not station_name and params.uri     then station_name = params.uri:match('stations/([^/]+)') end
 
 local fmt_date_rfc1123_2utc = '!' .. '%a, %d %b %Y %H:%M:%S GMT'
 
+local t = parse_iso8601( params.t ) or os.time()
+
 if station_name then
   -- redirect to one dedicated station/broadcast
   local st = Station.from_id( station_name )
-  if not st then http_400_bad_request('Unknown station \'', station_name, '\'. Give me either\n', '- GET param station=...\n', '- GET param uri=...\n', '- a referer\n\n') end
+  if not st then
+    http_400_bad_request('Unknown station \'', station_name, '\'. Give me either\n', '- GET param station=...\n', '- GET param uri=...\n', '- a referer\n\n')
+  end
 
-  local t = parse_iso8601( params.t )
-  local bc = st:broadcast_now(t or os.time(), true, false)
+  local bc = st:broadcast_now(t, true, false)
   if bc then
     -- RFC 2616 http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3.1
     http_303_see_other('../stations/' .. bc.id:escape_url() .. '', nil, os.date(fmt_date_rfc1123_2utc, bc:dtend()))
@@ -55,23 +58,19 @@ if station_name then
   end
 else
   -- list all stations' current broadcasts
-  local t = parse_iso8601( params.t ) or os.time()
-  local ifmod = parse_date_rfc1123( os.getenv('HTTP_IF_MODIFIED_SINCE'), 0 )
   local xml = {
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<?xml-stylesheet type="text/xsl" href="../assets/broadcasts2html-now.xslt"?>',
     '<!-- unorthodox relative namespace to enable http://www.w3.org/TR/grddl-tests/#sq2 without a central server -->',
     '<broadcasts xml:lang="de" xmlns="../assets/2013/radio-pi.rdf">',
   }
-  -- can we set the last-modified header?
-  -- we may have to go down to the file level.
   local file_mod = 0
   for _,st in orderedPairs(Station.each()) do
-    local path = st:broadcast_now_path(t, true, false)
-    local tmod_ = lfs.attributes(path, 'modification')
-    if tmod_ > file_mod then file_mod = tmod_ end
     local bc = st:broadcast_now(t, true, false)
-    if bc then bc:to_xml(xml) end
+    if bc then
+      file_mod = math.max(file_mod, bc:modified(), bc:dtstart())
+      bc:to_xml(xml)
+    end
   end
   table.insert( xml, '</broadcasts>' )
   local head = {
@@ -80,6 +79,7 @@ else
     ['Expires']       = os.date(fmt_date_rfc1123_2utc, os.time() + 10),
   }
   file_mod = os.time(os.date('!*t', file_mod))
+  local ifmod = parse_date_rfc1123( os.getenv('HTTP_IF_MODIFIED_SINCE'), 0 )
   if file_mod > ifmod then
     http_200_ok(head, table.concat(xml, "\n") )
   else

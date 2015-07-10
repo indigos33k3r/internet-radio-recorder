@@ -142,6 +142,10 @@ function Broadcast.from_file(f)
 end
 
 
+function Broadcast:modified()
+  return lfs.attributes(self:filename('xml'), 'modification')
+end
+
 function Broadcast:title()
   return assert(self._title)
 end
