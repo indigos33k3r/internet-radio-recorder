@@ -13,7 +13,8 @@ logs/
 */stations/
 !*/stations/app/
 
-.DS_Store
 .bundle/config
 vendor/bundle/
 .config/streamripper/streamripper.ini
+
+src/cmd/scrape-*-*-*.*.*
