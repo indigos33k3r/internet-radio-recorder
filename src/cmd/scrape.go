@@ -21,20 +21,31 @@ package main
 
 import (
 	"fmt"
-	"net/url"
 
 	"purl.mro.name/recorder/radio/scrape"
 )
 
 func main() {
-	programURL, err := url.Parse("http://www.br.de/radio/bayern2/programmkalender/programmfahne102.html")
-	if nil != err {
-		panic(err)
-	}
+	station := scrape.StationBR("b2")
 
-	chanDayURL := make(chan scrape.TimeURL, 20)
-	go scrape.ParseDayURLs(programURL, chanDayURL)
-	for d := range chanDayURL {
-		fmt.Printf("%s\n", d.String())
+	if false {
+		chanDayURL := make(chan scrape.TimeURL, 20)
+		go func() {
+			scrape.ParseDayURLs(station, chanDayURL)
+			close(chanDayURL)
+		}()
+		for d := range chanDayURL {
+			fmt.Printf("%s\n", d.String())
+		}
+	} else {
+		chanBroadcastURL := make(chan scrape.BroadcastURL, 20)
+		d := scrape.TimeURL{Source: *station.ProgramURL}
+		go func() {
+			scrape.ParseBroadcastURLs(d, chanBroadcastURL)
+			close(chanBroadcastURL)
+		}()
+		for d := range chanBroadcastURL {
+			fmt.Printf("%s\n", d.String())
+		}
 	}
 }
