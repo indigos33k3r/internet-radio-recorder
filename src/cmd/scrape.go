@@ -29,23 +29,18 @@ func main() {
 	station := scrape.StationBR("b2")
 
 	if false {
-		chanDayURL := make(chan scrape.TimeURL, 20)
-		go func() {
-			scrape.ParseDayURLs(station, chanDayURL)
-			close(chanDayURL)
-		}()
-		for d := range chanDayURL {
+		urls,_ := scrape.ParseDayURLs(station)
+		for _,d := range urls {
+			fmt.Printf("%s\n", d.String())
+		}
+	} else if false {
+		urls,_ := scrape.ParseBroadcastURLs(station, station.ProgramURL)
+		for _,d := range urls {
 			fmt.Printf("%s\n", d.String())
 		}
 	} else {
-		chanBroadcastURL := make(chan scrape.BroadcastURL, 20)
-		d := scrape.TimeURL{Source: *station.ProgramURL}
-		go func() {
-			scrape.ParseBroadcastURLs(d, chanBroadcastURL)
-			close(chanBroadcastURL)
-		}()
-		for d := range chanBroadcastURL {
-			fmt.Printf("%s\n", d.String())
-		}
+		c := make(chan scrape.Broadcast)
+		scrape.ScrapeIncremental(c)
+		close(c)
 	}
 }

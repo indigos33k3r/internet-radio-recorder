@@ -25,18 +25,6 @@ import (
 	"time"
 )
 
-var (
-	localLoc *time.Location
-)
-
-func init() {
-	var err error
-	localLoc, err = time.LoadLocation("Local")
-	if nil != err {
-		panic(err)
-	}
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////
 ///
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -45,6 +33,7 @@ type Station struct {
 	Name       string
 	CloseDown  string
 	ProgramURL *url.URL
+	TimeZone   *time.Location
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -80,4 +69,26 @@ type Broadcast struct {
 	Image        *url.URL
 	Description  *string
 	Author       *string
+	// Language     string
+}
+
+type Job struct {
+	*Station
+	ScrapeURL *url.URL
+}
+
+func ScrapeIncremental(c chan<- Broadcast) {
+	// create a buffered channel of jobs
+	js := make(chan Job, 100)
+	s := [2]*Station{StationBR("b1"), StationBR("b2")}
+
+	for i := len(s) - 1; i >= 0; i-- {
+		js <- Job{Station: s[i]}
+	}
+
+	for j := range js {
+		go func() {
+			runScrapeJob(j, js, c)
+		}()
+	}
 }
