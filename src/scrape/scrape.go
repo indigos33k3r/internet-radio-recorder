@@ -81,6 +81,7 @@ func (b Broadcast) Broadcast() *Broadcast {
 }
 
 type Scraper interface {
-	Scrape(results chan<- Broadcaster, jobs chan<- Scraper, now *time.Time) (err error)
+	Scrape(jobs chan<- Scraper, results chan<- Broadcaster) (err error)
+
 	Matches(now *time.Time) (ok bool)
 }

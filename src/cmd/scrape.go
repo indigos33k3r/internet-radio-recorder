@@ -30,36 +30,35 @@ import (
 )
 
 func main() {
-	broadcasts := make(chan scrape.Broadcaster)
-	scrapers := make(chan scrape.Scraper, 1)
-
-	now := time.Now()
+	results := make(chan scrape.Broadcaster)
+	jobs := make(chan scrape.Scraper, 1)
 
 	var wg_scrapers sync.WaitGroup
 
 	wg_scrapers.Add(1)
 	go func() {
 		defer wg_scrapers.Done()
-		scrapers <- br.Station("b1")
-		scrapers <- br.Station("b2")
-		scrapers <- br.Station("b3")
-		scrapers <- br.Station("b4")
-		scrapers <- br.Station("b5")
-		scrapers <- br.Station("b+")
-		scrapers <- br.Station("brheimat")
-		scrapers <- br.Station("puls")
+		jobs <- br.Station("b1")
+		jobs <- br.Station("b2")
+		jobs <- br.Station("b3")
+		jobs <- br.Station("b4")
+		jobs <- br.Station("b5")
+		jobs <- br.Station("b+")
+		jobs <- br.Station("brheimat")
+		jobs <- br.Station("puls")
 	}()
 
+	now := time.Now()
 	// Scraper loop
 	go func() {
-		for job := range scrapers {
+		for job := range jobs {
 			if !job.Matches(&now) {
 				continue
 			}
 			wg_scrapers.Add(1)
 			go func() {
 				defer wg_scrapers.Done()
-				err := job.Scrape(broadcasts, scrapers, &now)
+				err := job.Scrape(jobs, results)
 				if nil != err {
 					fmt.Fprintf(os.Stderr, "error %s %s\n", job, err)
 				}
@@ -70,7 +69,7 @@ func main() {
 	var wg_write sync.WaitGroup
 	// Broadcaster loop
 	go func() {
-		for bc := range broadcasts {
+		for bc := range results {
 			wg_write.Add(1)
 			go func() {
 				defer wg_write.Done()
@@ -82,8 +81,8 @@ func main() {
 
 	time.Sleep(time.Millisecond)
 	wg_scrapers.Wait()
-	close(scrapers)
+	close(jobs)
 	wg_write.Wait()
 	time.Sleep(10 * time.Second)
-	close(broadcasts)
+	close(results)
 }
