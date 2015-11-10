@@ -20,7 +20,7 @@
 // http://golang.org/pkg/testing/
 // http://blog.stretchr.com/2014/03/05/test-driven-development-specifically-in-golang/
 // https://xivilization.net/~marek/blog/2015/05/04/go-1-dot-4-2-for-raspberry-pi/
-package scrape // import "purl.mro.name/recorder/radio/scrape"
+package br // import "purl.mro.name/recorder/radio/scrape/br"
 
 import (
 	"fmt"
@@ -29,6 +29,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	rscrape "purl.mro.name/recorder/radio/scrape"
 )
 
 var _ = fmt.Printf
@@ -49,7 +50,7 @@ func TestNormalizeTimeOverflow(t *testing.T) {
 }
 
 func TestTimeZone(t *testing.T) {
-	b2 := StationBR("b2")
+	b2 := Station("b2")
 	assert.Equal(t, "Europe/Berlin", b2.TimeZone.String(), "foo")
 }
 
@@ -91,7 +92,7 @@ func TestParseCalendarForDayURLs(t *testing.T) {
 	assert.NotNil(t, f, "ouch")
 	assert.Nil(t, err, "ouch")
 
-	b2 := StationBR("b2")
+	b2 := Station("b2")
 	tus, err := ParseDayURLsReader(b2, f)
 	assert.Equal(t, 37, len(tus), "ouch")
 }
@@ -101,8 +102,8 @@ func TestParseScheduleForBroadcasts(t *testing.T) {
 	assert.NotNil(t, f, "ouch")
 	assert.Nil(t, err, "ouch")
 
-	s := StationBR("b2")
-	t0 := TimeURL{
+	s := Station("b2")
+	t0 := rscrape.TimeURL{
 		Time:   time.Date(2015, time.October, 21, 5, 0, 0, 0, localLoc),
 		Source: *urlMustParse("http://www.br.de/radio/bayern2/programmkalender/programmfahne102~_date-2015-10-21_-5ddeec3fc12bdd255a6c45c650f068b54f7b010b.html"),
 	}
@@ -119,9 +120,9 @@ func TestParseBroadcast_0(t *testing.T) {
 	assert.NotNil(t, f, "ouch")
 	assert.Nil(t, err, "ouch")
 
-	s := StationBR("b2")
-	t0 := BroadcastURL{
-		TimeURL: TimeURL{
+	s := Station("b2")
+	t0 := rscrape.BroadcastURL{
+		TimeURL: rscrape.TimeURL{
 			Time:   time.Date(2015, time.October, 21, 0, 12, 0, 0, localLoc),
 			Source: *urlMustParse("http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-472548.html"),
 		},
@@ -149,9 +150,9 @@ func TestParseBroadcast_1(t *testing.T) {
 	assert.NotNil(t, f, "ouch")
 	assert.Nil(t, err, "ouch")
 
-	s := StationBR("b2")
-	t0 := BroadcastURL{
-		TimeURL: TimeURL{
+	s := Station("b2")
+	t0 := rscrape.BroadcastURL{
+		TimeURL: rscrape.TimeURL{
 			Time:   time.Date(2015, time.October, 21, 10, 5, 0, 0, localLoc),
 			Source: *urlMustParse("http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-472576.html"),
 		},
@@ -179,9 +180,9 @@ func TestParseBroadcast_2(t *testing.T) {
 	assert.NotNil(t, f, "ouch")
 	assert.Nil(t, err, "ouch")
 
-	s := StationBR("b2")
-	t0 := BroadcastURL{
-		TimeURL: TimeURL{
+	s := Station("b2")
+	t0 := rscrape.BroadcastURL{
+		TimeURL: rscrape.TimeURL{
 			Time:   time.Date(2015, time.October, 21, 23, 5, 0, 0, localLoc),
 			Source: *urlMustParse("http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-472628.html"),
 		},

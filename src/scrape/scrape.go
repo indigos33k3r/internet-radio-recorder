@@ -72,23 +72,15 @@ type Broadcast struct {
 	// Language     string
 }
 
-type Job struct {
-	*Station
-	ScrapeURL *url.URL
+type Broadcaster interface {
+	Broadcast() *Broadcast
 }
 
-func ScrapeIncremental(c chan<- Broadcast) {
-	// create a buffered channel of jobs
-	js := make(chan Job, 100)
-	s := [2]*Station{StationBR("b1"), StationBR("b2")}
+func (b Broadcast) Broadcast() *Broadcast {
+	return &b
+}
 
-	for i := len(s) - 1; i >= 0; i-- {
-		js <- Job{Station: s[i]}
-	}
-
-	for j := range js {
-		go func() {
-			runScrapeJob(j, js, c)
-		}()
-	}
+type Scraper interface {
+	Scrape(results chan<- Broadcaster, jobs chan<- Scraper, now *time.Time) (err error)
+	Matches(now *time.Time) (ok bool)
 }
