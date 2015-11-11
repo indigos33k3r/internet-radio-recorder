@@ -165,7 +165,6 @@ func (day *TimeURLBR) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster
 	broadcast_urls, err := day.Station.parseBroadcastURLs(&day.Source)
 	if nil == err {
 		for _, b := range broadcast_urls {
-			// fmt.Printf("____ ___ %s\n", b)
 			jobs <- b
 		}
 	}
@@ -173,11 +172,11 @@ func (day *TimeURLBR) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster
 }
 
 // 3 days window, 1 day each side.
-func (s *TimeURLBR) Matches(now *time.Time) (ok bool) {
-	if nil == now || nil == s {
+func (day *TimeURLBR) Matches(now *time.Time) (ok bool) {
+	if nil == now || nil == day {
 		return false
 	}
-	dt := s.Time.Sub(*now)
+	dt := day.Time.Sub(*now)
 	return -24*time.Hour <= dt && dt <= 24*time.Hour
 }
 
@@ -252,8 +251,8 @@ func (b *BroadcastURLBR) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcas
 }
 
 // 1h future interval
-func (s *BroadcastURLBR) Matches(now *time.Time) (ok bool) {
-	start := &s.Time
+func (b *BroadcastURLBR) Matches(now *time.Time) (ok bool) {
+	start := &b.Time
 	if nil == now || nil == start {
 		return false
 	}
@@ -367,18 +366,15 @@ func (s *StationBR) parseBroadcastNode(url *url.URL, root *html.Node) (bc r.Broa
 			}
 			bc.Title = textChildrenNoClimb(h1)
 		}
-
-		// Description
-		desc := []string{}
-		for _, p := range scrape.FindAll(h1.Parent, func(n *html.Node) bool { return atom.P == n.DataAtom && "copytext" == scrape.Attr(n, "class") }) {
-			desc = append(desc, r.TextWithBr(p))
+		{
+			// Description
+			var desc []string = r.TextsWithBr(scrape.FindAll(h1.Parent, func(n *html.Node) bool { return atom.P == n.DataAtom && "copytext" == scrape.Attr(n, "class") }))
+			re := regexp.MustCompile("[ ]*(\\s)") // collapse whitespace, keep \n
+			t := strings.Join(desc, "\n\n")       // mark paragraphs with a double \n
+			t = re.ReplaceAllString(t, "$1")      // collapse whitespace (not the \n\n however)
+			t = strings.TrimSpace(t)
+			bc.Description = &t
 		}
-		re := regexp.MustCompile("[ ]*(\\s)") // collapse whitespace, keep \n
-		t := strings.Join(desc, "\n\n")       // mark paragraphs with a double \n
-		t = re.ReplaceAllString(t, "$1")      // collapse whitespace (not the \n\n however)
-		t = strings.TrimSpace(t)
-		bc.Description = &t
-
 	FoundImage:
 		// test some candidates:
 		for _, no := range []*html.Node{h1.Parent, root} {
@@ -413,34 +409,50 @@ func (s *StationBR) parseBroadcastNode(url *url.URL, root *html.Node) (bc r.Broa
 	}
 
 	// Language
-	for _, meta := range scrape.FindAll(root, func(n *html.Node) bool {
+	for idx, meta := range scrape.FindAll(root, func(n *html.Node) bool {
 		return atom.Meta == n.DataAtom && "og:locale" == scrape.Attr(n, "property")
 	}) {
+		if idx != 0 {
+			err = errors.New("There was more than 1 <meta property='og:locale'/>")
+			return
+		}
 		v := scrape.Attr(meta, "content")[0:2]
 		bc.Language = &v
 	}
 
 	// Subject
-	for _, a := range scrape.FindAll(root, func(n *html.Node) bool {
+	for idx, a := range scrape.FindAll(root, func(n *html.Node) bool {
 		return atom.A == n.DataAtom && strings.HasPrefix(scrape.Attr(n, "class"), "link_broadcast media_broadcastSeries")
 	}) {
+		if idx != 0 {
+			err = errors.New("There was more than 1 <a class='link_broadcast media_broadcastSeries'/>")
+			return
+		}
 		u := bc.Source
 		u.Path = scrape.Attr(a, "href")
 		bc.Subject = &u
 	}
 
 	// Modified
-	for _, meta := range scrape.FindAll(root, func(n *html.Node) bool {
+	for idx, meta := range scrape.FindAll(root, func(n *html.Node) bool {
 		return atom.Meta == n.DataAtom && "og:article:modified_time" == scrape.Attr(n, "property")
 	}) {
+		if idx != 0 {
+			err = errors.New("There was more than 1 <meta property='og:article:modified_time'/>")
+			return
+		}
 		v, _ := time.Parse(time.RFC3339, scrape.Attr(meta, "content"))
 		bc.Modified = &v
 	}
 
 	// Author
-	for _, meta := range scrape.FindAll(root, func(n *html.Node) bool {
+	for idx, meta := range scrape.FindAll(root, func(n *html.Node) bool {
 		return atom.Meta == n.DataAtom && "author" == scrape.Attr(n, "name")
 	}) {
+		if idx != 0 {
+			err = errors.New("There was more than 1 <meta name='author'/>")
+			return
+		}
 		s := scrape.Attr(meta, "content")
 		bc.Author = &s
 	}

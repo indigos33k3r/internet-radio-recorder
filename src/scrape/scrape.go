@@ -163,6 +163,14 @@ func TextWithBr(node *html.Node) string {
 	return strings.Join(parts, "")
 }
 
+func TextsWithBr(nodes []*html.Node) (ret []string) {
+	ret = make([]string, len(nodes))
+	for i, p := range nodes {
+		ret[i] = TextWithBr(p)
+	}
+	return
+}
+
 func FoldSpace(s string) string {
 	return strings.Map(func(r rune) rune {
 		if unicode.IsSpace(r) {
