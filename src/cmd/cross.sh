@@ -13,7 +13,7 @@ go get github.com/yhat/scrape
 go get github.com/stretchr/testify
 
 CWD="$(pwd)"
-for dir in . ../scrape ../scrape/br ../scrape/dlf
+for dir in . ../scrape ../scrape/br ../scrape/dlf ../scrape/m945
 do
   cd "$CWD/$dir"
   go fmt
