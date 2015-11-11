@@ -24,9 +24,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
+	"os"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 
@@ -36,18 +35,7 @@ import (
 	r "purl.mro.name/recorder/radio/scrape"
 )
 
-var _ = errors.New
-var _ = fmt.Printf
-var _ = io.Copy
-var _ = http.Get
-var _ = url.Parse
-var _ = regexp.MustCompile
-var _ = strconv.AppendInt
-var _ = strings.Count
-var _ = time.Sleep
-var _ = scrape.Text
-var _ = html.Render
-var _ = atom.Br
+var _ = os.Stderr
 
 /////////////////////////////////////////////////////////////////////////////
 /// Just wrap Station into a distinct, local type.
@@ -77,46 +65,14 @@ func (s *StationDLF) Matches(now *time.Time) (ok bool) {
 	return true
 }
 
-// Scrape slice of DayURLDLF - all calendar (day) entries of the station program url
+// Synthesise the day urls for incremental scraping.
 func (s *StationDLF) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (err error) {
-	time_urls, err := s.parseDayURLs()
-	if nil == err {
-		for _, t := range time_urls {
-			jobs <- t
-		}
+	t0 := time.Now()
+	for _, now := range r.IncrementalNows(&t0) {
+		day, _ := s.dayURLForDate(now)
+		jobs <- day
 	}
 	return
-}
-
-func (s *StationDLF) parseDayURLsNode(root *html.Node) (ret []*DayURLDLF, err error) {
-	i := 0
-	ret = []*DayURLDLF{}
-	for _, a := range scrape.FindAll(root, func(n *html.Node) bool { return atom.A == n.DataAtom && atom.Td == n.Parent.DataAtom }) {
-		rel := scrape.Attr(a, "href")
-		fmt.Printf("%s", rel)
-		d := DayURLDLF{TimeURL: r.TimeURL{Time: time.Time{}}}
-		// fmt.Printf("ok %s\n", d.String())
-		ret = append(ret, &d)
-	}
-	fmt.Printf("%d", i)
-	return
-}
-
-func (s *StationDLF) parseDayURLsReader(read io.Reader) (ret []*DayURLDLF, err error) {
-	root, err := html.Parse(read)
-	if nil != err {
-		return
-	}
-	return s.parseDayURLsNode(root)
-}
-
-func (s *StationDLF) parseDayURLs() (ret []*DayURLDLF, err error) {
-	resp, err := http.Get(s.ProgramURL.String())
-	defer resp.Body.Close()
-	if nil != err {
-		return
-	}
-	return s.parseDayURLsReader(resp.Body)
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -125,10 +81,10 @@ func (s *StationDLF) parseDayURLs() (ret []*DayURLDLF, err error) {
 func (s *StationDLF) dayURLForDate(day time.Time) (ret *DayURLDLF, err error) {
 	ret = &DayURLDLF{
 		TimeURL: r.TimeURL{
-			Time:   time.Date(day.Year(), day.Month(), day.Day(), 0, 0, 0, 0, s.TimeZone),
-			Source: *r.MustParseURL(s.ProgramURL.String() + day.Format("?drbm:date=02.01.2006")),
+			Time:    time.Date(day.Year(), day.Month(), day.Day(), 0, 0, 0, 0, s.TimeZone),
+			Source:  *r.MustParseURL(s.ProgramURL.String() + day.Format("?drbm:date=02.01.2006")),
+			Station: s.Station,
 		},
-		Station: s.Station,
 	}
 	// err = errors.New("Not ümplemented yet.")
 	return
@@ -138,16 +94,15 @@ func (s *StationDLF) dayURLForDate(day time.Time) (ret *DayURLDLF, err error) {
 /// Just wrap TimeURL into a distinct, local type.
 type DayURLDLF struct {
 	r.TimeURL
-	r.Station
 }
 
 /// r.Scraper
-func (s *DayURLDLF) Matches(now *time.Time) (ok bool) {
+func (s DayURLDLF) Matches(now *time.Time) (ok bool) {
 	return true
 }
 
 // Scrape slice of DayURLDLF - all calendar (day) entries of the station program url
-func (s *DayURLDLF) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (err error) {
+func (s DayURLDLF) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (err error) {
 	bcs, err := s.parseBroadcastsFromURL()
 	if nil == err {
 		for _, bc := range bcs {
@@ -157,13 +112,85 @@ func (s *DayURLDLF) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) 
 	return
 }
 
-func (s *DayURLDLF) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast, err error) {
-	i := 0
-	fmt.Printf("%d", i)
-	ret = []*r.Broadcast{}
-	for _, a := range scrape.FindAll(root, func(n *html.Node) bool { return atom.A == n.DataAtom && atom.Td == n.Parent.DataAtom }) {
-		rel := scrape.Attr(a, "href")
-		fmt.Printf("%s", rel)
+var (
+	lang_de   string = "de"
+	publisher string = "http://www.deutschlandfunk.de/"
+)
+
+func (day *DayURLDLF) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast, err error) {
+	// fmt.Fprintf(os.Stderr, "%s\n", day.Source.String())
+	index := 0
+	for _, at := range scrape.FindAll(root, func(n *html.Node) bool {
+		return atom.A == n.DataAtom && atom.Td == n.Parent.DataAtom && atom.Tr == n.Parent.Parent.DataAtom && "time" == scrape.Attr(n.Parent, "class")
+	}) {
+		// prepare response
+		bc := r.Broadcast{
+			BroadcastURL: r.BroadcastURL{
+				TimeURL: day.TimeURL,
+			},
+		}
+		// some defaults
+		bc.Language = &lang_de
+		bc.Publisher = &publisher
+		// set start time
+		{
+			a_id := scrape.Attr(at, "id")
+			if "" == a_id {
+				continue
+			}
+			// fmt.Fprintf(os.Stderr, "  a_id=%s\n", a_id)
+			bc.Source.Fragment = a_id
+			hour := r.MustParseInt(a_id[0:2])
+			minute := r.MustParseInt(a_id[2:4])
+			if 24 < hour || 60 < minute {
+				continue
+			}
+			bc.Time = time.Date(day.Year(), day.Month(), day.Day(), hour, minute, 0, 0, day.TimeZone)
+			if index > 0 {
+				ret[index-1].DtEnd = &bc.Time
+			}
+		}
+		// Title
+		for idx, h3 := range scrape.FindAll(at.Parent.Parent, func(n *html.Node) bool {
+			return atom.H3 == n.DataAtom && atom.Td == n.Parent.DataAtom && atom.Tr == n.Parent.Parent.DataAtom && "description" == scrape.Attr(n.Parent, "class")
+		}) {
+			if idx != 0 {
+				err = errors.New("There was more than 1 <tr><td class='description'><h3>")
+				return
+			}
+			for idx, h3_a := range scrape.FindAll(h3, func(n *html.Node) bool {
+				return atom.A == n.DataAtom && "" == scrape.Attr(n, "class")
+			}) {
+				if idx != 0 {
+					err = errors.New("There was more than 1 <tr><td class='description'><h3><a>")
+					return
+				}
+				bc.Title = scrape.Text(h3_a)
+				// bc.Source = scrape.Attr(h3_a, "href") // make URL absolute
+			}
+			bc.Title = strings.TrimSpace(bc.Title)
+			if "" == bc.Title {
+				bc.Title = r.TextChildrenNoClimb(h3)
+			}
+			// fmt.Fprintf(os.Stderr, " '%s'", bc.Title)
+			{
+				// Description
+				var desc []string = r.TextsWithBr(scrape.FindAll(h3.Parent, func(n *html.Node) bool { return atom.P == n.DataAtom }))
+				re := regexp.MustCompile("[ ]*(\\s)") // collapse whitespace, keep \n
+				t := strings.Join(desc, "\n\n")       // mark paragraphs with a double \n
+				t = re.ReplaceAllString(t, "$1")      // collapse whitespace (not the \n\n however)
+				t = strings.TrimSpace(t)
+				bc.Description = &t
+			}
+		}
+		// fmt.Fprintf(os.Stderr, "\n")
+		ret = append(ret, &bc)
+		index += 1
+	}
+	// fmt.Fprintf(os.Stderr, "len(ret) = %d '%s'\n", len(ret), day.Source.String())
+	if index > 0 {
+		midnight := time.Date(day.Year(), day.Month(), day.Day(), 24, 0, 0, 0, day.TimeZone)
+		ret[index-1].DtEnd = &midnight
 	}
 	return
 }

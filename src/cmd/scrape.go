@@ -51,10 +51,8 @@ func main() {
 	}()
 
 	now := time.Now()
-	incremental_nows := []time.Time{}
-	for _, h := range []time.Duration{0, 12, 3 * 24, 7 * 24, 7 * 7 * 24} {
-		incremental_nows = append(incremental_nows, now.Add(h*time.Hour))
-	}
+
+	incremental_nows := scrape.IncrementalNows(&now)
 
 	// Scraper loop
 	go func() {
@@ -80,21 +78,19 @@ func main() {
 	var wg_write sync.WaitGroup
 	// Broadcaster loop
 	go func() {
+		wg_write.Add(1)
+		defer wg_write.Done()
 		for bc := range results {
-			wg_write.Add(1)
-			go func() {
-				defer wg_write.Done()
-				// bcc := bc.Broadcast()
-				// fmt.Fprintf(os.Stderr, "done     %s - %s '%s' %s\n", bcc.Time, bcc.DtEnd, bcc.Title, bcc.Source.String())
-				bc.WriteAsLuaTable(os.Stdout)
-			}()
+			// bcc := bc.Broadcast()
+			// fmt.Fprintf(os.Stderr, "done     %s - %s '%s' %s\n", bcc.Time, bcc.DtEnd, bcc.Title, bcc.Source.String())
+			bc.WriteAsLuaTable(os.Stdout)
 		}
 	}()
 
 	time.Sleep(time.Millisecond)
 	wg_scrapers.Wait()
 	close(jobs)
+	close(results)
 	wg_write.Wait()
 	time.Sleep(10 * time.Second)
-	close(results)
 }

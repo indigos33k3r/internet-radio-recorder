@@ -308,17 +308,6 @@ func timeForH4(h4 string, now *time.Time) (year int, mon time.Month, day int, er
 /// Parse broadcast
 /////////////////////////////////////////////////////////////////////////////
 
-func textChildrenNoClimb(node *html.Node) string {
-	ret := []string{}
-	for n := node.FirstChild; nil != n; n = n.NextSibling {
-		if html.TextNode != n.Type {
-			continue
-		}
-		ret = append(ret, strings.TrimSpace(n.Data))
-	}
-	return strings.Join(ret, "")
-}
-
 var (
 	bcDateRegExp = regexp.MustCompile(",\\s+(\\d{2})\\.(\\d{2})\\.(\\d{4})\\s+(\\d{2}):(\\d{2})\\s+bis\\s+(\\d{2}):(\\d{2})")
 )
@@ -337,7 +326,7 @@ func (s *StationBR) parseBroadcastNode(url *url.URL, root *html.Node) (bc r.Broa
 			err = errors.New("There was more than 1 <h1 class='bcast_headline'>")
 			return
 		}
-		bc.Title = textChildrenNoClimb(h1)
+		bc.Title = r.TextChildrenNoClimb(h1)
 		for _, span := range scrape.FindAll(h1, func(n *html.Node) bool { return atom.Span == n.DataAtom }) {
 			switch scrape.Attr(span, "class") {
 			case "bcast_overline":
@@ -350,7 +339,7 @@ func (s *StationBR) parseBroadcastNode(url *url.URL, root *html.Node) (bc r.Broa
 				err = errors.New("unexpected <span> inside <h1>")
 				return
 			}
-			bc.Title = textChildrenNoClimb(h1)
+			bc.Title = r.TextChildrenNoClimb(h1)
 		}
 		{
 			// Description

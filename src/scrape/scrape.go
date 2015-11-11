@@ -34,63 +34,25 @@ import (
 )
 
 //////////////////////////////////////////////////////////////////////////////////////////
-///
+/// These 2 Interfaces are the mandatory ones.
 //////////////////////////////////////////////////////////////////////////////////////////
-type Station struct {
-	Identifier string
-	Name       string
-	CloseDown  string
-	ProgramURL *url.URL
-	TimeZone   *time.Location
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Something that can be scraped.
+type Scraper interface {
+
+	// scrape and fill intermediate results into 'jobs', final ones into 'results'
+	Scrape(jobs chan<- Scraper, results chan<- Broadcaster) (err error)
+
+	// is (re-)scraping due for this entity?
+	Matches(now *time.Time) (ok bool)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-///
-//////////////////////////////////////////////////////////////////////////////////////////
-type TimeURL struct {
-	time.Time
-	Source url.URL
-	Station
-}
-
-func (d *TimeURL) String() string {
-	return fmt.Sprintf("%s %s", d.Time.Format("2006-01-02 15:04 MST"), d.Source.String())
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-///
-//////////////////////////////////////////////////////////////////////////////////////////
-type BroadcastURL struct {
-	TimeURL
-	Title string
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-///
-//////////////////////////////////////////////////////////////////////////////////////////
-type Broadcast struct {
-	BroadcastURL
-	TitleSeries  *string
-	TitleEpisode *string
-	DtEnd        *time.Time
-	Modified     *time.Time
-	Subject      *url.URL
-	Image        *url.URL
-	Description  *string
-	Author       *string
-	Language     *string
-	Publisher    *string
-	Creator      *string
-	Copyright    *string
-}
-
+/// Something that can write ONE broadcast dataset to a writer.
 type Broadcaster interface {
-	// Broadcast() *Broadcast
-
 	WriteAsLuaTable(w io.Writer) (err error)
 }
-
-// func (b Broadcast) Broadcast() *Broadcast { return &b }
 
 func (b Broadcast) WriteAsLuaTable(w io.Writer) (err error) {
 	if "" == b.Station.Identifier {
@@ -103,7 +65,7 @@ func (b Broadcast) WriteAsLuaTable(w io.Writer) (err error) {
 	fmt.Fprintf(w, "  -- %s = '%s',\n", "t_scrape_end", "-")
 
 	f := func(k string, v string) {
-		fmt.Fprintf(w, "  %s = '%s',\n", k, v)
+		fmt.Fprintf(w, "  %s = '%s',\n", k, EscapeForLua(v))
 	}
 	fp := func(k string, v *string) {
 		if nil != v {
@@ -148,10 +110,64 @@ func (b Broadcast) WriteAsLuaTable(w io.Writer) (err error) {
 	return
 }
 
-type Scraper interface {
-	Scrape(jobs chan<- Scraper, results chan<- Broadcaster) (err error)
+//////////////////////////////////////////////////////////////////////////////////////////
+/// Some Helpers that may be useful but are totally optional.
+//////////////////////////////////////////////////////////////////////////////////////////
 
-	Matches(now *time.Time) (ok bool)
+func IncrementalNows(now *time.Time) (ret []time.Time) {
+	src := []time.Duration{0, 12, 3 * 24, 7 * 24, 7 * 7 * 24}
+	ret = make([]time.Time, len(src))
+	for i, h := range src {
+		ret[i] = now.Add(h * time.Hour)
+	}
+	return
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+///
+type Station struct {
+	Identifier string
+	Name       string
+	CloseDown  string
+	ProgramURL *url.URL
+	TimeZone   *time.Location
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+///
+type TimeURL struct {
+	time.Time
+	Source url.URL
+	Station
+}
+
+func (d *TimeURL) String() string {
+	return fmt.Sprintf("%s %s", d.Time.Format("2006-01-02 15:04 MST"), d.Source.String())
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+///
+type BroadcastURL struct {
+	TimeURL
+	Title string
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+///
+type Broadcast struct {
+	BroadcastURL
+	TitleSeries  *string
+	TitleEpisode *string
+	DtEnd        *time.Time
+	Modified     *time.Time
+	Subject      *url.URL
+	Image        *url.URL
+	Description  *string
+	Author       *string
+	Language     *string
+	Publisher    *string
+	Creator      *string
+	Copyright    *string
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -174,6 +190,17 @@ func MustParseInt(s string) int {
 	return int(ret)
 }
 
+func TextChildrenNoClimb(node *html.Node) string {
+	ret := []string{}
+	for n := node.FirstChild; nil != n; n = n.NextSibling {
+		if html.TextNode != n.Type {
+			continue
+		}
+		ret = append(ret, strings.TrimSpace(n.Data))
+	}
+	return strings.Join(ret, "")
+}
+
 func TextWithBr(node *html.Node) string {
 	nodes := scrape.FindAll(node, func(n *html.Node) bool { return n.Type == html.TextNode || atom.Br == n.DataAtom })
 	parts := make([]string, len(nodes))
@@ -181,7 +208,7 @@ func TextWithBr(node *html.Node) string {
 		if atom.Br == n.DataAtom {
 			parts[i] = "\n"
 		} else {
-			parts[i] = strings.TrimSpace(FoldSpace(n.Data)) + " "
+			parts[i] = strings.TrimSpace(NormaliseWhiteSpace(n.Data)) + " "
 		}
 	}
 	return strings.Join(parts, "")
@@ -195,7 +222,7 @@ func TextsWithBr(nodes []*html.Node) (ret []string) {
 	return
 }
 
-func FoldSpace(s string) string {
+func NormaliseWhiteSpace(s string) string {
 	return strings.Map(func(r rune) rune {
 		if unicode.IsSpace(r) {
 			return rune(32)
@@ -203,4 +230,8 @@ func FoldSpace(s string) string {
 			return r
 		}
 	}, s)
+}
+
+func EscapeForLua(s string) string {
+	return strings.Replace(strings.Replace(s, "'", "\\\\'", -1), "\n", "\\n", -1)
 }
