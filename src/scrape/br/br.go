@@ -378,6 +378,18 @@ func (s *StationBR) parseBroadcastNode(url *url.URL, root *html.Node) (bc r.Broa
 		t = re.ReplaceAllString(t, "$1")      // collapse whitespace (not the \n\n however)
 		t = strings.TrimSpace(t)
 		bc.Description = &t
+
+	FoundImage:
+		// test some candidates:
+		for _, no := range []*html.Node{h1.Parent, root} {
+			for _, di := range scrape.FindAll(no, func(n *html.Node) bool { return atom.Div == n.DataAtom && "picturebox" == scrape.Attr(n, "class") }) {
+				for _, img := range scrape.FindAll(di, func(n *html.Node) bool { return atom.Img == n.DataAtom }) {
+					u, _ := url.Parse(scrape.Attr(img, "src"))
+					bc.Image = u
+					break FoundImage
+				}
+			}
+		}
 	}
 
 	// Time, DtEnd

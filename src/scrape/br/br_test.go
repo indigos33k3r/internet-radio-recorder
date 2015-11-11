@@ -146,8 +146,8 @@ func TestParseBroadcast_0(t *testing.T) {
 	assert.Equal(t, "Bayerischer Rundfunk", *bc.Author, "ouch: Author")
 	assert.NotNil(t, bc.Description, "ouch: Description")
 	assert.Equal(t, "Franz Schillinger: \"Insisting Voices II\"; \"Veränderliche Langsamkeiten III\" (Wilfried Krüger, Horn; Heinrich Rauh, Violine); Stefan David Hummel: \"In one's heart of hearts\" (Stefan Teschner, Violine; Klaus Jäckle, Gitarre; Sven Forker, Schlagzeug); Matthias Schmitt: Sechs Miniaturen (Katarzyna Mycka, Marimbaphon); Stefan Hippe: \"Annacamento\" (ars nova ensemble nürnberg: Werner Heider); Ludger Hofmann-Engl: \"Abstract I\" (Wolfgang Pessler, Fagott; Sebastian Rocholl, Viola; Ralf Waldner, Cembalo); Ulrich Schultheiß: \"Bubbles\" (Stefan Barcsay, Gitarre)", *bc.Description, "ouch: Description")
-	assert.Nil(t, bc.Image, "ouch: Image")
-	// assert.Equal(t, "..", *bc.Descripiton, "ouch: Descripiton")
+	assert.NotNil(t, bc.Image, "ouch: Image")
+	assert.Equal(t, "http://www.br.de/layout/img/programmfahne/concerto-bavarese112~_v-img__16__9__m_-4423061158a17f4152aef84861ed0243214ae6e7.jpg?version=40aa3", bc.Image.String(), "ouch: Image")
 }
 
 func TestParseBroadcast_1(t *testing.T) {
@@ -181,8 +181,8 @@ func TestParseBroadcast_1(t *testing.T) {
 	assert.Equal(t, "Bayerischer Rundfunk", *bc.Author, "ouch: Author")
 	assert.NotNil(t, bc.Description, "ouch: Description")
 	assert.Equal(t, "Niedrigzinsen:\nPfandhäuser haben Hochkonjuktur trotz Niedrigzinsen /\nWo legen Sie ihr Geld an und wieviel Zinsen bekommen Sie dafür? /\nEin bisschen Risiko muss sein? Wie Anbieter für Produkte werben /\n\nNah dran:\n\"Alles unter einem Dach\" - Kann das Warenhaus sich neu erfinden? /\n\nMünzen:\nBrauchen wir noch Ein- und Zwei-Cent-Münzen? /\nSammler unter sich - Zu Besuch auf der Numismatika, Berlin /\nGehortet - Was tun mit dem Rotgeld, das Zuhause liegt? /\n\nNotizbuch Service:\nWenn der Postmann gar nicht klingelt -\nWas tun mit Briefen, die falsch zugestellt wurden? /\n\nLangsam Essen für Kinder:\nSlow Food stellt ein Kochbuch für Kinder vor - Kann sich das jeder leisten? /\n\nKurz vor 12:\nGlosse: Konsumverzicht\n\nModeration: Christine Bergmann\n11.00 Nachrichten, Wetter\n11.56 Werbung\nAusgewählte Beiträge als Podcast verfügbar\n\nNah dran: \"Alles unter einem Dach\" - Kann das Warenhaus sich neu erfinden?\n\nKarstadt, Wertheim, Tietz - diese Warenhäuser setzten einst unsere Großmütter in helle Erregung. Vom \"Paradies der Damen\" war die Rede - aber natürlich kamen auch die Herren auf ihre Kosten. In den für damalige Zeiten riesigen Verkaufsflächen gab es, wie ein Werbeslogan versprach \"tausendfach alles unter einem Dach\". Doch dann kamen die Möbelhäuser, die Elektronikfachmärkte, die Supermärkte im Gewerbegebiet und die riesigen Einkaufszentren. Nicht zuletzt macht das Internet dem stationären Einzelhandel Konkurrenz. Die Kunden kaufen überall - nur nicht mehr im Warenhaus. Hertie ist pleite, Karstadt kämpft ums Überleben. Kaufhof wurde jüngst an eine kanadische Kette verkauft. Hat das zentrumsnahe Kaufhaus heute noch eine Chance? Wie können Warenhäuser wieder mehr Kunden anlocken? Unterschiedliche Konzepte werden ausprobiert - Ralf Schmidberger hat sie unter die Lupe genommen.", *bc.Description, "ouch: Description")
-	assert.Nil(t, bc.Image, "ouch: Image")
-	// assert.Equal(t, "..", *bc.Descripiton, "ouch: Descripiton")
+	assert.NotNil(t, bc.Image.String(), "ouch: Image")
+	assert.Equal(t, "http://www.br.de/layout/img/programmfahne/sendungsbild128~_v-img__16__9__m_-4423061158a17f4152aef84861ed0243214ae6e7.jpg?version=d2b9d", bc.Image.String(), "ouch: Image")
 }
 
 func TestParseBroadcastUntilMidnight(t *testing.T) {
@@ -216,12 +216,11 @@ func TestParseBroadcastUntilMidnight(t *testing.T) {
 	assert.Equal(t, "Bayerischer Rundfunk", *bc.Author, "ouch: Author")
 	assert.NotNil(t, bc.Description, "ouch: Description")
 	assert.Equal(t, "Die Akustik-Avantgarde\nMusik von Joanna Newsom, Andrew Bird und Devendra Banhart\nMit Michael Bartlewski\n\nJoanna Newsom ist ziemlich einzigartig: Ihre Stimme ist piepsig, ihre Songs können gerne mal acht Minuten sein und dann spielt sie auch noch Harfe. Nicht die besten Voraussetzungen für eine Pop-Karriere. Joanna Newsom hat es trotzdem geschafft - wir blicken auf ihre einmalige Geschichte zurück. Die Harfe bezeichnet Joanna Newsom als Erweiterung ihres Körpers, im Nachtmix gibt es noch mehr Musik von Virtuosen, die die Pop-Welt mit ihren kauzigen, besonders instrumentierten Songs bereichern. Andrew Bird ist der loopende Violinist, Devendra Banhart bleibt wohl immer ein Hippie, und für CocoRosie kann auch auf dem neuen Album alles ein Instrument sein. Dazu: Alela Diane mit klassischen Folk-Klängen und Helado Negro verzaubert mit Zeitlupen-Disco.", *bc.Description, "ouch: Description")
-	assert.Nil(t, bc.Image, "ouch: Image")
-	// assert.Equal(t, "..", *bc.Descripiton, "ouch: Descripiton")
+	assert.NotNil(t, bc.Image.String(), "ouch: Image")
+	assert.Equal(t, "http://www.br.de/layout/img/programmfahne/nachtmix112~_v-img__16__9__m_-4423061158a17f4152aef84861ed0243214ae6e7.jpg?version=1beb6", bc.Image.String(), "ouch: Image")
 }
 
 func TestParseBroadcastWithImage(t *testing.T) {
-	// http://rec.mro.name/stations/b4/2015/11/11/2305%20Jazztime
 	f, err := os.Open("testdata/2015-11-11T2305-b4-sendung.html")
 	assert.NotNil(t, f, "ouch")
 	assert.Nil(t, err, "ouch")
@@ -235,6 +234,7 @@ func TestParseBroadcastWithImage(t *testing.T) {
 		Title: "Jazztime",
 	}
 
+	// http://rec.mro.name/stations/b4/2015/11/11/2305%20Jazztime
 	bc, err := s.parseBroadcastReader(&t0.Source, f)
 	assert.Nil(t, err, "ouch")
 	assert.Equal(t, "Jazztime", bc.Title, "ouch: Title")
@@ -252,7 +252,8 @@ func TestParseBroadcastWithImage(t *testing.T) {
 	assert.Equal(t, "Bayerischer Rundfunk", *bc.Author, "ouch: Author")
 	assert.NotNil(t, bc.Description, "ouch: Description")
 	assert.Equal(t, "Philipp Gropper´s Philm im Jazzstudio Nürnberg\nMit Philipp Gropper (Tenorsaxophon), Elias Stemeseder (Piano), Andreas Lang (Bass) und Oliver Steidle (Schlagzeug)\nAufnahme vom 2. Oktober 2015\nModeration und Auswahl: Beate Sampson\n\nPhilipp Gropper´s Philm: „Madman of Naranam“ (Philipp Gropper)\nPhilipp Gropper´s Philm: „ZE“ (Philipp Gropper)\nPhilipp Gropper´s Philm: „Licht“ (Philipp Gropper)\nPhilipp Gropper´s Philm: „Synthesizer/ Für die 68er“ (Philipp Gropper)\n\n\"Je länger ich Musik mache, desto wichtiger ist mir und desto klarer nehme ich wahr, was Musik, was eine Band transportiert, welche Botschaft von Ihr ausgeht. Diese durch die transzendierende Qualität von Musik erfahrbare Essenz ist, worum es geht und sie ist absolut unabhängig von Stilistik oder Besetzung. Reine Virtuosität, reine intellektuelle Höhenflüge oder die allgegenwärtige Weichgespültheit langweilen mich, es geht mir um Direktheit und Aura. Ich bin der Tradition sehr verbunden, versuche aber ständig deren Lebendigkeit und Frische, die jeweils nur im zeitlichen Kontext entstehen konnte und den alten Meistern gleichzeitig ihre Zeitlosigkeit sicherte, zu verstehen und weiterzutragen.\" So beschreibt der Berliner Saxophonist Philipp Gropper sein künstlerisches Selbstverständnis. Mit seinem 2011 gegründeten Quartett PHILM hat er es am 2. Oktober 2015 im Nürnberger Jazzstudio in Musik zum Ausdruck gebracht. Sie ist heute in unserem Mitschnitt des Konzertabends zu hören.", *bc.Description, "ouch: Description")
-	// assert.Equal(t, "http://www.br.de/radio/br-klassik/sendungen/jazztime/gropper-100~_v-img__16__9__m_-4423061158a17f4152aef84861ed0243214ae6e7.jpg?version=230c6", bc.Image.String(), "ouch: Image")
+	assert.NotNil(t, bc.Image, "ouch: Image")
+	assert.Equal(t, "http://www.br.de/radio/br-klassik/sendungen/jazztime/gropper-100~_v-img__16__9__m_-4423061158a17f4152aef84861ed0243214ae6e7.jpg?version=230c6", bc.Image.String(), "ouch: Image")
 	assert.Nil(t, bc.Publisher, "Publisher")
 	assert.Nil(t, bc.Creator, "Creator")
 	assert.Nil(t, bc.Copyright, "Copyright")
