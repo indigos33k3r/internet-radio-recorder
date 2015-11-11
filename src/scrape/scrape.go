@@ -24,7 +24,13 @@ import (
 	"io"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
+	"unicode"
+
+	"github.com/yhat/scrape"
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 )
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -142,4 +148,27 @@ type Scraper interface {
 	Scrape(jobs chan<- Scraper, results chan<- Broadcaster) (err error)
 
 	Matches(now *time.Time) (ok bool)
+}
+
+func TextWithBr(node *html.Node) string {
+	nodes := scrape.FindAll(node, func(n *html.Node) bool { return n.Type == html.TextNode || atom.Br == n.DataAtom })
+	parts := make([]string, len(nodes))
+	for i, n := range nodes {
+		if atom.Br == n.DataAtom {
+			parts[i] = "\n"
+		} else {
+			parts[i] = strings.TrimSpace(FoldSpace(n.Data)) + " "
+		}
+	}
+	return strings.Join(parts, "")
+}
+
+func FoldSpace(s string) string {
+	return strings.Map(func(r rune) rune {
+		if unicode.IsSpace(r) {
+			return rune(32)
+		} else {
+			return r
+		}
+	}, s)
 }

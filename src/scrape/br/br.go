@@ -356,10 +356,10 @@ func (s *StationBR) parseBroadcastNode(url *url.URL, root *html.Node) (bc r.Broa
 		for _, span := range scrape.FindAll(h1, func(n *html.Node) bool { return atom.Span == n.DataAtom }) {
 			switch scrape.Attr(span, "class") {
 			case "bcast_overline":
-				s := textChildrenNoClimb(span)
+				s := scrape.Text(span)
 				bc.TitleSeries = &s
 			case "bcast_subtitle":
-				s := textChildrenNoClimb(span)
+				s := scrape.Text(span)
 				bc.TitleEpisode = &s
 			default:
 				err = errors.New("unexpected <span> inside <h1>")
@@ -367,6 +367,17 @@ func (s *StationBR) parseBroadcastNode(url *url.URL, root *html.Node) (bc r.Broa
 			}
 			bc.Title = textChildrenNoClimb(h1)
 		}
+
+		// Description
+		desc := []string{}
+		for _, p := range scrape.FindAll(h1.Parent, func(n *html.Node) bool { return atom.P == n.DataAtom && "copytext" == scrape.Attr(n, "class") }) {
+			desc = append(desc, r.TextWithBr(p))
+		}
+		re := regexp.MustCompile("[ ]*(\\s)") // collapse whitespace, keep \n
+		t := strings.Join(desc, "\n\n")       // mark paragraphs with a double \n
+		t = re.ReplaceAllString(t, "$1")      // collapse whitespace (not the \n\n however)
+		t = strings.TrimSpace(t)
+		bc.Description = &t
 	}
 
 	// Time, DtEnd
@@ -423,7 +434,6 @@ func (s *StationBR) parseBroadcastNode(url *url.URL, root *html.Node) (bc r.Broa
 	}
 
 	// Image
-	// Description
 	return
 }
 
