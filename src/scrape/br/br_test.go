@@ -93,7 +93,7 @@ func TestParseCalendarForDayURLs(t *testing.T) {
 	assert.Nil(t, err, "ouch")
 
 	b2 := Station("b2")
-	tus, err := parseDayURLsReader(b2, f)
+	tus, err := b2.parseDayURLsReader(f)
 	assert.Equal(t, 37, len(tus), "ouch")
 }
 
@@ -107,7 +107,7 @@ func TestParseScheduleForBroadcasts(t *testing.T) {
 		Time:   time.Date(2015, time.October, 21, 5, 0, 0, 0, localLoc),
 		Source: *urlMustParse("http://www.br.de/radio/bayern2/programmkalender/programmfahne102~_date-2015-10-21_-5ddeec3fc12bdd255a6c45c650f068b54f7b010b.html"),
 	}
-	a, err := parseBroadcastURLsReader(s, &t0.Source, f)
+	a, err := s.parseBroadcastURLsReader(&t0.Source, f)
 	assert.Equal(t, 129, len(a), "ouch")
 }
 
@@ -129,20 +129,22 @@ func TestParseBroadcast_0(t *testing.T) {
 		Title: "Concerto Bavarese",
 	}
 
-	bc, err := parseBroadcastReader(s, &t0.TimeURL.Source, f)
+	bc, err := s.parseBroadcastReader(&t0.TimeURL.Source, f)
 	assert.Nil(t, err, "ouch")
-	assert.Equal(t, "Concerto bavarese", bc.Title, "ouch")
-	assert.Equal(t, "http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-472548.html", bc.BroadcastURL.TimeURL.Source.String(), "ouch")
-	assert.Equal(t, bc.Title, bc.BroadcastURL.Title, "ouch")
-	assert.Equal(t, "Aus dem Studio Franken:", *bc.TitleSeries, "ouch")
-	assert.Equal(t, "Fränkische Komponisten", *bc.TitleEpisode, "ouch")
-	assert.Equal(t, "2015-10-21T00:12:00+02:00", bc.BroadcastURL.TimeURL.Time.Format(time.RFC3339), "ouch")
-	assert.Equal(t, "2015-10-21T02:00:00+02:00", bc.DtEnd.Format(time.RFC3339), "ouch")
-	assert.Equal(t, "http://www.br.de/radio/bayern2/musik/concerto-bavarese/index.html", bc.Subject.String(), "ouch")
-	assert.Equal(t, "2015-10-22T00:06:13+02:00", bc.Modified.Format(time.RFC3339), "ouch")
-	assert.Equal(t, "Bayerischer Rundfunk", *bc.Author, "ouch")
-	assert.Nil(t, bc.Image, "ouch")
-	// assert.Equal(t, "..", *bc.Descripiton, "ouch")
+	assert.Equal(t, "Concerto bavarese", bc.Title, "ouch: Title")
+	assert.Equal(t, "http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-472548.html", bc.Source.String(), "ouch: Source")
+	assert.NotNil(t, bc.Language, "ouch: Language")
+	assert.Equal(t, "de", *bc.Language, "ouch: Language")
+	assert.Equal(t, bc.Title, bc.Title, "ouch: Title")
+	assert.Equal(t, "Aus dem Studio Franken:", *bc.TitleSeries, "ouch: TitleSeries")
+	assert.Equal(t, "Fränkische Komponisten", *bc.TitleEpisode, "ouch: TitleEpisode")
+	assert.Equal(t, "2015-10-21T00:12:00+02:00", bc.Time.Format(time.RFC3339), "ouch: Time")
+	assert.Equal(t, "2015-10-21T02:00:00+02:00", bc.DtEnd.Format(time.RFC3339), "ouch: DtEnd")
+	assert.Equal(t, "http://www.br.de/radio/bayern2/musik/concerto-bavarese/index.html", bc.Subject.String(), "ouch: Subject")
+	assert.Equal(t, "2015-10-22T00:06:13+02:00", bc.Modified.Format(time.RFC3339), "ouch: Modified")
+	assert.Equal(t, "Bayerischer Rundfunk", *bc.Author, "ouch: Author")
+	assert.Nil(t, bc.Image, "ouch: Image")
+	// assert.Equal(t, "..", *bc.Descripiton, "ouch: Descripiton")
 }
 
 func TestParseBroadcast_1(t *testing.T) {
@@ -159,23 +161,25 @@ func TestParseBroadcast_1(t *testing.T) {
 		Title: "Notizbuch",
 	}
 
-	bc, err := parseBroadcastReader(s, &t0.TimeURL.Source, f)
+	bc, err := s.parseBroadcastReader(&t0.TimeURL.Source, f)
 	assert.Nil(t, err, "ouch")
-	assert.Equal(t, "Notizbuch", bc.Title, "ouch")
-	assert.Equal(t, "http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-472576.html", bc.BroadcastURL.TimeURL.Source.String(), "ouch")
-	assert.Equal(t, bc.Title, bc.BroadcastURL.Title, "ouch")
-	assert.Nil(t, bc.TitleSeries, "ouch")
-	assert.Equal(t, "Kann das Warenhaus sich neu erfinden?", *bc.TitleEpisode, "ouch")
-	assert.Equal(t, "2015-10-21T10:05:00+02:00", bc.BroadcastURL.TimeURL.Time.Format(time.RFC3339), "ouch")
-	assert.Equal(t, "2015-10-21T12:00:00+02:00", bc.DtEnd.Format(time.RFC3339), "ouch")
-	assert.Equal(t, "http://www.br.de/radio/bayern2/gesellschaft/notizbuch/index.html", bc.Subject.String(), "ouch")
-	assert.Equal(t, "2015-10-22T00:06:25+02:00", bc.Modified.Format(time.RFC3339), "ouch")
-	assert.Equal(t, "Bayerischer Rundfunk", *bc.Author, "ouch")
-	assert.Nil(t, bc.Image, "ouch")
-	// assert.Equal(t, "..", *bc.Descripiton, "ouch")
+	assert.Equal(t, "Notizbuch", bc.Title, "ouch: Title")
+	assert.Equal(t, "http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-472576.html", bc.Source.String(), "ouch: Source")
+	assert.NotNil(t, bc.Language, "ouch: Language")
+	assert.Equal(t, "de", *bc.Language, "ouch: Language")
+	assert.Equal(t, bc.Title, bc.Title, "ouch: Title")
+	assert.Nil(t, bc.TitleSeries, "ouch: TitleSeries")
+	assert.Equal(t, "Kann das Warenhaus sich neu erfinden?", *bc.TitleEpisode, "ouch: TitleEpisode")
+	assert.Equal(t, "2015-10-21T10:05:00+02:00", bc.Time.Format(time.RFC3339), "ouch: Time")
+	assert.Equal(t, "2015-10-21T12:00:00+02:00", bc.DtEnd.Format(time.RFC3339), "ouch: DtEnd")
+	assert.Equal(t, "http://www.br.de/radio/bayern2/gesellschaft/notizbuch/index.html", bc.Subject.String(), "ouch: Subject")
+	assert.Equal(t, "2015-10-22T00:06:25+02:00", bc.Modified.Format(time.RFC3339), "ouch: Modified")
+	assert.Equal(t, "Bayerischer Rundfunk", *bc.Author, "ouch: Author")
+	assert.Nil(t, bc.Image, "ouch: Image")
+	// assert.Equal(t, "..", *bc.Descripiton, "ouch: Descripiton")
 }
 
-func TestParseBroadcast_2(t *testing.T) {
+func TestParseBroadcastUntilMidnight(t *testing.T) {
 	f, err := os.Open("testdata/2015-10-21T2305-b2-sendung.html")
 	assert.NotNil(t, f, "ouch")
 	assert.Nil(t, err, "ouch")
@@ -189,18 +193,57 @@ func TestParseBroadcast_2(t *testing.T) {
 		Title: "Nachtmix",
 	}
 
-	bc, err := parseBroadcastReader(s, &t0.Source, f)
+	bc, err := s.parseBroadcastReader(&t0.Source, f)
 	assert.Nil(t, err, "ouch")
-	assert.Equal(t, "Nachtmix", bc.Title, "ouch")
-	assert.Equal(t, "http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-472628.html", bc.BroadcastURL.TimeURL.Source.String(), "ouch")
-	assert.Equal(t, bc.Title, bc.BroadcastURL.Title, "ouch")
-	assert.Nil(t, bc.TitleSeries, "ouch")
-	assert.Equal(t, "Die Akustik-Avantgarde", *bc.TitleEpisode, "ouch")
-	assert.Equal(t, "2015-10-21T23:05:00+02:00", bc.BroadcastURL.TimeURL.Time.Format(time.RFC3339), "ouch")
-	assert.Equal(t, "2015-10-21T00:00:00+02:00", bc.DtEnd.Format(time.RFC3339), "ouch")
-	assert.Equal(t, "http://www.br.de/radio/bayern2/musik/nachtmix/index.html", bc.Subject.String(), "ouch")
-	assert.Equal(t, "2015-10-20T13:05:12+02:00", bc.Modified.Format(time.RFC3339), "ouch")
-	assert.Equal(t, "Bayerischer Rundfunk", *bc.Author, "ouch")
-	assert.Nil(t, bc.Image, "ouch")
-	// assert.Equal(t, "..", *bc.Descripiton, "ouch")
+	assert.Equal(t, "Nachtmix", bc.Title, "ouch: Title")
+	assert.Equal(t, "http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-472628.html", bc.Source.String(), "ouch: Source")
+	assert.NotNil(t, bc.Language, "ouch: Language")
+	assert.Equal(t, "de", *bc.Language, "ouch: Language")
+	assert.Equal(t, bc.Title, bc.Title, "ouch: Title")
+	assert.Nil(t, bc.TitleSeries, "ouch: TitleSeries")
+	assert.Equal(t, "Die Akustik-Avantgarde", *bc.TitleEpisode, "ouch: TitleEpisode")
+	assert.Equal(t, "2015-10-21T23:05:00+02:00", bc.Time.Format(time.RFC3339), "ouch: Time")
+	assert.Equal(t, "2015-10-22T00:00:00+02:00", bc.DtEnd.Format(time.RFC3339), "ouch: DtEnd")
+	assert.Equal(t, "http://www.br.de/radio/bayern2/musik/nachtmix/index.html", bc.Subject.String(), "ouch: Subject")
+	assert.Equal(t, "2015-10-20T13:05:12+02:00", bc.Modified.Format(time.RFC3339), "ouch: Modified")
+	assert.Equal(t, "Bayerischer Rundfunk", *bc.Author, "ouch: Author")
+	assert.Nil(t, bc.Image, "ouch: Image")
+	// assert.Equal(t, "..", *bc.Descripiton, "ouch: Descripiton")
+}
+
+func TestParseBroadcastWithImage(t *testing.T) {
+	// http://rec.mro.name/stations/b4/2015/11/11/2305%20Jazztime
+	f, err := os.Open("testdata/2015-11-11T2305-b4-sendung.html")
+	assert.NotNil(t, f, "ouch")
+	assert.Nil(t, err, "ouch")
+
+	s := Station("b4")
+	t0 := r.BroadcastURL{
+		TimeURL: r.TimeURL{
+			Time:   time.Date(2015, time.November, 11, 23, 5, 0, 0, localLoc),
+			Source: *urlMustParse("http://www.br.de/radio/br-klassik/programmkalender/ausstrahlung-493432.html"),
+		},
+		Title: "Jazztime",
+	}
+
+	bc, err := s.parseBroadcastReader(&t0.Source, f)
+	assert.Nil(t, err, "ouch")
+	assert.Equal(t, "Jazztime", bc.Title, "ouch: Title")
+	assert.Equal(t, "http://www.br.de/radio/br-klassik/programmkalender/ausstrahlung-493432.html", bc.Source.String(), "ouch: Source")
+	assert.NotNil(t, bc.Language, "ouch: Language")
+	assert.Equal(t, "de", *bc.Language, "ouch: Language")
+	assert.Equal(t, bc.Title, bc.Title, "ouch: Title")
+	assert.Equal(t, "Aus dem Studio Franken:", *bc.TitleSeries, "ouch: TitleSeries")
+	assert.Equal(t, "Jazz aus Nürnberg: Live-Mitschnitte", *bc.TitleEpisode, "ouch: TitleEpisode")
+	assert.Equal(t, "2015-11-11T23:05:00+01:00", bc.Time.Format(time.RFC3339), "ouch: Time")
+	assert.Equal(t, "2015-11-12T00:00:00+01:00", bc.DtEnd.Format(time.RFC3339), "ouch: DtEnd")
+	assert.Equal(t, 3300*time.Second, bc.DtEnd.Sub(bc.Time), "ouch: Duration")
+	assert.Equal(t, "http://www.br.de/radio/br-klassik/sendungen/jazztime/index.html", bc.Subject.String(), "ouch: Subject")
+	assert.Equal(t, "2015-11-11T09:15:08+01:00", bc.Modified.Format(time.RFC3339), "ouch: Modified")
+	assert.Equal(t, "Bayerischer Rundfunk", *bc.Author, "ouch: Author")
+	assert.Nil(t, bc.Publisher, "Publisher")
+	assert.Nil(t, bc.Creator, "Creator")
+	assert.Nil(t, bc.Copyright, "Copyright")
+	// assert.Equal(t, "http://www.br.de/radio/br-klassik/sendungen/jazztime/gropper-100~_v-img__16__9__m_-4423061158a17f4152aef84861ed0243214ae6e7.jpg?version=230c6", bc.Image.String(), "ouch: Image")
+	// assert.Equal(t, "..", *bc.Descripiton, "ouch: Descripiton")
 }

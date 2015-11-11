@@ -49,12 +49,21 @@ func main() {
 	}()
 
 	now := time.Now()
+	incremental_nows := []time.Time{}
+	for _, h := range []time.Duration{0, 12, 3 * 24, 7 * 24, 7 * 7 * 24} {
+		incremental_nows = append(incremental_nows, now.Add(h*time.Hour))
+	}
+
 	// Scraper loop
 	go func() {
 		for job := range jobs {
-			if !job.Matches(&now) {
-				continue
+			for _, n := range incremental_nows {
+				if job.Matches(&n) {
+					goto DoScrape
+				}
 			}
+			continue
+		DoScrape:
 			wg_scrapers.Add(1)
 			go func() {
 				defer wg_scrapers.Done()
@@ -73,8 +82,9 @@ func main() {
 			wg_write.Add(1)
 			go func() {
 				defer wg_write.Done()
-				bcc := bc.Broadcast()
-				fmt.Fprintf(os.Stderr, "done     %s - %s '%s' %s\n", bcc.Time, bcc.DtEnd, bcc.Title, bcc.Source.String())
+				// bcc := bc.Broadcast()
+				// fmt.Fprintf(os.Stderr, "done     %s - %s '%s' %s\n", bcc.Time, bcc.DtEnd, bcc.Title, bcc.Source.String())
+				bc.WriteAsLuaTable(os.Stdout)
 			}()
 		}
 	}()

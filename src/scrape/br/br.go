@@ -172,18 +172,13 @@ func (day *TimeURLBR) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster
 	return
 }
 
+// 3 days window, 1 day each side.
 func (s *TimeURLBR) Matches(now *time.Time) (ok bool) {
 	if nil == now || nil == s {
 		return false
 	}
-	start := &s.Time
-	for _, n := range []time.Time{now.Add(1 * time.Second), now.Add(24 * time.Hour), now.Add(4 * 7 * 24 * time.Hour)} {
-		dt := start.Sub(n)
-		if -24*time.Hour <= dt && dt <= 24*time.Hour {
-			return true
-		}
-	}
-	return false
+	dt := s.Time.Sub(*now)
+	return -24*time.Hour <= dt && dt <= 24*time.Hour
 }
 
 func (s *StationBR) parseBroadcastURLsNode(day_url *url.URL, root *html.Node) (ret []*BroadcastURLBR, err error) {
@@ -256,16 +251,15 @@ func (b *BroadcastURLBR) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcas
 	return
 }
 
+// 1h future interval
 func (s *BroadcastURLBR) Matches(now *time.Time) (ok bool) {
 	start := &s.Time
 	if nil == now || nil == start {
 		return false
 	}
-	for _, n := range []time.Time{now.Add(1 * time.Second), now.Add(24 * time.Hour), now.Add(4 * 7 * 24 * time.Hour)} {
-		dt := start.Sub(n)
-		if 0 <= dt && dt <= 60*time.Minute {
-			return true
-		}
+	dt := start.Sub(*now)
+	if 0 <= dt && dt <= 60*time.Minute {
+		return true
 	}
 	return false
 }
@@ -347,8 +341,11 @@ var (
 
 // Completely re-scrape everything and verify consistence at least of Time, evtl. Title
 func (s *StationBR) parseBroadcastNode(url *url.URL, root *html.Node) (bc r.Broadcast, err error) {
-	bc.BroadcastURL.TimeURL.Source = *url
-
+	bc.Source = *url
+	{
+		s := "de"
+		bc.Language = &s
+	}
 	// Title, TitleSeries, TitleEpisode
 	for i, h1 := range scrape.FindAll(root, func(n *html.Node) bool { return atom.H1 == n.DataAtom && "bcast_headline" == scrape.Attr(n, "class") }) {
 		if i != 0 {
@@ -372,7 +369,7 @@ func (s *StationBR) parseBroadcastNode(url *url.URL, root *html.Node) (bc r.Broa
 		}
 	}
 
-	// BroadcastURL.TimeURL.Time, DtEnd
+	// Time, DtEnd
 	for idx, p := range scrape.FindAll(root, func(n *html.Node) bool { return atom.P == n.DataAtom && "bcast_date" == scrape.Attr(n, "class") }) {
 		if idx != 0 {
 			err = errors.New("There was more than 1 <p class='bcast_date'>")
@@ -384,16 +381,27 @@ func (s *StationBR) parseBroadcastNode(url *url.URL, root *html.Node) (bc r.Broa
 			return
 		}
 		i := mustParseInt
-		bc.BroadcastURL.TimeURL.Time = time.Date(i(m[3]), time.Month(i(m[2])), i(m[1]), i(m[4]), i(m[5]), 0, 0, localLoc)
+		bc.Time = time.Date(i(m[3]), time.Month(i(m[2])), i(m[1]), i(m[4]), i(m[5]), 0, 0, localLoc)
 		t := time.Date(i(m[3]), time.Month(i(m[2])), i(m[1]), i(m[6]), i(m[7]), 0, 0, localLoc)
+		if bc.Time.Hour() > t.Hour() { // after midnight
+			t = t.AddDate(0, 0, 1)
+		}
 		bc.DtEnd = &t
+	}
+
+	// Language
+	for _, meta := range scrape.FindAll(root, func(n *html.Node) bool {
+		return atom.Meta == n.DataAtom && "og:locale" == scrape.Attr(n, "property")
+	}) {
+		v := scrape.Attr(meta, "content")[0:2]
+		bc.Language = &v
 	}
 
 	// Subject
 	for _, a := range scrape.FindAll(root, func(n *html.Node) bool {
 		return atom.A == n.DataAtom && strings.HasPrefix(scrape.Attr(n, "class"), "link_broadcast media_broadcastSeries")
 	}) {
-		u := bc.BroadcastURL.TimeURL.Source
+		u := bc.Source
 		u.Path = scrape.Attr(a, "href")
 		bc.Subject = &u
 	}
