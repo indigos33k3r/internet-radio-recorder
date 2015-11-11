@@ -40,36 +40,36 @@ import (
 
 /////////////////////////////////////////////////////////////////////////////
 /// Just wrap Station into a distinct, local type.
-type StationBR struct {
+type station struct {
 	r.Station
 }
 
 // Station Factory
-func Station(identifier string) *StationBR {
+func Station(identifier string) *station {
 	tz, err := time.LoadLocation("Europe/Berlin")
 	if nil != err {
 		panic(err)
 	}
-	s := map[string]*StationBR{
-		"b+":       &StationBR{Station: r.Station{Name: "Bayern Plus", CloseDown: "05:00", ProgramURL: r.MustParseURL("http://www.br.de/radio/bayern-plus/programmkalender/bayern-plus114.html"), Identifier: identifier, TimeZone: tz}},
-		"b1":       &StationBR{Station: r.Station{Name: "Bayern 1", CloseDown: "05:00", ProgramURL: r.MustParseURL("http://www.br.de/radio/bayern1/service/programm/index.html"), Identifier: identifier, TimeZone: tz}},
-		"b2":       &StationBR{Station: r.Station{Name: "Bayern 2", CloseDown: "05:00", ProgramURL: r.MustParseURL("http://www.br.de/radio/bayern2/service/programm/index.html"), Identifier: identifier, TimeZone: tz}},
-		"b3":       &StationBR{Station: r.Station{Name: "Bayern 3", CloseDown: "05:00", ProgramURL: r.MustParseURL("http://www.br.de/radio/bayern3/programmkalender/br-drei100.html"), Identifier: identifier, TimeZone: tz}},
-		"b4":       &StationBR{Station: r.Station{Name: "Bayern 4", CloseDown: "06:00", ProgramURL: r.MustParseURL("http://www.br.de/radio/br-klassik/programmkalender/br-klassik120.html"), Identifier: identifier, TimeZone: tz}},
-		"b5":       &StationBR{Station: r.Station{Name: "Bayern 5", CloseDown: "06:00", ProgramURL: r.MustParseURL("http://www.br.de/radio/b5-aktuell/programmkalender/b5aktuell116.html"), Identifier: identifier, TimeZone: tz}},
-		"brheimat": &StationBR{Station: r.Station{Name: "BR Heimat", CloseDown: "05:00", ProgramURL: r.MustParseURL("http://www.br.de/radio/br-heimat/programmkalender/br-heimat-116.html"), Identifier: identifier, TimeZone: tz}},
-		"puls":     &StationBR{Station: r.Station{Name: "Puls", CloseDown: "07:00", ProgramURL: r.MustParseURL("http://www.br.de/puls/programm/puls-radio/programmkalender/programmfahne104.html"), Identifier: identifier, TimeZone: tz}},
+	s := map[string]*station{
+		"b+":       &station{Station: r.Station{Name: "Bayern Plus", CloseDown: "05:00", ProgramURL: r.MustParseURL("http://www.br.de/radio/bayern-plus/programmkalender/bayern-plus114.html"), Identifier: identifier, TimeZone: tz}},
+		"b1":       &station{Station: r.Station{Name: "Bayern 1", CloseDown: "05:00", ProgramURL: r.MustParseURL("http://www.br.de/radio/bayern1/service/programm/index.html"), Identifier: identifier, TimeZone: tz}},
+		"b2":       &station{Station: r.Station{Name: "Bayern 2", CloseDown: "05:00", ProgramURL: r.MustParseURL("http://www.br.de/radio/bayern2/service/programm/index.html"), Identifier: identifier, TimeZone: tz}},
+		"b3":       &station{Station: r.Station{Name: "Bayern 3", CloseDown: "05:00", ProgramURL: r.MustParseURL("http://www.br.de/radio/bayern3/programmkalender/br-drei100.html"), Identifier: identifier, TimeZone: tz}},
+		"b4":       &station{Station: r.Station{Name: "Bayern 4", CloseDown: "06:00", ProgramURL: r.MustParseURL("http://www.br.de/radio/br-klassik/programmkalender/br-klassik120.html"), Identifier: identifier, TimeZone: tz}},
+		"b5":       &station{Station: r.Station{Name: "Bayern 5", CloseDown: "06:00", ProgramURL: r.MustParseURL("http://www.br.de/radio/b5-aktuell/programmkalender/b5aktuell116.html"), Identifier: identifier, TimeZone: tz}},
+		"brheimat": &station{Station: r.Station{Name: "BR Heimat", CloseDown: "05:00", ProgramURL: r.MustParseURL("http://www.br.de/radio/br-heimat/programmkalender/br-heimat-116.html"), Identifier: identifier, TimeZone: tz}},
+		"puls":     &station{Station: r.Station{Name: "Puls", CloseDown: "07:00", ProgramURL: r.MustParseURL("http://www.br.de/puls/programm/puls-radio/programmkalender/programmfahne104.html"), Identifier: identifier, TimeZone: tz}},
 	}[identifier]
 	return s
 }
 
-func (s *StationBR) String() string {
+func (s *station) String() string {
 	return fmt.Sprintf("Station '%s'", s.Station.Name)
 }
 
-func (s *StationBR) parseDayURLsNode(root *html.Node) (ret []*TimeURLBR, err error) {
+func (s *station) parseDayURLsNode(root *html.Node) (ret []*dayUrl, err error) {
 	i := 0
-	ret = []*TimeURLBR{}
+	ret = []*dayUrl{}
 	for _, a := range scrape.FindAll(root, func(n *html.Node) bool { return atom.A == n.DataAtom && atom.Td == n.Parent.DataAtom }) {
 		rel := scrape.Attr(a, "href")
 		d, err := s.newTimeURL(rel)
@@ -82,12 +82,12 @@ func (s *StationBR) parseDayURLsNode(root *html.Node) (ret []*TimeURLBR, err err
 			continue
 		}
 		// fmt.Printf("ok %s\n", d.String())
-		ret = append(ret, &TimeURLBR{TimeURL: d, Station: s})
+		ret = append(ret, &dayUrl{TimeURL: d, Station: s})
 	}
 	return
 }
 
-func (s *StationBR) parseDayURLsReader(read io.Reader) (ret []*TimeURLBR, err error) {
+func (s *station) parseDayURLsReader(read io.Reader) (ret []*dayUrl, err error) {
 	root, err := html.Parse(read)
 	if nil != err {
 		return
@@ -95,7 +95,7 @@ func (s *StationBR) parseDayURLsReader(read io.Reader) (ret []*TimeURLBR, err er
 	return s.parseDayURLsNode(root)
 }
 
-func (s *StationBR) parseDayURLs() (ret []*TimeURLBR, err error) {
+func (s *station) parseDayURLs() (ret []*dayUrl, err error) {
 	resp, err := http.Get(s.ProgramURL.String())
 	defer resp.Body.Close()
 	if nil != err {
@@ -104,8 +104,8 @@ func (s *StationBR) parseDayURLs() (ret []*TimeURLBR, err error) {
 	return s.parseDayURLsReader(resp.Body)
 }
 
-// Scrape slice of TimeURLBR - all calendar (day) entries of the station program url
-func (s *StationBR) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (err error) {
+// Scrape slice of dayUrl - all calendar (day) entries of the station program url
+func (s *station) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (err error) {
 	time_urls, err := s.parseDayURLs()
 	if nil == err {
 		for _, t := range time_urls {
@@ -115,7 +115,7 @@ func (s *StationBR) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) 
 	return
 }
 
-func (s *StationBR) Matches(now *time.Time) (ok bool) {
+func (s *station) Matches(now *time.Time) (ok bool) {
 	return true
 }
 
@@ -123,7 +123,7 @@ var (
 	urlDayRegExp *regexp.Regexp = regexp.MustCompile("^/radio/.+~_date-(\\d{4}-\\d{2}-\\d{2})_-.+$")
 )
 
-func (s *StationBR) newTimeURL(relUrl string) (ret r.TimeURL, err error) {
+func (s *station) newTimeURL(relUrl string) (ret r.TimeURL, err error) {
 	m := urlDayRegExp.FindStringSubmatch(relUrl)
 	if nil == m {
 		err = errors.New("Couldn't match regexp on " + relUrl + "")
@@ -147,13 +147,13 @@ func (s *StationBR) newTimeURL(relUrl string) (ret r.TimeURL, err error) {
 
 /////////////////////////////////////////////////////////////////////////////
 /// Just wrap TimeURL into a distinct, local type.
-type TimeURLBR struct {
+type dayUrl struct {
 	r.TimeURL
-	Station *StationBR // todo: might be removed later
+	Station *station // todo: might be removed later
 }
 
-// Scrape slice of BroadcastURLBR - all per-day broadcast entries of the day url
-func (day *TimeURLBR) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (err error) {
+// Scrape slice of broadcastUrl - all per-day broadcast entries of the day url
+func (day *dayUrl) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (err error) {
 	broadcast_urls, err := day.Station.parseBroadcastURLs(&day.Source)
 	if nil == err {
 		for _, b := range broadcast_urls {
@@ -164,7 +164,7 @@ func (day *TimeURLBR) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster
 }
 
 // 3 days window, 1 day each side.
-func (day *TimeURLBR) Matches(now *time.Time) (ok bool) {
+func (day *dayUrl) Matches(now *time.Time) (ok bool) {
 	if nil == now || nil == day {
 		return false
 	}
@@ -172,8 +172,8 @@ func (day *TimeURLBR) Matches(now *time.Time) (ok bool) {
 	return -24*time.Hour <= dt && dt <= 24*time.Hour
 }
 
-func (s *StationBR) parseBroadcastURLsNode(day_url *url.URL, root *html.Node) (ret []*BroadcastURLBR, err error) {
-	ret = []*BroadcastURLBR{}
+func (s *station) parseBroadcastURLsNode(day_url *url.URL, root *html.Node) (ret []*broadcastUrl, err error) {
+	ret = []*broadcastUrl{}
 	const closeDownHour int = 5
 	now := time.Now()
 	for _, h4 := range scrape.FindAll(root, func(n *html.Node) bool { return atom.H4 == n.DataAtom }) {
@@ -196,7 +196,7 @@ func (s *StationBR) parseBroadcastURLsNode(day_url *url.URL, root *html.Node) (r
 				day_ += 1
 			}
 			// fmt.Printf("%s %s\n", b.r.TimeURL.String(), b.Title)
-			ret = append(ret, &BroadcastURLBR{BroadcastURL: r.BroadcastURL{
+			ret = append(ret, &broadcastUrl{BroadcastURL: r.BroadcastURL{
 				TimeURL: r.TimeURL{
 					Time:    time.Date(year, month, day_, hour, r.MustParseInt(m[2]), 0, 0, localLoc),
 					Source:  ur,
@@ -210,7 +210,7 @@ func (s *StationBR) parseBroadcastURLsNode(day_url *url.URL, root *html.Node) (r
 	return
 }
 
-func (s *StationBR) parseBroadcastURLsReader(day_url *url.URL, read io.Reader) (ret []*BroadcastURLBR, err error) {
+func (s *station) parseBroadcastURLsReader(day_url *url.URL, read io.Reader) (ret []*broadcastUrl, err error) {
 	root, err := html.Parse(read)
 	if nil != err {
 		return
@@ -218,7 +218,7 @@ func (s *StationBR) parseBroadcastURLsReader(day_url *url.URL, read io.Reader) (
 	return s.parseBroadcastURLsNode(day_url, root)
 }
 
-func (s *StationBR) parseBroadcastURLs(day_url *url.URL) (ret []*BroadcastURLBR, err error) {
+func (s *station) parseBroadcastURLs(day_url *url.URL) (ret []*broadcastUrl, err error) {
 	resp, err := http.Get(day_url.String())
 	defer resp.Body.Close()
 	if nil != err {
@@ -230,12 +230,12 @@ func (s *StationBR) parseBroadcastURLs(day_url *url.URL) (ret []*BroadcastURLBR,
 /////////////////////////////////////////////////////////////////////////////
 ///
 
-type BroadcastURLBR struct {
+type broadcastUrl struct {
 	r.BroadcastURL
-	Station *StationBR
+	Station *station
 }
 
-func (b *BroadcastURLBR) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (err error) {
+func (b *broadcastUrl) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (err error) {
 	bc, err := b.Station.parseBroadcast(&b.TimeURL.Source)
 	if nil == err {
 		results <- bc
@@ -244,7 +244,7 @@ func (b *BroadcastURLBR) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcas
 }
 
 // 1h future interval
-func (b *BroadcastURLBR) Matches(now *time.Time) (ok bool) {
+func (b *broadcastUrl) Matches(now *time.Time) (ok bool) {
 	start := &b.Time
 	if nil == now || nil == start {
 		return false
@@ -313,7 +313,7 @@ var (
 )
 
 // Completely re-scrape everything and verify consistence at least of Time, evtl. Title
-func (s *StationBR) parseBroadcastNode(url *url.URL, root *html.Node) (bc r.Broadcast, err error) {
+func (s *station) parseBroadcastNode(url *url.URL, root *html.Node) (bc r.Broadcast, err error) {
 	bc.Station = s.Station
 	bc.Source = *url
 	{
@@ -439,7 +439,7 @@ func (s *StationBR) parseBroadcastNode(url *url.URL, root *html.Node) (bc r.Broa
 	return
 }
 
-func (s *StationBR) parseBroadcastReader(url *url.URL, read io.Reader) (bc r.Broadcast, err error) {
+func (s *station) parseBroadcastReader(url *url.URL, read io.Reader) (bc r.Broadcast, err error) {
 	root, err := html.Parse(read)
 	if nil != err {
 		return
@@ -447,7 +447,7 @@ func (s *StationBR) parseBroadcastReader(url *url.URL, read io.Reader) (bc r.Bro
 	return s.parseBroadcastNode(url, root)
 }
 
-func (s *StationBR) parseBroadcast(url *url.URL) (bc r.Broadcast, err error) {
+func (s *station) parseBroadcast(url *url.URL) (bc r.Broadcast, err error) {
 	resp, err := http.Get(url.String())
 	defer resp.Body.Close()
 	if nil != err {

@@ -58,7 +58,7 @@ func TestParseBroadcasts(t *testing.T) {
 	assert.Nil(t, err, "ouch")
 
 	s := Station("dlf")
-	u := DayURLDLF{
+	u := dayUrl{
 		r.TimeURL{
 			Time:    time.Date(2015, time.October, 25, 0, 0, 0, 0, s.TimeZone),
 			Source:  *r.MustParseURL("http://www.deutschlandfunk.de/programmvorschau.281.de.html?cal:month=10&drbm:date=25.10.2015"),
@@ -82,8 +82,8 @@ func TestParseBroadcasts(t *testing.T) {
 	assert.Nil(t, bc.TitleEpisode, "ouch: TitleEpisode")
 	assert.Equal(t, "2015-10-25T00:00:00+02:00", bc.Time.Format(time.RFC3339), "ouch: Time")
 	assert.NotNil(t, bc.DtEnd, "ouch: DtEnd")
-	//	assert.Equal(t, "2015-10-25T00:05:00+02:00", bc.DtEnd.Format(time.RFC3339), "ouch: DtEnd")
-	//	assert.Equal(t, 300*time.Second, bc.DtEnd.Sub(bc.Time), "ouch: Duration")
+	assert.Equal(t, "2015-10-25T00:05:00+02:00", bc.DtEnd.Format(time.RFC3339), "ouch: DtEnd")
+	assert.Equal(t, 300*time.Second, bc.DtEnd.Sub(bc.Time), "ouch: Duration")
 	assert.Nil(t, bc.Subject, "ouch: Subject")
 	assert.Nil(t, bc.Modified, "ouch: Modified")
 	assert.Nil(t, bc.Author, "ouch: Author")
@@ -124,7 +124,7 @@ func TestParseBroadcasts_1(t *testing.T) {
 	assert.Nil(t, err, "ouch")
 
 	s := Station("dlf")
-	u := DayURLDLF{
+	u := dayUrl{
 		r.TimeURL{
 			Time:    time.Date(2015, time.November, 14, 0, 0, 0, 0, s.TimeZone),
 			Source:  *r.MustParseURL("http://www.deutschlandfunk.de/programmvorschau.281.de.html?cal:month=10&drbm:date=14.11.2015"),

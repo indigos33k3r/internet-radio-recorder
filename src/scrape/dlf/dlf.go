@@ -38,35 +38,35 @@ import (
 var _ = os.Stderr
 
 /////////////////////////////////////////////////////////////////////////////
-/// Just wrap Station into a distinct, local type.
-type StationDLF struct {
+/// Just wrap Station into a distinct, local type - a Scraper, naturally
+type station struct {
 	r.Station
 }
 
 // Station Factory
-func Station(identifier string) *StationDLF {
+func Station(identifier string) *station {
 	tz, err := time.LoadLocation("Europe/Berlin")
 	if nil != err {
 		panic(err)
 	}
-	s := map[string]*StationDLF{
-		"dlf": &StationDLF{Station: r.Station{Name: "Deutschlandfunk", CloseDown: "00:00", ProgramURL: r.MustParseURL("http://www.deutschlandfunk.de/programmvorschau.281.de.html"), Identifier: identifier, TimeZone: tz}},
+	s := map[string]*station{
+		"dlf": &station{Station: r.Station{Name: "Deutschlandfunk", CloseDown: "00:00", ProgramURL: r.MustParseURL("http://www.deutschlandfunk.de/programmvorschau.281.de.html"), Identifier: identifier, TimeZone: tz}},
 	}[identifier]
 	return s
 }
 
 /// Stringer
-func (s *StationDLF) String() string {
+func (s *station) String() string {
 	return fmt.Sprintf("Station '%s'", s.Name)
 }
 
 /// r.Scraper
-func (s *StationDLF) Matches(now *time.Time) (ok bool) {
+func (s *station) Matches(now *time.Time) (ok bool) {
 	return true
 }
 
 // Synthesise the day urls for incremental scraping.
-func (s *StationDLF) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (err error) {
+func (s *station) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (err error) {
 	t0 := time.Now()
 	for _, now := range r.IncrementalNows(&t0) {
 		day, _ := s.dayURLForDate(now)
@@ -78,8 +78,8 @@ func (s *StationDLF) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster)
 ///////////////////////////////////////////////////////////////////////
 // http://www.deutschlandfunk.de/programmvorschau.281.de.html?drbm:date=19.11.2015
 
-func (s *StationDLF) dayURLForDate(day time.Time) (ret *DayURLDLF, err error) {
-	ret = &DayURLDLF{
+func (s *station) dayURLForDate(day time.Time) (ret *dayUrl, err error) {
+	ret = &dayUrl{
 		TimeURL: r.TimeURL{
 			Time:    time.Date(day.Year(), day.Month(), day.Day(), 0, 0, 0, 0, s.TimeZone),
 			Source:  *r.MustParseURL(s.ProgramURL.String() + day.Format("?drbm:date=02.01.2006")),
@@ -91,19 +91,19 @@ func (s *StationDLF) dayURLForDate(day time.Time) (ret *DayURLDLF, err error) {
 }
 
 /////////////////////////////////////////////////////////////////////////////
-/// Just wrap TimeURL into a distinct, local type.
-type DayURLDLF struct {
+/// Just wrap TimeURL into a distinct, local type - a Scraper, naturally
+type dayUrl struct {
 	r.TimeURL
 }
 
 /// r.Scraper
-func (s DayURLDLF) Matches(now *time.Time) (ok bool) {
+func (day dayUrl) Matches(now *time.Time) (ok bool) {
 	return true
 }
 
-// Scrape slice of DayURLDLF - all calendar (day) entries of the station program url
-func (s DayURLDLF) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (err error) {
-	bcs, err := s.parseBroadcastsFromURL()
+// Scrape broadcasts from a day page.
+func (day dayUrl) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (err error) {
+	bcs, err := day.parseBroadcastsFromURL()
 	if nil == err {
 		for _, bc := range bcs {
 			results <- bc
@@ -117,7 +117,7 @@ var (
 	publisher string = "http://www.deutschlandfunk.de/"
 )
 
-func (day *DayURLDLF) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast, err error) {
+func (day *dayUrl) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast, err error) {
 	// fmt.Fprintf(os.Stderr, "%s\n", day.Source.String())
 	index := 0
 	for _, at := range scrape.FindAll(root, func(n *html.Node) bool {
@@ -195,15 +195,15 @@ func (day *DayURLDLF) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadca
 	return
 }
 
-func (s *DayURLDLF) parseBroadcastsFromReader(read io.Reader) (ret []*r.Broadcast, err error) {
+func (day *dayUrl) parseBroadcastsFromReader(read io.Reader) (ret []*r.Broadcast, err error) {
 	root, err := html.Parse(read)
 	if nil != err {
 		return
 	}
-	return s.parseBroadcastsFromNode(root)
+	return day.parseBroadcastsFromNode(root)
 }
 
-func (day *DayURLDLF) parseBroadcastsFromURL() (ret []*r.Broadcast, err error) {
+func (day *dayUrl) parseBroadcastsFromURL() (ret []*r.Broadcast, err error) {
 	resp, err := http.Get(day.Source.String())
 	defer resp.Body.Close()
 	if nil != err {
