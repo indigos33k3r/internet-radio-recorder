@@ -48,8 +48,9 @@ type Station struct {
 ///
 //////////////////////////////////////////////////////////////////////////////////////////
 type TimeURL struct {
-	Time   time.Time
+	time.Time
 	Source url.URL
+	Station
 }
 
 func (d *TimeURL) String() string {
@@ -92,6 +93,9 @@ type Broadcaster interface {
 // func (b Broadcast) Broadcast() *Broadcast { return &b }
 
 func (b Broadcast) WriteAsLuaTable(w io.Writer) (err error) {
+	if "" == b.Station.Identifier {
+		panic("How can the identifier miss?")
+	}
 	// https://github.com/mro/radio-pi/blob/master/htdocs/app/recorder.rb#L188
 	fmt.Fprintf(w, "\n-- comma separated lua tables, one per broadcast:\n{\n")
 	fmt.Fprintf(w, "  -- %s = '%s',\n", "t_download_start", "-")
@@ -115,7 +119,7 @@ func (b Broadcast) WriteAsLuaTable(w io.Writer) (err error) {
 		f(k, v.Format(time.RFC3339))
 	}
 
-	//	fmt.Fprintf(w, "%s = '%s',\n", "station_name", b.Station.Name)
+	f("station_name", b.Station.Identifier)
 	f("title", b.Title)
 	f("DC_scheme", "/app/pbmi2003-recmod2012/")
 	fp("DC_language", b.Language)

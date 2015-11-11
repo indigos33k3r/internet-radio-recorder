@@ -82,7 +82,7 @@ func (s *StationBR) parseDayURLsNode(root *html.Node) (ret []*TimeURLBR, err err
 			continue
 		}
 		// fmt.Printf("ok %s\n", d.String())
-		ret = append(ret, &TimeURLBR{TimeURL: d})
+		ret = append(ret, &TimeURLBR{TimeURL: d, Station: s})
 	}
 	return
 }
@@ -138,7 +138,10 @@ func (s *StationBR) newTimeURL(relUrl string) (ret r.TimeURL, err error) {
 
 	programURL := *(s.ProgramURL)
 	programURL.Path = relUrl
-	ret = r.TimeURL{Time: day, Source: programURL}
+	ret = r.TimeURL{Time: day, Source: programURL, Station: s.Station}
+	if "" == ret.Station.Identifier {
+		panic("How can the identifier miss?")
+	}
 	return
 }
 
@@ -146,7 +149,7 @@ func (s *StationBR) newTimeURL(relUrl string) (ret r.TimeURL, err error) {
 /// Just wrap TimeURL into a distinct, local type.
 type TimeURLBR struct {
 	r.TimeURL
-	Station *StationBR
+	Station *StationBR // todo: might be removed later
 }
 
 // Scrape slice of BroadcastURLBR - all per-day broadcast entries of the day url
@@ -195,8 +198,9 @@ func (s *StationBR) parseBroadcastURLsNode(day_url *url.URL, root *html.Node) (r
 			// fmt.Printf("%s %s\n", b.r.TimeURL.String(), b.Title)
 			ret = append(ret, &BroadcastURLBR{BroadcastURL: r.BroadcastURL{
 				TimeURL: r.TimeURL{
-					Time:   time.Date(year, month, day_, hour, r.MustParseInt(m[2]), 0, 0, localLoc),
-					Source: ur,
+					Time:    time.Date(year, month, day_, hour, r.MustParseInt(m[2]), 0, 0, localLoc),
+					Source:  ur,
+					Station: s.Station,
 				},
 				Title: strings.TrimSpace(m[3]),
 			},
@@ -321,6 +325,7 @@ var (
 
 // Completely re-scrape everything and verify consistence at least of Time, evtl. Title
 func (s *StationBR) parseBroadcastNode(url *url.URL, root *html.Node) (bc r.Broadcast, err error) {
+	bc.Station = s.Station
 	bc.Source = *url
 	{
 		s := "de"
@@ -439,6 +444,9 @@ func (s *StationBR) parseBroadcastNode(url *url.URL, root *html.Node) (bc r.Broa
 	}
 
 	// Image
+	if "" == bc.Station.Identifier {
+		panic("How can the identifier miss?")
+	}
 	return
 }
 
