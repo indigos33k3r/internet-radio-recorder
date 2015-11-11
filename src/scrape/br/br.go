@@ -26,7 +26,6 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 
@@ -36,18 +35,8 @@ import (
 	r "purl.mro.name/recorder/radio/scrape"
 )
 
-var _ = fmt.Printf
-
 /////////////////////////////////////////////////////////////////////////////
 ///
-
-func urlMustParse(s string) *url.URL {
-	ret, err := url.Parse(s)
-	if nil != err {
-		panic(err)
-	}
-	return ret
-}
 
 /////////////////////////////////////////////////////////////////////////////
 /// Just wrap Station into a distinct, local type.
@@ -61,17 +50,17 @@ func Station(identifier string) *StationBR {
 	if nil != err {
 		panic(err)
 	}
-	s := map[string]StationBR{
-		"b+":       StationBR{Station: r.Station{Name: "Bayern Plus", CloseDown: "05:00", ProgramURL: urlMustParse("http://www.br.de/radio/bayern-plus/programmkalender/bayern-plus114.html"), Identifier: identifier, TimeZone: tz}},
-		"b1":       StationBR{Station: r.Station{Name: "Bayern 1", CloseDown: "05:00", ProgramURL: urlMustParse("http://www.br.de/radio/bayern1/service/programm/index.html"), Identifier: identifier, TimeZone: tz}},
-		"b2":       StationBR{Station: r.Station{Name: "Bayern 2", CloseDown: "05:00", ProgramURL: urlMustParse("http://www.br.de/radio/bayern2/service/programm/index.html"), Identifier: identifier, TimeZone: tz}},
-		"b3":       StationBR{Station: r.Station{Name: "Bayern 3", CloseDown: "05:00", ProgramURL: urlMustParse("http://www.br.de/radio/bayern3/programmkalender/br-drei100.html"), Identifier: identifier, TimeZone: tz}},
-		"b4":       StationBR{Station: r.Station{Name: "Bayern 4", CloseDown: "06:00", ProgramURL: urlMustParse("http://www.br.de/radio/br-klassik/programmkalender/br-klassik120.html"), Identifier: identifier, TimeZone: tz}},
-		"b5":       StationBR{Station: r.Station{Name: "Bayern 5", CloseDown: "06:00", ProgramURL: urlMustParse("http://www.br.de/radio/b5-aktuell/programmkalender/b5aktuell116.html"), Identifier: identifier, TimeZone: tz}},
-		"brheimat": StationBR{Station: r.Station{Name: "BR Heimat", CloseDown: "05:00", ProgramURL: urlMustParse("http://www.br.de/radio/br-heimat/programmkalender/br-heimat-116.html"), Identifier: identifier, TimeZone: tz}},
-		"puls":     StationBR{Station: r.Station{Name: "Puls", CloseDown: "07:00", ProgramURL: urlMustParse("http://www.br.de/puls/programm/puls-radio/programmkalender/programmfahne104.html"), Identifier: identifier, TimeZone: tz}},
+	s := map[string]*StationBR{
+		"b+":       &StationBR{Station: r.Station{Name: "Bayern Plus", CloseDown: "05:00", ProgramURL: r.MustParseURL("http://www.br.de/radio/bayern-plus/programmkalender/bayern-plus114.html"), Identifier: identifier, TimeZone: tz}},
+		"b1":       &StationBR{Station: r.Station{Name: "Bayern 1", CloseDown: "05:00", ProgramURL: r.MustParseURL("http://www.br.de/radio/bayern1/service/programm/index.html"), Identifier: identifier, TimeZone: tz}},
+		"b2":       &StationBR{Station: r.Station{Name: "Bayern 2", CloseDown: "05:00", ProgramURL: r.MustParseURL("http://www.br.de/radio/bayern2/service/programm/index.html"), Identifier: identifier, TimeZone: tz}},
+		"b3":       &StationBR{Station: r.Station{Name: "Bayern 3", CloseDown: "05:00", ProgramURL: r.MustParseURL("http://www.br.de/radio/bayern3/programmkalender/br-drei100.html"), Identifier: identifier, TimeZone: tz}},
+		"b4":       &StationBR{Station: r.Station{Name: "Bayern 4", CloseDown: "06:00", ProgramURL: r.MustParseURL("http://www.br.de/radio/br-klassik/programmkalender/br-klassik120.html"), Identifier: identifier, TimeZone: tz}},
+		"b5":       &StationBR{Station: r.Station{Name: "Bayern 5", CloseDown: "06:00", ProgramURL: r.MustParseURL("http://www.br.de/radio/b5-aktuell/programmkalender/b5aktuell116.html"), Identifier: identifier, TimeZone: tz}},
+		"brheimat": &StationBR{Station: r.Station{Name: "BR Heimat", CloseDown: "05:00", ProgramURL: r.MustParseURL("http://www.br.de/radio/br-heimat/programmkalender/br-heimat-116.html"), Identifier: identifier, TimeZone: tz}},
+		"puls":     &StationBR{Station: r.Station{Name: "Puls", CloseDown: "07:00", ProgramURL: r.MustParseURL("http://www.br.de/puls/programm/puls-radio/programmkalender/programmfahne104.html"), Identifier: identifier, TimeZone: tz}},
 	}[identifier]
-	return &s
+	return s
 }
 
 func (s *StationBR) String() string {
@@ -198,7 +187,7 @@ func (s *StationBR) parseBroadcastURLsNode(day_url *url.URL, root *html.Node) (r
 			ur := *day_url
 			ur.Path = scrape.Attr(a, "href")
 
-			hour := mustParseInt(m[1])
+			hour := r.MustParseInt(m[1])
 			var day_ int = day
 			if hour < closeDownHour {
 				day_ += 1
@@ -206,7 +195,7 @@ func (s *StationBR) parseBroadcastURLsNode(day_url *url.URL, root *html.Node) (r
 			// fmt.Printf("%s %s\n", b.r.TimeURL.String(), b.Title)
 			ret = append(ret, &BroadcastURLBR{BroadcastURL: r.BroadcastURL{
 				TimeURL: r.TimeURL{
-					Time:   time.Date(year, month, day_, hour, mustParseInt(m[2]), 0, 0, localLoc),
+					Time:   time.Date(year, month, day_, hour, r.MustParseInt(m[2]), 0, 0, localLoc),
 					Source: ur,
 				},
 				Title: strings.TrimSpace(m[3]),
@@ -286,14 +275,6 @@ func init() {
 /// Find broadcast schedule per (three) day
 /////////////////////////////////////////////////////////////////////////////
 
-func mustParseInt(s string) int {
-	ret, err := strconv.ParseInt(s, 10, 12)
-	if nil != err {
-		panic(err)
-	}
-	return int(ret)
-}
-
 func yearForMonth(mo time.Month, now *time.Time) int {
 	year := now.Year()
 	if mo+6 <= now.Month() {
@@ -313,9 +294,9 @@ func timeForH4(h4 string, now *time.Time) (year int, mon time.Month, day int, er
 		// err = error.New("Couldn't parse " + h4)
 		return
 	}
-	mon = time.Month(mustParseInt(m[2]))
+	mon = time.Month(r.MustParseInt(m[2]))
 	year = yearForMonth(mon, now)
-	day = mustParseInt(m[1])
+	day = r.MustParseInt(m[1])
 	return
 }
 
@@ -399,7 +380,7 @@ func (s *StationBR) parseBroadcastNode(url *url.URL, root *html.Node) (bc r.Broa
 			err = errors.New("There was no date match")
 			return
 		}
-		i := mustParseInt
+		i := r.MustParseInt
 		bc.Time = time.Date(i(m[3]), time.Month(i(m[2])), i(m[1]), i(m[4]), i(m[5]), 0, 0, localLoc)
 		t := time.Date(i(m[3]), time.Month(i(m[2])), i(m[1]), i(m[6]), i(m[7]), 0, 0, localLoc)
 		if bc.Time.Hour() > t.Hour() { // after midnight

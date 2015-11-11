@@ -23,7 +23,6 @@
 package br // import "purl.mro.name/recorder/radio/scrape/br"
 
 import (
-	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -31,8 +30,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	r "purl.mro.name/recorder/radio/scrape"
 )
-
-var _ = fmt.Printf
 
 func TestNormalizeTimeOverflow(t *testing.T) {
 	{
@@ -105,7 +102,7 @@ func TestParseScheduleForBroadcasts(t *testing.T) {
 	s := Station("b2")
 	t0 := r.TimeURL{
 		Time:   time.Date(2015, time.October, 21, 5, 0, 0, 0, localLoc),
-		Source: *urlMustParse("http://www.br.de/radio/bayern2/programmkalender/programmfahne102~_date-2015-10-21_-5ddeec3fc12bdd255a6c45c650f068b54f7b010b.html"),
+		Source: *r.MustParseURL("http://www.br.de/radio/bayern2/programmkalender/programmfahne102~_date-2015-10-21_-5ddeec3fc12bdd255a6c45c650f068b54f7b010b.html"),
 	}
 	a, err := s.parseBroadcastURLsReader(&t0.Source, f)
 	assert.Equal(t, 129, len(a), "ouch")
@@ -124,7 +121,7 @@ func TestParseBroadcast_0(t *testing.T) {
 	t0 := r.BroadcastURL{
 		TimeURL: r.TimeURL{
 			Time:   time.Date(2015, time.October, 21, 0, 12, 0, 0, localLoc),
-			Source: *urlMustParse("http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-472548.html"),
+			Source: *r.MustParseURL("http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-472548.html"),
 		},
 		Title: "Concerto Bavarese",
 	}
@@ -159,7 +156,7 @@ func TestParseBroadcast_1(t *testing.T) {
 	t0 := r.BroadcastURL{
 		TimeURL: r.TimeURL{
 			Time:   time.Date(2015, time.October, 21, 10, 5, 0, 0, localLoc),
-			Source: *urlMustParse("http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-472576.html"),
+			Source: *r.MustParseURL("http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-472576.html"),
 		},
 		Title: "Notizbuch",
 	}
@@ -194,7 +191,7 @@ func TestParseBroadcastUntilMidnight(t *testing.T) {
 	t0 := r.BroadcastURL{
 		TimeURL: r.TimeURL{
 			Time:   time.Date(2015, time.October, 21, 23, 5, 0, 0, localLoc),
-			Source: *urlMustParse("http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-472628.html"),
+			Source: *r.MustParseURL("http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-472628.html"),
 		},
 		Title: "Nachtmix",
 	}
@@ -229,7 +226,7 @@ func TestParseBroadcastWithImage(t *testing.T) {
 	t0 := r.BroadcastURL{
 		TimeURL: r.TimeURL{
 			Time:   time.Date(2015, time.November, 11, 23, 5, 0, 0, localLoc),
-			Source: *urlMustParse("http://www.br.de/radio/br-klassik/programmkalender/ausstrahlung-493432.html"),
+			Source: *r.MustParseURL("http://www.br.de/radio/br-klassik/programmkalender/ausstrahlung-493432.html"),
 		},
 		Title: "Jazztime",
 	}

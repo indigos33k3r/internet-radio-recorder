@@ -150,6 +150,26 @@ type Scraper interface {
 	Matches(now *time.Time) (ok bool)
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+///
+//////////////////////////////////////////////////////////////////////////////////////////
+
+func MustParseURL(s string) *url.URL {
+	ret, err := url.Parse(s)
+	if nil != err {
+		panic(err)
+	}
+	return ret
+}
+
+func MustParseInt(s string) int {
+	ret, err := strconv.ParseInt(s, 10, 12)
+	if nil != err {
+		panic(err)
+	}
+	return int(ret)
+}
+
 func TextWithBr(node *html.Node) string {
 	nodes := scrape.FindAll(node, func(n *html.Node) bool { return n.Type == html.TextNode || atom.Br == n.DataAtom })
 	parts := make([]string, len(nodes))

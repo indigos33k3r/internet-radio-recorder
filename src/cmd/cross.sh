@@ -15,6 +15,9 @@ go fmt
 cd - && cd ../scrape/br
 go fmt
 go test
+cd - && cd ../scrape/dlf
+go fmt
+go test
 cd -
 go fmt
 
