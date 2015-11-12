@@ -17,7 +17,14 @@
 //
 // MIT License http://opensource.org/licenses/MIT
 
-package scrape // import "purl.mro.name/recorder/radio/scrape"
+// Generic stuff useful for scraping radio broadcast station program
+// websites.
+//
+// Most important are the two interfaces 'Scraper' and 'Broadcaster'.
+//
+// import "purl.mro.name/recorder/radio/scrape"
+//
+package scrape
 
 import (
 	"fmt"
@@ -33,14 +40,8 @@ import (
 	"golang.org/x/net/html/atom"
 )
 
-//////////////////////////////////////////////////////////////////////////////////////////
-/// These 2 Interfaces are the mandatory ones.
-//////////////////////////////////////////////////////////////////////////////////////////
-
-//////////////////////////////////////////////////////////////////////////////////////////
-/// Something that can be scraped.
+// Something that can be scraped.
 type Scraper interface {
-
 	// scrape and fill intermediate results into 'jobs', final ones into 'results'
 	Scrape(jobs chan<- Scraper, results chan<- Broadcaster) (err error)
 
@@ -48,9 +49,9 @@ type Scraper interface {
 	Matches(now *time.Time) (ok bool)
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-/// Something that can write ONE broadcast dataset to a writer.
+// Something that can write broadcast(s) dataset to a writer.
 type Broadcaster interface {
+	// Do as the name indicates.
 	WriteAsLuaTable(w io.Writer) (err error)
 }
 
@@ -114,6 +115,7 @@ func (b Broadcast) WriteAsLuaTable(w io.Writer) (err error) {
 /// Some Helpers that may be useful but are totally optional.
 //////////////////////////////////////////////////////////////////////////////////////////
 
+// Instances of time.Time when incremental scrapes are due.
 func IncrementalNows(now *time.Time) (ret []time.Time) {
 	src := []time.Duration{0, 12, 3 * 24, 7 * 24, 7 * 7 * 24}
 	ret = make([]time.Time, len(src))
@@ -123,8 +125,8 @@ func IncrementalNows(now *time.Time) (ret []time.Time) {
 	return
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-///
+// Basic data about broadcasting stations.
+// Optional, but may be useful to most scrapers.
 type Station struct {
 	Identifier string
 	Name       string
@@ -133,8 +135,10 @@ type Station struct {
 	TimeZone   *time.Location
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-///
+// Basic data about a url connected with a time.Time.
+// May be e.g. a daily schedule or a broadcast detail page.
+//
+// Optional, but may be useful to most scrapers.
 type TimeURL struct {
 	time.Time
 	Source url.URL
@@ -145,15 +149,19 @@ func (d *TimeURL) String() string {
 	return fmt.Sprintf("%s %s", d.Time.Format("2006-01-02 15:04 MST"), d.Source.String())
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-///
+// Basic data about a url connected with a boadcast.
+// May be e.g. a broadcast detail page.
+//
+// Optional, but may be useful to some scrapers.
 type BroadcastURL struct {
 	TimeURL
 	Title string
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-///
+// Data about one broadcast. Ready to be fed to a
+// 'Broadcaster'
+//
+// Optional, but may be useful to most scrapers.
 type Broadcast struct {
 	BroadcastURL
 	TitleSeries  *string
@@ -169,10 +177,6 @@ type Broadcast struct {
 	Creator      *string
 	Copyright    *string
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////
-///
-//////////////////////////////////////////////////////////////////////////////////////////
 
 func MustParseURL(s string) *url.URL {
 	ret, err := url.Parse(s)
@@ -217,6 +221,7 @@ func TextWithBr(node *html.Node) string {
 func TextsWithBr(nodes []*html.Node) (ret []string) {
 	ret = make([]string, len(nodes))
 	for i, p := range nodes {
+		// BUG(mro): so where goes this?
 		ret[i] = TextWithBr(p)
 	}
 	return

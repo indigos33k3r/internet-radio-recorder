@@ -17,7 +17,10 @@
 //
 // MIT License http://opensource.org/licenses/MIT
 
-package br // import "purl.mro.name/recorder/radio/scrape/br"
+// Scrape http://br.de program schedule + broadcast pages.
+//
+// import "purl.mro.name/recorder/radio/scrape/br"
+package br
 
 import (
 	"errors"
@@ -45,6 +48,8 @@ type station struct {
 }
 
 // Station Factory
+//
+// Returns a instance conforming to 'scrape.Scraper'
 func Station(identifier string) *station {
 	tz, err := time.LoadLocation("Europe/Berlin")
 	if nil != err {
@@ -176,7 +181,7 @@ func (day *dayUrl) parseBroadcastURLsNode(root *html.Node) (ret []*broadcastUrl,
 	const closeDownHour int = 5
 	now := time.Now()
 	for _, h4 := range scrape.FindAll(root, func(n *html.Node) bool { return atom.H4 == n.DataAtom }) {
-		year, month, day__, err := timeForH4(scrape.Text(h4), &now)
+		year, month, day_, err := timeForH4(scrape.Text(h4), &now)
 		if nil != err {
 			panic(err)
 		}
@@ -186,18 +191,16 @@ func (day *dayUrl) parseBroadcastURLsNode(root *html.Node) (ret []*broadcastUrl,
 			if nil == m {
 				panic(errors.New("Couldn't parse <a>"))
 			}
-
 			ur, _ := url.Parse(scrape.Attr(a, "href"))
-
 			hour := r.MustParseInt(m[1])
-			var day_ int = day__
+			dayOffset := 0
 			if hour < closeDownHour {
-				day_ += 1
+				dayOffset = 1
 			}
 			// fmt.Printf("%s %s\n", b.r.TimeURL.String(), b.Title)
 			ret = append(ret, &broadcastUrl{BroadcastURL: r.BroadcastURL{
 				TimeURL: r.TimeURL{
-					Time:    time.Date(year, month, day_, hour, r.MustParseInt(m[2]), 0, 0, localLoc),
+					Time:    time.Date(year, month, day_+dayOffset, hour, r.MustParseInt(m[2]), 0, 0, localLoc),
 					Source:  *day.Source.ResolveReference(ur),
 					Station: day.Station,
 				},
