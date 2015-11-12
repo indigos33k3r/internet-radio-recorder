@@ -82,7 +82,7 @@ func (s *station) parseDayURLsNode(root *html.Node) (ret []*dayUrl, err error) {
 			continue
 		}
 		// fmt.Printf("ok %s\n", d.String())
-		ret = append(ret, &dayUrl{TimeURL: d, Station: s})
+		ret = append(ret, &dayUrl{TimeURL: d})
 	}
 	return
 }
@@ -149,12 +149,11 @@ func (s *station) newTimeURL(relUrl string) (ret r.TimeURL, err error) {
 /// Just wrap TimeURL into a distinct, local type.
 type dayUrl struct {
 	r.TimeURL
-	Station *station // todo: might be removed later
 }
 
 // Scrape slice of broadcastUrl - all per-day broadcast entries of the day url
 func (day *dayUrl) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (err error) {
-	broadcast_urls, err := day.Station.parseBroadcastURLs(&day.Source)
+	broadcast_urls, err := day.parseBroadcastURLs()
 	if nil == err {
 		for _, b := range broadcast_urls {
 			jobs <- b
@@ -172,12 +171,12 @@ func (day *dayUrl) Matches(now *time.Time) (ok bool) {
 	return -24*time.Hour <= dt && dt <= 24*time.Hour
 }
 
-func (s *station) parseBroadcastURLsNode(day_url *url.URL, root *html.Node) (ret []*broadcastUrl, err error) {
+func (day *dayUrl) parseBroadcastURLsNode(root *html.Node) (ret []*broadcastUrl, err error) {
 	ret = []*broadcastUrl{}
 	const closeDownHour int = 5
 	now := time.Now()
 	for _, h4 := range scrape.FindAll(root, func(n *html.Node) bool { return atom.H4 == n.DataAtom }) {
-		year, month, day, err := timeForH4(scrape.Text(h4), &now)
+		year, month, day__, err := timeForH4(scrape.Text(h4), &now)
 		if nil != err {
 			panic(err)
 		}
@@ -191,7 +190,7 @@ func (s *station) parseBroadcastURLsNode(day_url *url.URL, root *html.Node) (ret
 			ur, _ := url.Parse(scrape.Attr(a, "href"))
 
 			hour := r.MustParseInt(m[1])
-			var day_ int = day
+			var day_ int = day__
 			if hour < closeDownHour {
 				day_ += 1
 			}
@@ -199,44 +198,44 @@ func (s *station) parseBroadcastURLsNode(day_url *url.URL, root *html.Node) (ret
 			ret = append(ret, &broadcastUrl{BroadcastURL: r.BroadcastURL{
 				TimeURL: r.TimeURL{
 					Time:    time.Date(year, month, day_, hour, r.MustParseInt(m[2]), 0, 0, localLoc),
-					Source:  *day_url.ResolveReference(ur),
-					Station: s.Station,
+					Source:  *day.Source.ResolveReference(ur),
+					Station: day.Station,
 				},
 				Title: strings.TrimSpace(m[3]),
 			},
-				Station: s})
+			})
 		}
 	}
 	return
 }
 
-func (s *station) parseBroadcastURLsReader(day_url *url.URL, read io.Reader) (ret []*broadcastUrl, err error) {
+func (day *dayUrl) parseBroadcastURLsReader(read io.Reader) (ret []*broadcastUrl, err error) {
 	root, err := html.Parse(read)
 	if nil != err {
 		return
 	}
-	return s.parseBroadcastURLsNode(day_url, root)
+	return day.parseBroadcastURLsNode(root)
 }
 
-func (s *station) parseBroadcastURLs(day_url *url.URL) (ret []*broadcastUrl, err error) {
-	resp, err := http.Get(day_url.String())
+func (day *dayUrl) parseBroadcastURLs() (ret []*broadcastUrl, err error) {
+	resp, err := http.Get(day.Source.String())
 	if nil != err {
 		return
 	}
 	defer resp.Body.Close()
-	return s.parseBroadcastURLsReader(day_url, resp.Body)
+	return day.parseBroadcastURLsReader(resp.Body)
 }
 
 /////////////////////////////////////////////////////////////////////////////
 ///
 
+/// Just wrap BroadcastURL into a distinct, local type.
 type broadcastUrl struct {
 	r.BroadcastURL
-	Station *station
 }
 
 func (b *broadcastUrl) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (err error) {
-	bc, err := b.Station.parseBroadcast(&b.TimeURL.Source)
+	bc, err := b.parseBroadcast()
 	if nil == err {
 		results <- bc
 	}
@@ -313,9 +312,9 @@ var (
 )
 
 // Completely re-scrape everything and verify consistence at least of Time, evtl. Title
-func (s *station) parseBroadcastNode(url *url.URL, root *html.Node) (bc r.Broadcast, err error) {
-	bc.Station = s.Station
-	bc.Source = *url
+func (bcu *broadcastUrl) parseBroadcastNode(root *html.Node) (bc r.Broadcast, err error) {
+	bc.Station = bcu.Station
+	bc.Source = bcu.Source
 	{
 		s := "de"
 		bc.Language = &s
@@ -356,7 +355,7 @@ func (s *station) parseBroadcastNode(url *url.URL, root *html.Node) (bc r.Broadc
 			for _, di := range scrape.FindAll(no, func(n *html.Node) bool { return atom.Div == n.DataAtom && "picturebox" == scrape.Attr(n, "class") }) {
 				for _, img := range scrape.FindAll(di, func(n *html.Node) bool { return atom.Img == n.DataAtom }) {
 					u, _ := url.Parse(scrape.Attr(img, "src"))
-					bc.Image = u
+					bc.Image = bcu.Source.ResolveReference(u)
 					break FoundImage
 				}
 			}
@@ -438,19 +437,19 @@ func (s *station) parseBroadcastNode(url *url.URL, root *html.Node) (bc r.Broadc
 	return
 }
 
-func (s *station) parseBroadcastReader(url *url.URL, read io.Reader) (bc r.Broadcast, err error) {
+func (bcu *broadcastUrl) parseBroadcastReader(read io.Reader) (bc r.Broadcast, err error) {
 	root, err := html.Parse(read)
 	if nil != err {
 		return
 	}
-	return s.parseBroadcastNode(url, root)
+	return bcu.parseBroadcastNode(root)
 }
 
-func (s *station) parseBroadcast(url *url.URL) (bc r.Broadcast, err error) {
-	resp, err := http.Get(url.String())
+func (bcu *broadcastUrl) parseBroadcast() (bc r.Broadcast, err error) {
+	resp, err := http.Get(bcu.Source.String())
 	if nil != err {
 		return
 	}
 	defer resp.Body.Close()
-	return s.parseBroadcastReader(url, resp.Body)
+	return bcu.parseBroadcastReader(resp.Body)
 }
