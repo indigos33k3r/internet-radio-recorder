@@ -153,11 +153,14 @@ func (day *dayUrl) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast,
 				u, _ := url.Parse(href)
 				bc.Subject = day.Source.ResolveReference(u)
 			}
+
+			desc_node := tit.Parent
+			desc_node.RemoveChild(tit)
 			{
 				// Description
-				var desc []string = r.TextsWithBr(scrape.FindAll(tit, func(n *html.Node) bool { return atom.A != n.DataAtom }))
+				var desc string = r.TextWithBr(desc_node)
 				re := regexp.MustCompile("[ ]*(\\s)") // collapse whitespace, keep \n
-				t := strings.Join(desc, "\n\n")       // mark paragraphs with a double \n
+				t := desc                             // mark paragraphs with a double \n
 				t = re.ReplaceAllString(t, "$1")      // collapse whitespace (not the \n\n however)
 				t = strings.TrimSpace(t)
 				bc.Description = &t
