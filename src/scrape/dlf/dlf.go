@@ -25,7 +25,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -35,8 +34,6 @@ import (
 	"golang.org/x/net/html/atom"
 	r "purl.mro.name/recorder/radio/scrape"
 )
-
-var _ = os.Stderr
 
 /////////////////////////////////////////////////////////////////////////////
 /// Just wrap Station into a distinct, local type - a Scraper, naturally

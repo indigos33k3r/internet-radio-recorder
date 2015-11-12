@@ -31,8 +31,6 @@ import (
 	r "purl.mro.name/recorder/radio/scrape"
 )
 
-var _ = os.Stderr
-
 func TestFactory(t *testing.T) {
 	s := Station("m945 foo")
 	assert.Nil(t, s, "ouch")

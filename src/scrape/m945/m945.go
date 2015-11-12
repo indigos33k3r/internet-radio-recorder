@@ -20,12 +20,9 @@
 package m945 // import "purl.mro.name/recorder/radio/scrape/m945"
 
 import (
-	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -35,10 +32,6 @@ import (
 	"golang.org/x/net/html/atom"
 	r "purl.mro.name/recorder/radio/scrape"
 )
-
-var _ = fmt.Fprintf
-var _ = os.Stderr
-var _ = errors.New
 
 /////////////////////////////////////////////////////////////////////////////
 /// Just wrap Station into a distinct, local type - a Scraper, naturally
