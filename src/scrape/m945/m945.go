@@ -150,7 +150,8 @@ func (day *dayUrl) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast,
 			bc.Title = strings.TrimSpace(scrape.Text(tit))
 			href := scrape.Attr(tit, "href")
 			if "" != href {
-				bc.Subject, _ = url.Parse(href)
+				u, _ := url.Parse(href)
+				bc.Subject = day.Source.ResolveReference(u)
 			}
 			{
 				// Description

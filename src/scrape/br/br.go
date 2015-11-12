@@ -136,8 +136,8 @@ func (s *station) newTimeURL(relUrl string) (ret r.TimeURL, err error) {
 		return
 	}
 
-	programURL := *(s.ProgramURL)
-	programURL.Path = relUrl
+	ru, _ := url.Parse(relUrl)
+	programURL := *s.ProgramURL.ResolveReference(ru)
 	ret = r.TimeURL{Time: day, Source: programURL, Station: s.Station}
 	if "" == ret.Station.Identifier {
 		panic("How can the identifier miss?")
@@ -187,8 +187,8 @@ func (s *station) parseBroadcastURLsNode(day_url *url.URL, root *html.Node) (ret
 			if nil == m {
 				panic(errors.New("Couldn't parse <a>"))
 			}
-			ur := *day_url
-			ur.Path = scrape.Attr(a, "href")
+
+			ur, _ := url.Parse(scrape.Attr(a, "href"))
 
 			hour := r.MustParseInt(m[1])
 			var day_ int = day
@@ -199,7 +199,7 @@ func (s *station) parseBroadcastURLsNode(day_url *url.URL, root *html.Node) (ret
 			ret = append(ret, &broadcastUrl{BroadcastURL: r.BroadcastURL{
 				TimeURL: r.TimeURL{
 					Time:    time.Date(year, month, day_, hour, r.MustParseInt(m[2]), 0, 0, localLoc),
-					Source:  ur,
+					Source:  *day_url.ResolveReference(ur),
 					Station: s.Station,
 				},
 				Title: strings.TrimSpace(m[3]),
@@ -403,9 +403,8 @@ func (s *station) parseBroadcastNode(url *url.URL, root *html.Node) (bc r.Broadc
 			err = errors.New("There was more than 1 <a class='link_broadcast media_broadcastSeries'/>")
 			return
 		}
-		u := bc.Source
-		u.Path = scrape.Attr(a, "href")
-		bc.Subject = &u
+		u, _ := url.Parse(scrape.Attr(a, "href"))
+		bc.Subject = bc.Source.ResolveReference(u)
 	}
 
 	// Modified

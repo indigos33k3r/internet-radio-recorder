@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"regexp"
 	"strings"
@@ -166,7 +167,8 @@ func (day *dayUrl) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast,
 					return
 				}
 				bc.Title = scrape.Text(h3_a)
-				// bc.Source = scrape.Attr(h3_a, "href") // make URL absolute
+				u, _ := url.Parse(scrape.Attr(h3_a, "href"))
+				bc.Subject = day.Source.ResolveReference(u)
 			}
 			bc.Title = strings.TrimSpace(bc.Title)
 			if "" == bc.Title {
