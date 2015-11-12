@@ -377,7 +377,7 @@ func (s *station) parseBroadcastNode(url *url.URL, root *html.Node) (bc r.Broadc
 		i := r.MustParseInt
 		bc.Time = time.Date(i(m[3]), time.Month(i(m[2])), i(m[1]), i(m[4]), i(m[5]), 0, 0, localLoc)
 		t := time.Date(i(m[3]), time.Month(i(m[2])), i(m[1]), i(m[6]), i(m[7]), 0, 0, localLoc)
-		if bc.Time.Hour() > t.Hour() { // after midnight
+		if bc.Time.Hour() > t.Hour() || (bc.Time.Hour() == t.Hour() && bc.Time.Minute() > t.Minute()) { // after midnight
 			t = t.AddDate(0, 0, 1)
 		}
 		bc.DtEnd = &t

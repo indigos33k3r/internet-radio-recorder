@@ -268,3 +268,43 @@ func TestParseBroadcastWithImage(t *testing.T) {
 	assert.Nil(t, bc.Creator, "Creator")
 	assert.Nil(t, bc.Copyright, "Copyright")
 }
+
+func TestParseBroadcast23h55min(t *testing.T) {
+	f, err := os.Open("testdata/2015-11-15T0005-b+-sendung.html")
+	assert.NotNil(t, f, "ouch")
+	assert.Nil(t, err, "ouch")
+
+	s := Station("b+")
+	t0 := r.BroadcastURL{
+		TimeURL: r.TimeURL{
+			Time:    time.Date(2015, time.November, 11, 15, 5, 0, 0, localLoc),
+			Source:  *r.MustParseURL("http://www.br.de/radio/bayern-plus/programmkalender/ausstrahlung-497666.html"),
+			Station: s.Station,
+		},
+		Title: "Bayern plus - Meine Schlager hören",
+	}
+
+	// http://rec.mro.name/stations/b%2b/2015/11/15/0005%20Bayern%20plus%20-%20Meine%20Schlager%20h%C3%B6ren
+	bc, err := s.parseBroadcastReader(&t0.Source, f)
+	assert.Nil(t, err, "ouch")
+	assert.Equal(t, "b+", bc.Station.Identifier, "ouch: Station.Identifier")
+	assert.Equal(t, "Bayern plus - Meine Schlager hören", bc.Title, "ouch: Title")
+	assert.Equal(t, "http://www.br.de/radio/bayern-plus/programmkalender/ausstrahlung-497666.html", bc.Source.String(), "ouch: Source")
+	assert.NotNil(t, bc.Language, "ouch: Language")
+	assert.Equal(t, "de", *bc.Language, "ouch: Language")
+	assert.Equal(t, t0.Title, bc.Title, "ouch: Title")
+	assert.Nil(t, bc.TitleSeries, "ouch: TitleSeries")
+	assert.Nil(t, bc.TitleEpisode, "ouch: TitleEpisode")
+	assert.Equal(t, "2015-11-15T00:05:00+01:00", bc.Time.Format(time.RFC3339), "ouch: Time")
+	assert.Equal(t, "2015-11-16T00:00:00+01:00", bc.DtEnd.Format(time.RFC3339), "ouch: DtEnd")
+	assert.Equal(t, 1435*time.Minute, bc.DtEnd.Sub(bc.Time), "ouch: Duration")
+	assert.Nil(t, bc.Subject, "ouch: Subject")
+	assert.Equal(t, "2015-10-29T01:25:04+01:00", bc.Modified.Format(time.RFC3339), "ouch: Modified")
+	assert.Equal(t, "Bayerischer Rundfunk", *bc.Author, "ouch: Author")
+	assert.NotNil(t, bc.Description, "ouch: Description")
+	assert.Equal(t, "Jeweils zur vollen Stunde\nNachrichten, Wetter, Verkehr", *bc.Description, "ouch: Description")
+	assert.Nil(t, bc.Image, "ouch: Image")
+	assert.Nil(t, bc.Publisher, "Publisher")
+	assert.Nil(t, bc.Creator, "Creator")
+	assert.Nil(t, bc.Copyright, "Copyright")
+}
