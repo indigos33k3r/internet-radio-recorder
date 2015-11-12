@@ -205,9 +205,9 @@ func (day *dayUrl) parseBroadcastsFromReader(read io.Reader) (ret []*r.Broadcast
 
 func (day *dayUrl) parseBroadcastsFromURL() (ret []*r.Broadcast, err error) {
 	resp, err := http.Get(day.Source.String())
-	defer resp.Body.Close()
 	if nil != err {
 		return
 	}
+	defer resp.Body.Close()
 	return day.parseBroadcastsFromReader(resp.Body)
 }

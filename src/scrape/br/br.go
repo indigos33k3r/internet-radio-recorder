@@ -97,10 +97,10 @@ func (s *station) parseDayURLsReader(read io.Reader) (ret []*dayUrl, err error) 
 
 func (s *station) parseDayURLs() (ret []*dayUrl, err error) {
 	resp, err := http.Get(s.ProgramURL.String())
-	defer resp.Body.Close()
 	if nil != err {
 		return
 	}
+	defer resp.Body.Close()
 	return s.parseDayURLsReader(resp.Body)
 }
 
@@ -220,10 +220,10 @@ func (s *station) parseBroadcastURLsReader(day_url *url.URL, read io.Reader) (re
 
 func (s *station) parseBroadcastURLs(day_url *url.URL) (ret []*broadcastUrl, err error) {
 	resp, err := http.Get(day_url.String())
-	defer resp.Body.Close()
 	if nil != err {
 		return
 	}
+	defer resp.Body.Close()
 	return s.parseBroadcastURLsReader(day_url, resp.Body)
 }
 
@@ -449,9 +449,9 @@ func (s *station) parseBroadcastReader(url *url.URL, read io.Reader) (bc r.Broad
 
 func (s *station) parseBroadcast(url *url.URL) (bc r.Broadcast, err error) {
 	resp, err := http.Get(url.String())
-	defer resp.Body.Close()
 	if nil != err {
 		return
 	}
+	defer resp.Body.Close()
 	return s.parseBroadcastReader(url, resp.Body)
 }
