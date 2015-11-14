@@ -212,7 +212,7 @@ func TextWithBr(node *html.Node) string {
 		if atom.Br == n.DataAtom {
 			parts[i] = "\n"
 		} else {
-			parts[i] = strings.TrimSpace(NormaliseWhiteSpace(n.Data)) + " "
+			parts[i] = NormaliseWhiteSpace(n.Data)
 		}
 	}
 	return strings.Join(parts, "")

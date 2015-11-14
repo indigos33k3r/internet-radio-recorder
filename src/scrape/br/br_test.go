@@ -268,7 +268,7 @@ func TestParseBroadcastWithImage(t *testing.T) {
 	assert.Equal(t, "2015-11-11T09:15:08+01:00", bc.Modified.Format(time.RFC3339), "ouch: Modified")
 	assert.Equal(t, "Bayerischer Rundfunk", *bc.Author, "ouch: Author")
 	assert.NotNil(t, bc.Description, "ouch: Description")
-	assert.Equal(t, "Philipp Gropper´s Philm im Jazzstudio Nürnberg\nMit Philipp Gropper (Tenorsaxophon), Elias Stemeseder (Piano), Andreas Lang (Bass) und Oliver Steidle (Schlagzeug)\nAufnahme vom 2. Oktober 2015\nModeration und Auswahl: Beate Sampson\n\nPhilipp Gropper´s Philm: „Madman of Naranam“ (Philipp Gropper)\nPhilipp Gropper´s Philm: „ZE“ (Philipp Gropper)\nPhilipp Gropper´s Philm: „Licht“ (Philipp Gropper)\nPhilipp Gropper´s Philm: „Synthesizer/ Für die 68er“ (Philipp Gropper)\n\n\"Je länger ich Musik mache, desto wichtiger ist mir und desto klarer nehme ich wahr, was Musik, was eine Band transportiert, welche Botschaft von Ihr ausgeht. Diese durch die transzendierende Qualität von Musik erfahrbare Essenz ist, worum es geht und sie ist absolut unabhängig von Stilistik oder Besetzung. Reine Virtuosität, reine intellektuelle Höhenflüge oder die allgegenwärtige Weichgespültheit langweilen mich, es geht mir um Direktheit und Aura. Ich bin der Tradition sehr verbunden, versuche aber ständig deren Lebendigkeit und Frische, die jeweils nur im zeitlichen Kontext entstehen konnte und den alten Meistern gleichzeitig ihre Zeitlosigkeit sicherte, zu verstehen und weiterzutragen.\" So beschreibt der Berliner Saxophonist Philipp Gropper sein künstlerisches Selbstverständnis. Mit seinem 2011 gegründeten Quartett PHILM hat er es am 2. Oktober 2015 im Nürnberger Jazzstudio in Musik zum Ausdruck gebracht. Sie ist heute in unserem Mitschnitt des Konzertabends zu hören.", *bc.Description, "ouch: Description")
+	assert.Equal(t, "Philipp Gropper´s Philm im Jazzstudio Nürnberg\nMit Philipp Gropper (Tenorsaxophon), Elias Stemeseder (Piano), Andreas Lang (Bass) und Oliver Steidle (Schlagzeug)\nAufnahme vom 2. Oktober 2015\nModeration und Auswahl: Beate Sampson\n\nPhilipp Gropper´s Philm: „Madman of Naranam“ (Philipp Gropper)\nPhilipp Gropper´s Philm: „ZE“(Philipp Gropper)\nPhilipp Gropper´s Philm: „Licht“(Philipp Gropper)\nPhilipp Gropper´s Philm: „Synthesizer/ Für die 68er“ (Philipp Gropper)\n\n\"Je länger ich Musik mache, desto wichtiger ist mir und desto klarer nehme ich wahr, was Musik, was eine Band transportiert, welche Botschaft von Ihr ausgeht. Diese durch die transzendierende Qualität von Musik erfahrbare Essenz ist, worum es geht und sie ist absolut unabhängig von Stilistik oder Besetzung. Reine Virtuosität, reine intellektuelle Höhenflüge oder die allgegenwärtige Weichgespültheit langweilen mich, es geht mir um Direktheit und Aura. Ich bin der Tradition sehr verbunden, versuche aber ständig deren Lebendigkeit und Frische, die jeweils nur im zeitlichen Kontext entstehen konnte und den alten Meistern gleichzeitig ihre Zeitlosigkeit sicherte, zu verstehen und weiterzutragen.\" So beschreibt der Berliner Saxophonist Philipp Gropper sein künstlerisches Selbstverständnis. Mit seinem 2011 gegründeten Quartett PHILM hat er es am 2. Oktober 2015 im Nürnberger Jazzstudio in Musik zum Ausdruck gebracht. Sie ist heute in unserem Mitschnitt des Konzertabends zu hören.", *bc.Description, "ouch: Description")
 	assert.NotNil(t, bc.Image, "ouch: Image")
 	assert.Equal(t, "http://www.br.de/radio/br-klassik/sendungen/jazztime/gropper-100~_v-img__16__9__m_-4423061158a17f4152aef84861ed0243214ae6e7.jpg?version=230c6", bc.Image.String(), "ouch: Image")
 	assert.Nil(t, bc.Publisher, "Publisher")
@@ -315,4 +315,27 @@ func TestParseBroadcast23h55min(t *testing.T) {
 	assert.Nil(t, bc.Publisher, "Publisher")
 	assert.Nil(t, bc.Creator, "Creator")
 	assert.Nil(t, bc.Copyright, "Copyright")
+}
+
+func TestParseBroadcastDescriptionWhitespace(t *testing.T) {
+	f, err := os.Open("testdata/2015-11-15T0900-b2-sendung.html")
+	assert.NotNil(t, f, "ouch")
+	assert.Nil(t, err, "ouch")
+
+	s := Station("b2")
+	t0 := broadcastUrl{
+		r.BroadcastURL{
+			TimeURL: r.TimeURL{
+				Time:    time.Date(2015, time.November, 11, 15, 9, 0, 0, localLoc),
+				Source:  *r.MustParseURL("http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-497000.html"),
+				Station: s.Station,
+			},
+			Title: "Nachrichten, Wetter",
+		}}
+
+	// http://rec.mro.name/stations/b2/2015/11/15/0900%20Nachrichten%2c%20Wetter.xml
+	bc, err := t0.parseBroadcastReader(f)
+	assert.Nil(t, err, "ouch")
+	assert.Equal(t, "b2", bc.Station.Identifier, "ouch: Station.Identifier")
+	assert.Equal(t, "Die aktuellen Nachrichten des Bayerischen Rundfunks - auch hier auf BR.de zum Nachlesen.", *bc.Description, "ouch: Description")
 }

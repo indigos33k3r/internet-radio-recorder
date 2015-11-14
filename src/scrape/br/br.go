@@ -346,9 +346,9 @@ func (bcu *broadcastUrl) parseBroadcastNode(root *html.Node) (bc r.Broadcast, er
 		{
 			// Description
 			var desc []string = r.TextsWithBr(scrape.FindAll(h1.Parent, func(n *html.Node) bool { return atom.P == n.DataAtom && "copytext" == scrape.Attr(n, "class") }))
-			re := regexp.MustCompile("[ ]*(\\s)") // collapse whitespace, keep \n
-			t := strings.Join(desc, "\n\n")       // mark paragraphs with a double \n
-			t = re.ReplaceAllString(t, "$1")      // collapse whitespace (not the \n\n however)
+			re := regexp.MustCompile("[ ]*(\\s)[ ]*") // collapse whitespace, keep \n
+			t := strings.Join(desc, "\n\n")           // mark paragraphs with a double \n
+			t = re.ReplaceAllString(t, "$1")          // collapse whitespace (not the \n\n however)
 			t = strings.TrimSpace(t)
 			bc.Description = &t
 		}

@@ -152,9 +152,9 @@ func (day *dayUrl) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast,
 			{
 				// Description
 				var desc string = r.TextWithBr(desc_node)
-				re := regexp.MustCompile("[ ]*(\\s)") // collapse whitespace, keep \n
-				t := desc                             // mark paragraphs with a double \n
-				t = re.ReplaceAllString(t, "$1")      // collapse whitespace (not the \n\n however)
+				re := regexp.MustCompile("[ ]*(\\s)[ ]*") // collapse whitespace, keep \n
+				t := desc                                 // mark paragraphs with a double \n
+				t = re.ReplaceAllString(t, "$1")          // collapse whitespace (not the \n\n however)
 				t = strings.TrimSpace(t)
 				bc.Description = &t
 			}
