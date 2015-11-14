@@ -82,7 +82,7 @@ func (b Broadcast) WriteAsLuaTable(w io.Writer) (err error) {
 		f(k, v.Format(time.RFC3339))
 	}
 
-	f("station_name", b.Station.Identifier)
+	f("station", b.Station.Identifier)
 	f("title", b.Title)
 	f("DC_scheme", "/app/pbmi2003-recmod2012/")
 	fp("DC_language", b.Language)
@@ -238,5 +238,5 @@ func NormaliseWhiteSpace(s string) string {
 }
 
 func EscapeForLua(s string) string {
-	return strings.Replace(strings.Replace(s, "'", "\\\\'", -1), "\n", "\\n", -1)
+	return strings.Replace(strings.Replace(s, "'", "\\'", -1), "\n", "\\n", -1)
 }
