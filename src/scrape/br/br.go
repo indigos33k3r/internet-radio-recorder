@@ -352,14 +352,28 @@ func (bcu *broadcastUrl) parseBroadcastNode(root *html.Node) (bc r.Broadcast, er
 			t = strings.TrimSpace(t)
 			bc.Description = &t
 		}
-	FoundImage:
-		// test some candidates:
-		for _, no := range []*html.Node{h1.Parent, root} {
-			for _, di := range scrape.FindAll(no, func(n *html.Node) bool { return atom.Div == n.DataAtom && "picturebox" == scrape.Attr(n, "class") }) {
+		if nil == bc.Image {
+		FoundImage0:
+			for _, di := range scrape.FindAll(h1.Parent, func(n *html.Node) bool {
+				return atom.Div == n.DataAtom && "teaser media_video embeddedMedia" == scrape.Attr(n, "class")
+			}) {
 				for _, img := range scrape.FindAll(di, func(n *html.Node) bool { return atom.Img == n.DataAtom }) {
 					u, _ := url.Parse(scrape.Attr(img, "src"))
 					bc.Image = bcu.Source.ResolveReference(u)
-					break FoundImage
+					break FoundImage0
+				}
+			}
+		}
+		if nil == bc.Image {
+		FoundImage1:
+			// test some candidates:
+			for _, no := range []*html.Node{h1.Parent, root} {
+				for _, di := range scrape.FindAll(no, func(n *html.Node) bool { return atom.Div == n.DataAtom && "picturebox" == scrape.Attr(n, "class") }) {
+					for _, img := range scrape.FindAll(di, func(n *html.Node) bool { return atom.Img == n.DataAtom }) {
+						u, _ := url.Parse(scrape.Attr(img, "src"))
+						bc.Image = bcu.Source.ResolveReference(u)
+						break FoundImage1
+					}
 				}
 			}
 		}
@@ -433,7 +447,6 @@ func (bcu *broadcastUrl) parseBroadcastNode(root *html.Node) (bc r.Broadcast, er
 		bc.Author = &s
 	}
 
-	// Image
 	if "" == bc.Station.Identifier {
 		panic("How can the identifier miss?")
 	}

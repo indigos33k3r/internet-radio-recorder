@@ -231,7 +231,7 @@ func TestParseBroadcastUntilMidnight(t *testing.T) {
 	assert.NotNil(t, bc.Description, "ouch: Description")
 	assert.Equal(t, "Die Akustik-Avantgarde\nMusik von Joanna Newsom, Andrew Bird und Devendra Banhart\nMit Michael Bartlewski\n\nJoanna Newsom ist ziemlich einzigartig: Ihre Stimme ist piepsig, ihre Songs können gerne mal acht Minuten sein und dann spielt sie auch noch Harfe. Nicht die besten Voraussetzungen für eine Pop-Karriere. Joanna Newsom hat es trotzdem geschafft - wir blicken auf ihre einmalige Geschichte zurück. Die Harfe bezeichnet Joanna Newsom als Erweiterung ihres Körpers, im Nachtmix gibt es noch mehr Musik von Virtuosen, die die Pop-Welt mit ihren kauzigen, besonders instrumentierten Songs bereichern. Andrew Bird ist der loopende Violinist, Devendra Banhart bleibt wohl immer ein Hippie, und für CocoRosie kann auch auf dem neuen Album alles ein Instrument sein. Dazu: Alela Diane mit klassischen Folk-Klängen und Helado Negro verzaubert mit Zeitlupen-Disco.", *bc.Description, "ouch: Description")
 	assert.NotNil(t, bc.Image.String(), "ouch: Image")
-	assert.Equal(t, "http://www.br.de/layout/img/programmfahne/nachtmix112~_v-img__16__9__m_-4423061158a17f4152aef84861ed0243214ae6e7.jpg?version=1beb6", bc.Image.String(), "ouch: Image")
+	assert.Equal(t, "http://www.br.de/radio/bayern2/musik/nachtmix/nachtmix-ondemand-nachhoeren-104~_v-img__16__9__m_-4423061158a17f4152aef84861ed0243214ae6e7.png?version=570b1", bc.Image.String(), "ouch: Image")
 }
 
 func TestParseBroadcastWithImage(t *testing.T) {
@@ -274,6 +274,32 @@ func TestParseBroadcastWithImage(t *testing.T) {
 	assert.Nil(t, bc.Publisher, "Publisher")
 	assert.Nil(t, bc.Creator, "Creator")
 	assert.Nil(t, bc.Copyright, "Copyright")
+}
+
+func TestParseBroadcastWithImage1(t *testing.T) {
+	f, err := os.Open("testdata/2015-11-16T1605-b2-sendung.html")
+	assert.NotNil(t, f, "ouch")
+	assert.Nil(t, err, "ouch")
+
+	s := Station("b2")
+	t0 := broadcastUrl{
+		r.BroadcastURL{
+			TimeURL: r.TimeURL{
+				Time:    time.Date(2015, time.November, 16, 16, 5, 0, 0, localLoc),
+				Source:  *r.MustParseURL("http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-498522.html"),
+				Station: s.Station,
+			},
+			Title: "Nachrichten, Wetter",
+		}}
+
+	// http://rec.mro.name/stations/b2/2015/11/16/1605%20Eins%20zu%20Eins.%20Der%20Talk
+	bc, err := t0.parseBroadcastReader(f)
+	assert.Nil(t, err, "ouch")
+	assert.Equal(t, "b2", bc.Station.Identifier, "ouch: Station.Identifier")
+	assert.Equal(t, "Stefan Parrisius im Gespräch mit Yvonne Hofstetter, Big Data Managing Director\nWiederholung um 22.05 Uhr\nAls Podcast verfügbar\n\nErfahrungen und Einsichten, einschneidende Erlebnisse und große Erfolge: Biografische Gespräche mit Menschen, die eine spannende Lebensgeschichte oder einen außergewöhnlichen Beruf haben.", *bc.Description, "ouch: Description")
+	//
+	assert.NotNil(t, bc.Image, "ouch: Image")
+	assert.Equal(t, "http://www.br.de/radio/bayern2/gesellschaft/eins-zu-eins-der-talk/yvonne-hofstetter-110~_v-img__16__9__m_-4423061158a17f4152aef84861ed0243214ae6e7.jpg?version=72771", bc.Image.String(), "ouch: Image")
 }
 
 func TestParseBroadcast23h55min(t *testing.T) {
