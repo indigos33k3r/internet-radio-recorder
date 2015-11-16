@@ -1,3 +1,4 @@
+https://travis-ci.org/mro/radio-pi/
 
 A internet radio recorder. Turns broadcasts of e.g. http://br.de/radio/, http://m945.de/ or http://dlf.de/ into RSS feeds with mp3 enclosures.
 
