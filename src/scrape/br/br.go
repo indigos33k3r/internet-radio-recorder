@@ -125,7 +125,7 @@ func (s *station) Matches(now *time.Time) (ok bool) {
 }
 
 var (
-	urlDayRegExp *regexp.Regexp = regexp.MustCompile("^/radio/.+~_date-(\\d{4}-\\d{2}-\\d{2})_-.+$")
+	urlDayRegExp *regexp.Regexp = regexp.MustCompile("^/.+~_date-(\\d{4}-\\d{2}-\\d{2})_-[0-9a-f]{40}\\.html$")
 )
 
 func (s *station) newTimeURL(relUrl string) (ret r.TimeURL, err error) {

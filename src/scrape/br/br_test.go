@@ -365,3 +365,17 @@ func TestParseBroadcastDescriptionWhitespace(t *testing.T) {
 	assert.Equal(t, "b2", bc.Station.Identifier, "ouch: Station.Identifier")
 	assert.Equal(t, "Die aktuellen Nachrichten des Bayerischen Rundfunks - auch hier auf BR.de zum Nachlesen.", *bc.Description, "ouch: Description")
 }
+
+func TestParsePulseProgram(t *testing.T) {
+	f, err := os.Open("testdata/2015-11-25-puls-program.html")
+	assert.NotNil(t, f, "ouch")
+	assert.Nil(t, err, "ouch")
+
+	s := Station("puls")
+
+	a, err := s.parseDayURLsReader(f)
+	assert.Equal(t, 25, len(a), "ouch: len")
+	assert.Equal(t, "puls", a[0].TimeURL.Station.Identifier, "ouch: ")
+	assert.Equal(t, "2015-09-27T07:00:00+02:00", a[0].Time.Format(time.RFC3339), "ouch: ")
+	assert.Equal(t, "2015-11-17T07:00:00+01:00", a[17].Time.Format(time.RFC3339), "ouch: ")
+}
