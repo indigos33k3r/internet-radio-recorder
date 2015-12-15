@@ -1,6 +1,6 @@
 #!/bin/dash
 #
-# Copyright (c) 2013-2015 Marcus Rohrmoser, http://purl.mro.name/radio-pi
+# Copyright (c) 2013-2015 Marcus Rohrmoser, http://purl.mro.name/internet-radio-recorder
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 # associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -22,13 +22,13 @@
 #
 # INSTALLATION
 #
-#   $ curl https://raw.github.com/mro/radio-pi/master/INSTALL.sh > INSTALL.sh && dash INSTALL.sh
+#   $ curl https://raw.github.com/mro/internet-radio-recorder/master/INSTALL.sh > INSTALL.sh && dash INSTALL.sh
 #
 
-git_repo="https://github.com/mro/radio-pi.git"
+git_repo="https://github.com/mro/internet-radio-recorder.git"
 www_base="/srv"     # has to match simple-vhost.server-root from /etc/lighttpd/conf-available/10-simple-vhost.conf
 
-user="radio-pi"
+user="internet-radio-recorder"
 group="www-data"
 tmp_dir="/tmp/$user"
 
@@ -52,7 +52,7 @@ if [ "" = "$RECORDER_DOMAIN" ] ; then
   apt-mark showmanual > "$tmp_dir/apt-mark.showmanual.pre"
   apt-mark showauto > "$tmp_dir/apt-mark.showauto.pre"
   
-  echo "$echo_prefix installing radio-pi from $git_repo to /srv/<recorder.example.com>"
+  echo "$echo_prefix installing internet-radio-recorder from $git_repo to /srv/<recorder.example.com>"
   read -p "$echo_prefix domain (e.g. recorder.example.com): " RECORDER_DOMAIN
   if [ "" = "$RECORDER_DOMAIN" ] ; then
     echo "$echo_prefix no domain given, exiting..."
@@ -138,11 +138,11 @@ echo "$echo_prefix Prerequisites - configuration.."
   sudo chown -R "$user:$group" "$recorder_base" || { echo "Couldn't chown" 1>&2 && exit 8; }
   sudo chmod g+w "$recorder_base/logs"
 
-  sudo tee /etc/sudoers.d/radio-pi >/dev/null - <<END_OF_SUDOERS
+  sudo tee /etc/sudoers.d/internet-radio-recorder >/dev/null - <<END_OF_SUDOERS
 www-data ALL = ($user:$group) NOPASSWD: $recorder_base/htdocs/enclosures/app/ad_hoc.lua
 #
 # In case you mess up this file, repair like described here http://ubuntuforums.org/showthread.php?t=2036382&p=12144840#post12144840
-# $ pkexec vim /etc/sudoers.d/radio-pi
+# $ pkexec vim /etc/sudoers.d/internet-radio-recorder
 #
 END_OF_SUDOERS
 
@@ -170,7 +170,7 @@ END_OF_SUDOERS
     exit 7
   fi
   # user/password database:
-  sudo htdigest -c /etc/lighttpd/radio-pi.user.htdigest 'Radio Pi' "$RECORDER_HTTP_USER"
+  sudo htdigest -c /etc/lighttpd/internet-radio-recorder.user.htdigest 'Radio Pi' "$RECORDER_HTTP_USER"
 
   echo "http://$RECORDER_DOMAIN" | sudo -u "$user" tee "$recorder_base/htdocs/app/base.url"
 
