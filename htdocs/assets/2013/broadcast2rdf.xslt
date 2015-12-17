@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-  Copyright (c) 2015 Marcus Rohrmoser, http://purl.mro.name/radio-pi
+  Copyright (c) 2015 Marcus Rohrmoser, http://purl.mro.name/internet-radio-recorder
 
   Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
   associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -232,7 +232,7 @@
     <rdf:Description about="{$me_uri}/../../../../../..">
       <rdfs:label xml:lang="de">Internet Radio Rekorder</rdfs:label>
       <rdfs:label xml:lang="en">Internet Radio Recorder</rdfs:label>
-      <dct:relation rdf:resource="http://purl.mro.name/radio-pi/"/>
+      <dct:relation rdf:resource="http://purl.mro.name/internet-radio-recorder/"/>
       <dct:hasPart rdf:resource="{$me_uri}/../../../../.."/>
       <!-- dct:hasPart rdf:resource="../../../../../podcasts/"/ -->
     </rdf:Description>

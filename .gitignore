@@ -21,3 +21,4 @@ src/cmd/scrape-*-*-*.*.*
 src/index.html
 src/*/index.html
 src/*/*/index.html
+bin/scrape-linux-amd64-0.0.1

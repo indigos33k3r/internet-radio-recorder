@@ -16,7 +16,7 @@
 	return table.concat(folded, "\n ")
 	end
  }BEGIN:VCALENDAR
-PRODID;X-RICAL-TZSOURCE=TZINFO:-//mro//radio-pi//DE
+PRODID;X-RICAL-TZSOURCE=TZINFO:-//mro//internet-radio-recorder//DE
 CALSCALE:GREGORIAN
 VERSION:2.0
 #{= ical('X-WR-CALNAME', self.title) }

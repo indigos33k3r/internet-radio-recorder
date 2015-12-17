@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # encoding: utf-8
 #
-# Copyright (c) 2013-2015 Marcus Rohrmoser, http://purl.mro.name/radio-pi
+# Copyright (c) 2013-2015 Marcus Rohrmoser, http://purl.mro.name/internet-radio-recorder
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 # associated documentation files (the "Software"), to deal in the Software without restriction,
