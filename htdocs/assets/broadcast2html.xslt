@@ -144,13 +144,13 @@
           </xsl:for-each>
         </ul>
         <ul id="navigation" class="buttongroup" title="Navigation">
-          <li><a id="prev_week" href="../../../../../app/now.lua?t=P-7D" title="Woche vorher">&lt;&lt;&lt;</a></li>
-          <li><a id="yesterday" href="../../../../../app/now.lua?t=P-1D" title="Tag vorher">&lt;&lt;</a></li>
+          <li><a id="prev_week" href="../../../../../app/now.lua?t=P-7D" title="Woche vorher">&lt;&lt;&lt;<br class="br"/>P-1W</a></li>
+          <li><a id="yesterday" href="../../../../../app/now.lua?t=P-1D" title="Tag vorher">&lt;&lt;<br class="br"/>P-1D</a></li>
           <li><a href="../../../../../app/prev.lua" rel="prev" title="Sendung vorher">&lt;</a></li>
           <li class="now"><a href="../../../now">aktuell</a></li>
           <li><a href="../../../../../app/next.lua" rel="next" title="Sendung nachher">&gt;</a></li>
-          <li><a id="tomorrow" href="../../../../../app/now.lua?t=P1D" title="Tag nachher">&gt;&gt;</a></li>
-          <li><a id="next_week" href="../../../../../app/now.lua?t=P7D" title="Woche nachher">&gt;&gt;&gt;</a></li>
+          <li><a id="tomorrow" href="../../../../../app/now.lua?t=P1D" title="Tag nachher">&gt;&gt;<br class="br"/>P+1D</a></li>
+          <li><a id="next_week" href="../../../../../app/now.lua?t=P7D" title="Woche nachher">&gt;&gt;&gt;<br class="br"/>P+1W</a></li>
         </ul>
         <div class="summary">
           <h2 id="series">
@@ -174,7 +174,7 @@
           <span id="dtend" class="dtend" title="{rec:meta[@name='DC.format.timeend']/@content}"><xsl:value-of select="substring-after(rec:meta[@name='DC.format.timeend']/@content, 'T')"/></span>
         </h3>
         <p class="image">
-          <img alt="Bild zur Sendung" id="image" class="border" src="{rec:meta[@name='DC.image']/@content}"/>
+          <img alt="Bild zur Sendung" id="image" class="border animated fadeInRotate" src="{rec:meta[@name='DC.image']/@content}"/>
         </p>
         <div id="content" class="description border">
           <p>

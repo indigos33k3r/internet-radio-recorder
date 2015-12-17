@@ -4,15 +4,36 @@
   Supposed to be either linked to from or located in station/<name>/app/style.css,
   so each station could provide a custom skin.
 */
-html {
-  min-width:  319px;
-}
+  @font-face {
+    /* http://moorstation.org/typoasis/blackletter/htm/deutsche_druck.htm */
+    font-family: DeutscheDruckschriftInitialen;
+    src: url("http://aladin.mro.name/assets/Druckschrift-Initialen.ttf");
+  }
+  @font-face {
+    /* http://www.ligafaktur.de/Schriften.html */
+    font-family: DeutscheDruckschrift;
+    src: url("http://aladin.mro.name/assets/LFODeutscheDruckschrift.ttf");
+  }
 
+html {
+  /* font-family: DeutscheDruckschrift; */
+  min-width:  319px;
+  background-color: rgb(237, 227, 207);
+  color: rgb(48, 43, 37);
+}
+body {
+  background-color: rgb(217, 207, 187);
+  border-radius: 30px;
+  box-shadow: 1px 2px 1px #333;
+  padding: 1em;
+  margin: 1em auto;
+  max-width: 800px;
+}
 ul.buttongroup {
   clear:      left;
   list-style-type: none;
   padding:    0;
-  margin:     0;
+  margin:     -1em;
 }
 ul.nobullet {
   list-style-type:none;
@@ -21,21 +42,21 @@ ul.nobullet {
 ul.buttongroup li {
   float:      left;
   padding:    0;
-  margin:     0.5ex;
+  margin:     3pt;
+  max-width:  45%;
 
   background-color: rgba(0,0,0,0.061);
 }
 ul.buttongroup li a {
   display:    block;
-  padding:    0.45ex;
+  padding:    3px 2px;
   text-align: center;
-  min-width:  3.25ex;
+  min-width:  30px;
   min-height: 4.5ex;
 }
 ul#whatsonnow li a {
-  min-width:  15.5ex;
-  max-width:  30ex;
-  height:     5.5ex;
+  min-width:  120px;
+  max-width:  240px;
 
   overflow:   hidden;
   text-overflow: ellipsis;
@@ -44,7 +65,7 @@ ul#whatsonnow li a {
 }
 .border {
   border: 1px solid rgba(0,0,0,0.1);
-  border-radius: 15px;
+  border-radius: 4px;
 }
 ul#whatsonnow li, ul#navigation li {
   border: 1px solid rgba(0,0,0,0.1);
@@ -53,17 +74,29 @@ ul#whatsonnow li, ul#navigation li {
 #image {
   float:right;
   margin: 0 -0.5ex 0 0;
+  max-width:  50%;
+  height: auto;
 }
 #content {
   background-color: rgba(0,0,0,0.03);
   margin: 0 -0.5ex 0 -0.5ex;
   padding: 0 0.5ex 0 0.5ex;
 }
+/*
+#content p::first-letter {
+  color: rgb(147, 77, 63);
+  float: left;
+  font-family: DeutscheDruckschriftInitialen;
+  font-size: 100pt;
+  vertical-align: top;
+}
+*/
 fieldset {
   border: 0 none;
 }
 input[type="submit"] {
-  font-size:  110%
+  /* font-family: DeutscheDruckschrift; */
+  font-size:  110%;
 }
 #footer {
   font-size:  8pt;
@@ -78,7 +111,27 @@ input[type="submit"] {
   display:none;
 }
 .has_podcast.is_future  #title:before { content:"* "; }
-.has_podcast.is_current #title:before { content:"♪ "; }
+@keyframes doSpin {
+  0% {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    opacity: 0.25;
+    transform: rotate(180deg) scale(0.75);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(360deg) scale(1);
+  }
+}
+.has_podcast.is_current #title:before {
+  content:"♪ ";
+  animation-duration: 1s;
+  animation-name: doSpin;
+  animation-duration: 5s;
+  animation-iteration-count: infinite;
+}
 .has_podcast.is_past    #title:before { content:"@ "; }
 
 /* disable recording button for past broadcasts */
@@ -114,11 +167,28 @@ br.br { display:inline; }
   .navigation {
     line-height: 3.5ex;
   }
-  #image {
-    width:  50%;
-    height: auto;
+}
+
+/** see https://www.w3.org/community/fedsocweb/ and https://www.w3.org/community/src/cgbg2012/templates/wordpress/StoryTeller/style.css */
+/*
+@keyframes fadeInRotate {
+  0% {
+    opacity: 0;
+    transform: rotate(180deg) scale(0.1);
   }
-  ul#whatsonnow li a {
-    max-width:  136px;
+  35% {
+    opacity: 0.1;
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(360deg) scale(1);
   }
 }
+.fadeInRotate {
+  animation-name: fadeInRotate;
+}
+.animated {
+  animation-duration: 1s;
+  animation-fill-mode: both;
+}
+*/
