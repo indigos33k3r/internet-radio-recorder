@@ -1,4 +1,4 @@
-Build Status: https://travis-ci.org/mro/radio-pi/
+Build Status: https://travis-ci.org/mro/internet-radio-recorder/
 
 A internet radio recorder. Turns broadcasts of e.g. http://br.de/radio/, http://m945.de/ or http://dlf.de/ into RSS feeds with mp3 enclosures.
 
@@ -6,12 +6,12 @@ Scrapes the websites to get proper descriptions, then does a match and schedules
 
 Built lightweight to run nicely on a raspi - http://www.raspberrypi.org/ - or any other debian-like system.
 
-http://purl.mro.name/radio-pi/
+http://purl.mro.name/recorder
 
 
 INSTALLATION
 
-    $ curl https://raw.github.com/mro/radio-pi/master/INSTALL.sh > INSTALL.sh && dash INSTALL.sh
+    $ curl https://raw.github.com/mro/internet-radio-recorder/master/INSTALL.sh > INSTALL.sh && dash INSTALL.sh
 
 
 CREDITS
