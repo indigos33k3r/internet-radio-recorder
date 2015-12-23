@@ -5,7 +5,7 @@
   Supposed to be either linked to from or located in station/<name>/app/broadcast2html.xslt,
   so each station could provide a custom skin.
 
- Copyright (c) 2013-2015 Marcus Rohrmoser, http://purl.mro.name/internet-radio-recorder
+ Copyright (c) 2013-2015 Marcus Rohrmoser, http://purl.mro.name/recorder
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  associated documentation files (the "Software"), to deal in the Software without restriction,

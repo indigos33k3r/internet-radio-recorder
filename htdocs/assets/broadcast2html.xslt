@@ -10,7 +10,7 @@
 
   See stations/dlf/app/broadcast2html.xslt for an example for xsl:import.
 
- Copyright (c) 2013-2015 Marcus Rohrmoser, http://purl.mro.name/internet-radio-recorder
+ Copyright (c) 2013-2015 Marcus Rohrmoser, http://purl.mro.name/recorder
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -207,7 +207,7 @@
           <img alt="CSS ist valide!" src="http://jigsaw.w3.org/css-validator/images/vcss-blue" style="border:0;width:88px;height:31px"/>
           </a>
           -->
-          Powered by <a href="http://purl.mro.name/internet-radio-recorder">github.com/mro/internet-radio-recorder</a><br class="br"/>
+          Powered by <a href="http://purl.mro.name/recorder">github.com/mro/internet-radio-recorder</a><br class="br"/>
           <a href="http://www.w3.org/RDF/">RDF</a>:<br class="br"/>
           <tt>$ <a href="http://librdf.org/raptor/rapper.html">rapper</a> -i grddl -o turtle '<span class="canonical-url url">&lt;url from address bar&gt;</span>'</tt><br class="br"/>
           <tt>$ <a href="http://librdf.org/raptor/rapper.html">rapper</a> -i grddl -o rdfxml-abbrev '<span class="canonical-url">&lt;url from address bar&gt;</span>'</tt><br class="br"/>
@@ -267,7 +267,7 @@
           <img alt="CSS ist valide!" src="http://jigsaw.w3.org/css-validator/images/vcss-blue" style="border:0;width:88px;height:31px"/>
           </a>
           -->
-          Powered by <a href="http://purl.mro.name/internet-radio-recorder/">github.com/mro/internet-radio-recorder</a><br class="br"/>
+          Powered by <a href="http://purl.mro.name/recorder">github.com/mro/internet-radio-recorder</a><br class="br"/>
           <a href="http://www.w3.org/RDF/">RDF</a>:<br class="br"/>
           <tt>$ <a href="http://librdf.org/raptor/rapper.html">rapper</a> -i grddl -o turtle '<span class="canonical-url">&lt;url from address bar&gt;</span>'</tt><br class="br"/>
           <tt>$ <a href="http://librdf.org/raptor/rapper.html">rapper</a> -i grddl -o rdfxml-abbrev '<span class="canonical-url">&lt;url from address bar&gt;</span>'</tt><br class="br"/>
