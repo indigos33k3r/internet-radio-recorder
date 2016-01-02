@@ -38,6 +38,7 @@ Add a Podcast to record
 
 SIMILAR
 
+    - https://github.com/Wikinaut/MyStreamRecorder
     - https://github.com/DirkR/capturadio
     - https://github.com/cosmovision/radiorecorder
     - https://github.com/prop/radio-recorder
