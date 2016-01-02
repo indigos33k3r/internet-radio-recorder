@@ -1,3 +1,4 @@
+Build Status: https://travis-ci.org/mro/internet-radio-recorder/
 
 A internet radio recorder. Turns broadcasts of e.g. http://br.de/radio/, http://m945.de/ or http://dlf.de/ into RSS feeds with mp3 enclosures.
 
@@ -5,7 +6,7 @@ Scrapes the websites to get proper descriptions, then does a match and schedules
 
 Built lightweight to run nicely on a raspi - http://www.raspberrypi.org/ - or any other debian-like system.
 
-http://purl.mro.name/recorder/
+http://purl.mro.name/recorder
 
 
 INSTALLATION
@@ -37,6 +38,7 @@ Add a Podcast to record
 
 SIMILAR
 
+    - https://github.com/Wikinaut/MyStreamRecorder
     - https://github.com/DirkR/capturadio
     - https://github.com/cosmovision/radiorecorder
     - https://github.com/prop/radio-recorder
