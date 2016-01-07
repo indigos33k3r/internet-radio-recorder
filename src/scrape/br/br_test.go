@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2015 Marcus Rohrmoser, https://github.com/mro/radio-pi
+// Copyright (c) 2015-2016 Marcus Rohrmoser, http://purl.mro.name/recorder
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,

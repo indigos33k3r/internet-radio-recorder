@@ -10,7 +10,7 @@
 
   See stations/dlf/app/broadcast2html.xslt for an example for xsl:import.
 
- Copyright (c) 2013-2015 Marcus Rohrmoser, http://purl.mro.name/recorder
+ Copyright (c) 2013-2016 Marcus Rohrmoser, http://purl.mro.name/recorder
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  associated documentation files (the "Software"), to deal in the Software without restriction,
