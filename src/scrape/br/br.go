@@ -179,9 +179,8 @@ func (day *dayUrl) Matches(now *time.Time) (ok bool) {
 func (day *dayUrl) parseBroadcastURLsNode(root *html.Node) (ret []*broadcastUrl, err error) {
 	ret = []*broadcastUrl{}
 	const closeDownHour int = 5
-	now := time.Now()
 	for _, h4 := range scrape.FindAll(root, func(n *html.Node) bool { return atom.H4 == n.DataAtom }) {
-		year, month, day_, err := timeForH4(scrape.Text(h4), &now)
+		year, month, day_, err := timeForH4(scrape.Text(h4), &day.TimeURL.Time)
 		if nil != err {
 			panic(err)
 		}
