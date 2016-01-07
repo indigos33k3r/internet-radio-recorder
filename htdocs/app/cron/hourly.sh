@@ -22,7 +22,7 @@
 cd "$(dirname "$0")"/../..
 me="$(basename "$0")"
 
-echo "Start  $(/bin/date +'%F %T')" 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log
+echo "Start  $(/bin/date +'%F %T')" 1>&2 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log
 
 if [ -x ../bin/scrape-linux-amd64-0.0.1 ] ; then
   ../bin/scrape-linux-amd64-0.0.1 2>> log/"$me".stderr.log
@@ -48,4 +48,4 @@ fi \
 
 nice app/calendar.lua stations/* podcasts/* 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log
 
-echo "Finish $(/bin/date +'%F %T')" 1>> log/"$me".stdout.log
+echo "Finish $(/bin/date +'%F %T')" 1>&2 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log

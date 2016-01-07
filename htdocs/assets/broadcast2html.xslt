@@ -193,7 +193,7 @@
         </form>
         <p id="enclosure">
           <!-- audio controls="controls" style="display:none">Doesn't play well with auth...<source type="audio/mpeg" /></audio -->
-          <a id="enclosure_link">mp3</a></p>
+          <a id="enclosure_link">✇ mp3</a></p>
         <hr/>
         <ul id="allday" class="nobullet" style="display:none"><li>Dummy</li></ul>
         <p><a href=".">Verzeichnis Index</a></p>

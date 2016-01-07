@@ -132,7 +132,7 @@ input[type="submit"] {
   animation-duration: 5s;
   animation-iteration-count: infinite;
 }
-.has_podcast.is_past    #title:before { content:"@ "; }
+.has_podcast.is_past    #title:before { content:"✇ "; }
 
 /* disable recording button for past broadcasts */
 .is_past form#ad_hoc { display:none; }
