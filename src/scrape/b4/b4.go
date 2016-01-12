@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2016 Marcus Rohrmoser, http://purl.mro.name/recorder
+// Copyright (c) 2016-2016 Marcus Rohrmoser, http://purl.mro.name/recorder
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -30,7 +30,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	//"os"
 	"regexp"
 	"strings"
 	"time"
@@ -54,14 +53,12 @@ type station struct {
 //
 // Returns a instance conforming to 'scrape.Scraper'
 func Station(identifier string) *station {
-	tz, err := time.LoadLocation("Europe/Berlin")
-	if nil != err {
-		panic(err)
+	switch identifier {
+	case
+		"b4":
+		return &station{Station: r.Station{Name: "Bayern 4", CloseDown: "06:00", ProgramURL: r.MustParseURL("https://www.br-klassik.de/programm/radio/index.html"), Identifier: identifier, TimeZone: localLoc}}
 	}
-	s := map[string]*station{
-		"b4": &station{Station: r.Station{Name: "Bayern 4", CloseDown: "06:00", ProgramURL: r.MustParseURL("https://www.br-klassik.de/programm/radio/index.html"), Identifier: identifier, TimeZone: tz}},
-	}[identifier]
-	return s
+	return nil
 }
 
 func (s *station) String() string {
@@ -89,12 +86,11 @@ func (s *station) calendarItemRangeURLForTime(t time.Time) (ret *calItemRangeURL
 	if nil == s {
 		panic("aua")
 	}
-	h := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), 0, 0, 0, s.TimeZone)
-	t0 := h.Add(-time.Second)
-	t1 := h.Add(time.Hour)
+	t0 := t.Add(time.Minute)
+	t1 := t0.Add(time.Hour)
 	ret = &calItemRangeURL{
 		TimeURL: r.TimeURL{
-			Time:    h,
+			Time:    t0,
 			Source:  *r.MustParseURL("https://www.br-klassik.de/programm/radio/radiosendungen-100~calendarItems.jsp?rows=800" + t0.Format("&from=2006-01-02T15:04:05") + t1.Format("&to=2006-01-02T15:04:05")),
 			Station: s.Station,
 		},
@@ -110,12 +106,6 @@ type calItemRangeURL struct {
 }
 
 func (day *calItemRangeURL) Matches(now *time.Time) (ok bool) {
-	if nil == now {
-		return true
-	}
-	if day == nil || day.Time.After(*now) || day.Time.Add(time.Hour).Before(*now) {
-		return false
-	}
 	return true
 }
 
@@ -231,12 +221,6 @@ type broadcastURL struct {
 }
 
 func (b *broadcastURL) Matches(now *time.Time) (ok bool) {
-	if nil == now {
-		return true
-	}
-	if b == nil || b.Time.After(*now) {
-		return false
-	}
 	return true
 }
 
@@ -258,6 +242,9 @@ var (
 // Completely re-scrape everything and verify consistence at least of Time, evtl. Title
 func (bcu *broadcastURL) parseBroadcastNode(root *html.Node) (bc r.Broadcast, err error) {
 	bc.Station = bcu.Station
+	if "" == bc.Station.Identifier {
+		panic("How can the identifier miss?")
+	}
 	bc.Source = bcu.Source
 	bc.Time = bcu.Time
 	bc.Image = bcu.Image
@@ -361,9 +348,6 @@ func (bcu *broadcastURL) parseBroadcastNode(root *html.Node) (bc r.Broadcast, er
 		bc.Author = &s
 	}
 
-	if "" == bc.Station.Identifier {
-		panic("How can the identifier miss?")
-	}
 	return
 }
 

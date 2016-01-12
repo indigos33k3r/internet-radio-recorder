@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2016 Marcus Rohrmoser, http://purl.mro.name/recorder
+// Copyright (c) 2016-2016 Marcus Rohrmoser, http://purl.mro.name/recorder
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -41,8 +41,8 @@ func TestDayURLForDate(t *testing.T) {
 	s := Station("b4")
 	u, err := s.calendarItemRangeURLForTime(time.Date(2015, 11, 30, 5, 6, 7, 8, s.TimeZone))
 	assert.Nil(t, err, "ouch: err")
-	assert.Equal(t, "https://www.br-klassik.de/programm/radio/radiosendungen-100~calendarItems.jsp?rows=800&from=2015-11-30T04:59:59&to=2015-11-30T06:00:00", u.Source.String(), "ouch")
-	assert.Equal(t, "2015-11-30T05:00:00+01:00", u.Time.Format(time.RFC3339), "ouch")
+	assert.Equal(t, "https://www.br-klassik.de/programm/radio/radiosendungen-100~calendarItems.jsp?rows=800&from=2015-11-30T05:07:07&to=2015-11-30T06:07:07", u.Source.String(), "ouch")
+	assert.Equal(t, "2015-11-30T05:07:07+01:00", u.Time.Format(time.RFC3339), "ouch")
 }
 
 func TestUnmarshalBuiltMyTimeJSON(t *testing.T) {
@@ -85,8 +85,8 @@ func TestUnmarshalCalendarItemsJSON(t *testing.T) {
 func TestParseCalendarItems(t *testing.T) {
 	s := Station("b4")
 	u, err := s.calendarItemRangeURLForTime(time.Date(2015, 11, 30, 5, 0, 0, 0, localLoc))
-	assert.Equal(t, "https://www.br-klassik.de/programm/radio/radiosendungen-100~calendarItems.jsp?rows=800&from=2015-11-30T04:59:59&to=2015-11-30T06:00:00", u.Source.String(), "Nov")
-	assert.Equal(t, "2015-11-30T05:00:00+01:00", u.Time.Format(time.RFC3339), "Nov")
+	assert.Equal(t, "https://www.br-klassik.de/programm/radio/radiosendungen-100~calendarItems.jsp?rows=800&from=2015-11-30T05:01:00&to=2015-11-30T06:01:00", u.Source.String(), "Nov")
+	assert.Equal(t, "2015-11-30T05:01:00+01:00", u.Time.Format(time.RFC3339), "Nov")
 	assert.Equal(t, "b4", u.Station.Identifier, "Nov")
 	assert.NotNil(t, u.Station.ProgramURL, "Nov")
 
