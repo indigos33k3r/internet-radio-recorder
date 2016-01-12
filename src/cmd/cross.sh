@@ -4,7 +4,7 @@
 
 cd "$(dirname "$0")"
 
-VERSION=0.0.1
+VERSION=0.1.0
 
 rm "scrape"-*-"$VERSION" 2>/dev/null
 
@@ -14,7 +14,7 @@ go get github.com/stretchr/testify
 
 CWD="$(pwd)"
 cd ..
-for dir in cmd scrape scrape/br scrape/dlf scrape/m945
+for dir in cmd scrape scrape/br scrape/b4 scrape/dlf scrape/m945
 do
   cd "$CWD/../$dir"
   go fmt && go test && \
@@ -35,8 +35,8 @@ env GOOS=linux GOARCH=amd64 go build -o scrape-linux-amd64-$VERSION
 
 # ls -l "scrape"-*-"$VERSION" 2>/dev/null
 
-ssh raspi rm "Downloads/scrape-linux-arm-$VERSION"
-scp "scrape-linux-arm-$VERSION" raspi:~/"Downloads/scrape-linux-arm-$VERSION"
+# ssh raspi rm "Downloads/scrape-linux-arm-$VERSION"
+# scp "scrape-linux-arm-$VERSION" raspi:~/"Downloads/scrape-linux-arm-$VERSION"
 # time ssh raspi "Downloads/scrape-linux-arm-$VERSION"
 
 ssh con rm "Downloads/scrape-linux-amd64-$VERSION"
