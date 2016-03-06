@@ -158,6 +158,16 @@ func (day *dayUrl) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast,
 			//			bc.Subject = day.Source.ResolveReference(u)
 
 			bc.Title = strings.TrimSpace(bc.Title)
+			for idx1, a := range scrape.FindAll(div, func(n *html.Node) bool {
+				return atom.A == n.DataAtom
+			}) {
+				if idx1 != 0 {
+					err = errors.New("There was more than 1 <a>")
+					return
+				}
+				u, _ := url.Parse(scrape.Attr(a, "href"))
+				bc.Subject = day.Source.ResolveReference(u)
+			}
 		}
 		// fmt.Fprintf(os.Stderr, "\n")
 		ret = append(ret, &bc)
