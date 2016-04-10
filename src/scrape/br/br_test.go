@@ -126,7 +126,7 @@ func TestParseBroadcast_0(t *testing.T) {
 	assert.Nil(t, err, "ouch")
 
 	s := Station("b2")
-	t0 := broadcastUrl{
+	t0 := broadcastURL{
 		r.BroadcastURL{
 			TimeURL: r.TimeURL{
 				Time:    time.Date(2015, time.October, 21, 0, 12, 0, 0, localLoc),
@@ -164,7 +164,7 @@ func TestParseBroadcast_1(t *testing.T) {
 	assert.Nil(t, err, "ouch")
 
 	s := Station("b2")
-	t0 := broadcastUrl{
+	t0 := broadcastURL{
 		r.BroadcastURL{
 			TimeURL: r.TimeURL{
 				Time:    time.Date(2015, time.October, 21, 10, 5, 0, 0, localLoc),
@@ -202,7 +202,7 @@ func TestParseBroadcastUntilMidnight(t *testing.T) {
 	assert.Nil(t, err, "ouch")
 
 	s := Station("b2")
-	t0 := broadcastUrl{
+	t0 := broadcastURL{
 		r.BroadcastURL{
 			TimeURL: r.TimeURL{
 				Time:    time.Date(2015, time.October, 21, 23, 5, 0, 0, localLoc),
@@ -234,55 +234,13 @@ func TestParseBroadcastUntilMidnight(t *testing.T) {
 	assert.Equal(t, "http://www.br.de/radio/bayern2/musik/nachtmix/nachtmix-ondemand-nachhoeren-104~_v-img__16__9__m_-4423061158a17f4152aef84861ed0243214ae6e7.png?version=570b1", bc.Image.String(), "ouch: Image")
 }
 
-func TestParseBroadcastWithImage(t *testing.T) {
-	f, err := os.Open("testdata/2015-11-11T2305-b4-sendung.html")
-	assert.NotNil(t, f, "ouch")
-	assert.Nil(t, err, "ouch")
-
-	s := Station("b4")
-	t0 := broadcastUrl{
-		r.BroadcastURL{
-			TimeURL: r.TimeURL{
-				Time:    time.Date(2015, time.November, 11, 23, 5, 0, 0, localLoc),
-				Source:  *r.MustParseURL("http://www.br.de/radio/br-klassik/programmkalender/ausstrahlung-493432.html"),
-				Station: s.Station,
-			},
-			Title: "Jazztime",
-		}}
-
-	// http://rec.mro.name/stations/b4/2015/11/11/2305%20Jazztime
-	bc, err := t0.parseBroadcastReader(f)
-	assert.Nil(t, err, "ouch")
-	assert.Equal(t, "b4", bc.Station.Identifier, "ouch: Station.Identifier")
-	assert.Equal(t, "Jazztime", bc.Title, "ouch: Title")
-	assert.Equal(t, "http://www.br.de/radio/br-klassik/programmkalender/ausstrahlung-493432.html", bc.Source.String(), "ouch: Source")
-	assert.NotNil(t, bc.Language, "ouch: Language")
-	assert.Equal(t, "de", *bc.Language, "ouch: Language")
-	assert.Equal(t, t0.Title, bc.Title, "ouch: Title")
-	assert.Equal(t, "Aus dem Studio Franken:", *bc.TitleSeries, "ouch: TitleSeries")
-	assert.Equal(t, "Jazz aus Nürnberg: Live-Mitschnitte", *bc.TitleEpisode, "ouch: TitleEpisode")
-	assert.Equal(t, "2015-11-11T23:05:00+01:00", bc.Time.Format(time.RFC3339), "ouch: Time")
-	assert.Equal(t, "2015-11-12T00:00:00+01:00", bc.DtEnd.Format(time.RFC3339), "ouch: DtEnd")
-	assert.Equal(t, 3300*time.Second, bc.DtEnd.Sub(bc.Time), "ouch: Duration")
-	assert.Equal(t, "http://www.br.de/radio/br-klassik/sendungen/jazztime/index.html", bc.Subject.String(), "ouch: Subject")
-	assert.Equal(t, "2015-11-11T09:15:08+01:00", bc.Modified.Format(time.RFC3339), "ouch: Modified")
-	assert.Equal(t, "Bayerischer Rundfunk", *bc.Author, "ouch: Author")
-	assert.NotNil(t, bc.Description, "ouch: Description")
-	assert.Equal(t, "Philipp Gropper´s Philm im Jazzstudio Nürnberg\nMit Philipp Gropper (Tenorsaxophon), Elias Stemeseder (Piano), Andreas Lang (Bass) und Oliver Steidle (Schlagzeug)\nAufnahme vom 2. Oktober 2015\nModeration und Auswahl: Beate Sampson\n\nPhilipp Gropper´s Philm: „Madman of Naranam“ (Philipp Gropper)\nPhilipp Gropper´s Philm: „ZE“(Philipp Gropper)\nPhilipp Gropper´s Philm: „Licht“(Philipp Gropper)\nPhilipp Gropper´s Philm: „Synthesizer/ Für die 68er“ (Philipp Gropper)\n\n\"Je länger ich Musik mache, desto wichtiger ist mir und desto klarer nehme ich wahr, was Musik, was eine Band transportiert, welche Botschaft von Ihr ausgeht. Diese durch die transzendierende Qualität von Musik erfahrbare Essenz ist, worum es geht und sie ist absolut unabhängig von Stilistik oder Besetzung. Reine Virtuosität, reine intellektuelle Höhenflüge oder die allgegenwärtige Weichgespültheit langweilen mich, es geht mir um Direktheit und Aura. Ich bin der Tradition sehr verbunden, versuche aber ständig deren Lebendigkeit und Frische, die jeweils nur im zeitlichen Kontext entstehen konnte und den alten Meistern gleichzeitig ihre Zeitlosigkeit sicherte, zu verstehen und weiterzutragen.\" So beschreibt der Berliner Saxophonist Philipp Gropper sein künstlerisches Selbstverständnis. Mit seinem 2011 gegründeten Quartett PHILM hat er es am 2. Oktober 2015 im Nürnberger Jazzstudio in Musik zum Ausdruck gebracht. Sie ist heute in unserem Mitschnitt des Konzertabends zu hören.", *bc.Description, "ouch: Description")
-	assert.NotNil(t, bc.Image, "ouch: Image")
-	assert.Equal(t, "http://www.br.de/radio/br-klassik/sendungen/jazztime/gropper-100~_v-img__16__9__m_-4423061158a17f4152aef84861ed0243214ae6e7.jpg?version=230c6", bc.Image.String(), "ouch: Image")
-	assert.Nil(t, bc.Publisher, "Publisher")
-	assert.Nil(t, bc.Creator, "Creator")
-	assert.Nil(t, bc.Copyright, "Copyright")
-}
-
 func TestParseBroadcastWithImage1(t *testing.T) {
 	f, err := os.Open("testdata/2015-11-16T1605-b2-sendung.html")
 	assert.NotNil(t, f, "ouch")
 	assert.Nil(t, err, "ouch")
 
 	s := Station("b2")
-	t0 := broadcastUrl{
+	t0 := broadcastURL{
 		r.BroadcastURL{
 			TimeURL: r.TimeURL{
 				Time:    time.Date(2015, time.November, 16, 16, 5, 0, 0, localLoc),
@@ -308,7 +266,7 @@ func TestParseBroadcast23h55min(t *testing.T) {
 	assert.Nil(t, err, "ouch")
 
 	s := Station("b+")
-	t0 := broadcastUrl{
+	t0 := broadcastURL{
 		r.BroadcastURL{
 			TimeURL: r.TimeURL{
 				Time:    time.Date(2015, time.November, 11, 15, 5, 0, 0, localLoc),
@@ -349,7 +307,7 @@ func TestParseBroadcastDescriptionWhitespace(t *testing.T) {
 	assert.Nil(t, err, "ouch")
 
 	s := Station("b2")
-	t0 := broadcastUrl{
+	t0 := broadcastURL{
 		r.BroadcastURL{
 			TimeURL: r.TimeURL{
 				Time:    time.Date(2015, time.November, 11, 15, 9, 0, 0, localLoc),
