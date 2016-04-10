@@ -24,8 +24,8 @@ me="$(basename "$0")"
 
 echo "Start  $(/bin/date +'%F %T')" 1>&2 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log
 
-if [ -x ../bin/scrape-linux-amd64-0.0.1 ] ; then
-  ../bin/scrape-linux-amd64-0.0.1 2>> log/"$me".stderr.log
+if [ -x ../bin/scrape-linux-amd64-0.2.0 ] ; then
+  ../bin/scrape-linux-amd64-0.2.0 2>> log/"$me".stderr.log
 else
   parallel --version >/dev/null || { echo "install 'parallel'" && exit 1;}
 
