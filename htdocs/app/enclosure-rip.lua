@@ -96,7 +96,8 @@ end
 
 
 function Enclosure:dir_mp3_temp()
-  return self:filename()
+  -- limit streamripper destination directory name length
+  return string.sub(self:filename(), 1, 86)
 end
 
 
