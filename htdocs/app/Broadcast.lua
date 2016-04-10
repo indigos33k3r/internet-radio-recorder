@@ -27,7 +27,6 @@ end
 
 function string:to_filename()
   local replace = {
-    ['–'] = '-',
     ['/'] = '-',
     ["\t"]  = ' ',
     ["\n"]  = ' ',
@@ -37,7 +36,7 @@ function string:to_filename()
   local subf = function(s)
     return replace[s] or escape[s] or s
   end
-  return self:gsub('.', subf)
+  return self:gsub('.', subf):gsub('–', '-')
 end
 
 
