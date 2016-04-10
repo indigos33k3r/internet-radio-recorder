@@ -96,6 +96,7 @@ function Podcast:broadcasts(comparator,tmin,tmax)
     end
   end
   if not comparator then
+    -- default ascending
     comparator = function(a,b) return a:dtstart() < b:dtstart() end
   end
   table.sort(tmp, comparator)
@@ -127,15 +128,15 @@ end
 
 function Podcast:purge_outdated(dry_run)
   -- reverse, most recent first:
-  local bcs = self:broadcasts(function(a,b) return a.id > b.id end, 0, os.time())
+  local bcs = self:broadcasts(function(a,b) return a:dtstart() > b:dtstart() end, 0, os.time())
   local kept = 0
   for _,bc in ipairs(bcs) do
-      if 'mp3' == bc:enclosure().state then
-      -- io.stderr:write('purge_outdated ', bc.id, "\n")
+    if 'mp3' == bc:enclosure().state then
+      io.stderr:write('purge_outdated ', bc.id, "\n")
       if kept < self.episodes_to_keep then
         kept = kept + 1
       else
-        local ok,msg = bc:enclosure():purge(dry_run)
+        local ok,msg = bc:enclosure():purge(true)
         if ok then
           io.stderr:write('purged ', bc.id, "\n")
         else
