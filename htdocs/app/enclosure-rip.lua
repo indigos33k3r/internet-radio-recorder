@@ -238,7 +238,7 @@ function Enclosure:id3tag_mp3(dry_run)
 end
 
 
-local dry_run = arg[1] == '--dry-run'
+local dry_run = '--dry-run' == arg[1]
 local enc = nil
 if dry_run then
   enc = assert(Broadcast.from_file( arg[2] ), "can't use broadcast " ..  arg[2]):enclosure()

@@ -241,7 +241,7 @@
         <h1 title="{@date}"><xsl:value-of select="@date"/></h1>
         <ol style='list-style-type: none;'>
           <xsl:for-each select="rec:broadcast">
-            <xsl:variable name="rowid" select="translate(substring(rec:meta[@name='DC.format.timestart']/@content, 11, 6), ':', '_')"/>
+            <xsl:variable name="rowid" select="translate(substring(rec:meta[@name='DC.format.timestart']/@content, 11, 6), ':', '')"/>
             <xsl:variable name="duration_minutes" select="number(rec:meta[@name='DC.format.duration']/@content) div 60"/>
             <li class="broadcast vevent" id="{$rowid}">
               <a class="dtstart" href="#{$rowid}" title="{rec:meta[@name='DC.format.timestart']/@content}"><xsl:value-of select="substring(rec:meta[@name='DC.format.timestart']/@content, 12, 5)"/></a>

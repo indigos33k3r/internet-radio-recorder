@@ -156,6 +156,8 @@ input[type="submit"] {
 }
 
 ul > li > a.has_podcast:before { content:"* "; }
+ul > li > a.has_podcast.is_past:before { content:"✇ "; }
+ul > li > a.has_podcast.is_current:before { content:"♪ "; }
 
 /* This is a workaround for Browsers that insert additional <br> tags. 
  * See http://purl.mro.name/safari-xslt-br-bug */
