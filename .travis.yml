@@ -18,6 +18,8 @@ install:
 script:
  - go test -v purl.mro.name/recorder/radio/scrape
  - go test -v purl.mro.name/recorder/radio/scrape/br
+ - go test -v purl.mro.name/recorder/radio/scrape/b4
  - go test -v purl.mro.name/recorder/radio/scrape/dlf
  - go test -v purl.mro.name/recorder/radio/scrape/m945
+ - go test -v purl.mro.name/recorder/radio/scrape/radiofabrik
  - go test -v purl.mro.name/recorder/radio/cmd
