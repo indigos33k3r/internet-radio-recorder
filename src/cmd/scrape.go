@@ -30,6 +30,7 @@ import (
 	"purl.mro.name/recorder/radio/scrape/br"
 	"purl.mro.name/recorder/radio/scrape/dlf"
 	"purl.mro.name/recorder/radio/scrape/m945"
+	"purl.mro.name/recorder/radio/scrape/radiofabrik"
 )
 
 func main() {
@@ -41,6 +42,7 @@ func main() {
 	wg_scrapers.Add(1)
 	go func() {
 		defer wg_scrapers.Done()
+		jobs <- radiofabrik.Station("radiofabrik")
 		jobs <- m945.Station("m945")
 		jobs <- dlf.Station("dlf")
 		jobs <- br.Station("b1")

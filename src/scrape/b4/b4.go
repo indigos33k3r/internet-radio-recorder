@@ -30,6 +30,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -352,7 +353,9 @@ func (bcu *broadcastURL) parseBroadcastNode(root *html.Node) (bc r.Broadcast, er
 }
 
 func (bcu *broadcastURL) parseBroadcastReader(read io.Reader) (bc r.Broadcast, err error) {
-	root, err := html.Parse(read)
+	cr := r.NewCountingReader(read)
+	root, err := html.Parse(cr)
+	fmt.Fprintf(os.Stderr, "parsed %d bytes\n", cr.TotalBytes)
 	if nil != err {
 		return
 	}

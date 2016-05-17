@@ -17,15 +17,15 @@
 //
 // MIT License http://opensource.org/licenses/MIT
 
-package m945 // import "purl.mro.name/recorder/radio/scrape/m945"
+package radiofabrik // import "purl.mro.name/recorder/radio/scrape/radiofabrik"
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"os"
-	"regexp"
 	"strings"
 	"time"
 
@@ -48,14 +48,17 @@ func Station(identifier string) *station {
 		panic(err)
 	}
 	s := map[string]*station{
-		"m945": &station{Station: r.Station{Name: "M 94.5", CloseDown: "00:00", ProgramURL: r.MustParseURL("http://www.m945.de/programm/"), Identifier: identifier, TimeZone: tz}},
+		"radiofabrik": &station{Station: r.Station{Name: "radiofabrik", CloseDown: "00:00", ProgramURL: r.MustParseURL("http://www.radiofabrik.at/programm0/tagesprogramm.html"), Identifier: identifier, TimeZone: tz}},
 	}[identifier]
 	return s
 }
 
-///////////////////////////////////////////////////////////////////////
-/// r.Scraper
+/// Stringer
+func (s *station) String() string {
+	return fmt.Sprintf("Station '%s'", s.Name)
+}
 
+/// r.Scraper
 func (s *station) Matches(now *time.Time) (ok bool) {
 	return true
 }
@@ -71,13 +74,13 @@ func (s *station) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (e
 }
 
 ///////////////////////////////////////////////////////////////////////
-// http://www.m945.de/programm/?daterequest=2015-11-14
+// http://www.deutschlandfunk.de/programmvorschau.281.de.html?drbm:date=19.11.2015
 
 func (s *station) dayURLForDate(day time.Time) (ret *dayUrl, err error) {
 	ret = &dayUrl{
 		TimeURL: r.TimeURL{
 			Time:    time.Date(day.Year(), day.Month(), day.Day(), 0, 0, 0, 0, s.TimeZone),
-			Source:  *r.MustParseURL(s.ProgramURL.String() + day.Format("?daterequest=2006-01-02")),
+			Source:  *r.MustParseURL(s.ProgramURL.String() + day.Format("?foo=bar&si_day=02&si_month=01&si_year=2006")),
 			Station: s.Station,
 		},
 	}
@@ -109,13 +112,15 @@ func (day dayUrl) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (e
 
 var (
 	lang_de   string = "de"
-	publisher string = "http://www.m945.de/"
+	publisher string = "http://www.radiofabrik.at/"
 )
 
 func (day *dayUrl) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast, err error) {
-	nodes := scrape.FindAll(root, func(n *html.Node) bool { return atom.Div == n.DataAtom && "time" == scrape.Attr(n, "class") })
-	ret = make([]*r.Broadcast, len(nodes))
-	for index, tim := range nodes {
+	// fmt.Fprintf(os.Stderr, "%s\n", day.Source.String())
+	index := 0
+	for _, at := range scrape.FindAll(root, func(n *html.Node) bool {
+		return atom.Div == n.DataAtom && "si_dayList_starttime" == scrape.Attr(n, "class")
+	}) {
 		// prepare response
 		bc := r.Broadcast{
 			BroadcastURL: r.BroadcastURL{
@@ -125,49 +130,54 @@ func (day *dayUrl) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast,
 		// some defaults
 		bc.Language = &lang_de
 		bc.Publisher = &publisher
+		empty_str := ""
+		bc.Description = &empty_str
 		// set start time
 		{
-			div_t := strings.TrimSpace(scrape.Text(tim))
-			if 5 != len(div_t) {
+			hhmm := scrape.Text(at)
+			// fmt.Fprintf(os.Stderr, "  a_id=%s\n", a_id)
+			hour := r.MustParseInt(hhmm[0:2])
+			minute := r.MustParseInt(hhmm[3:5])
+			if 24 < hour || 60 < minute {
 				continue
 			}
-			hour := r.MustParseInt(div_t[0:2])
-			minute := r.MustParseInt(div_t[3:5])
 			bc.Time = time.Date(day.Year(), day.Month(), day.Day(), hour, minute, 0, 0, day.TimeZone)
 			if index > 0 {
 				ret[index-1].DtEnd = &bc.Time
 			}
 		}
-		for _, tit := range scrape.FindAll(tim.Parent, func(n *html.Node) bool {
-			return atom.A == n.DataAtom && atom.Div == n.Parent.DataAtom && "descr" == scrape.Attr(n.Parent, "class")
+		// Title
+		for idx, div := range scrape.FindAll(at.Parent, func(n *html.Node) bool {
+			return atom.Div == n.DataAtom && "si_dayList_description" == scrape.Attr(n, "class")
 		}) {
-			// Title
-			bc.Title = strings.TrimSpace(scrape.Text(tit))
-			href := scrape.Attr(tit, "href")
-			if "" != href {
-				u, _ := url.Parse(href)
+			if idx != 0 {
+				err = errors.New("There was more than 1 <div class='si_dayList_description'>")
+				return
+			}
+			bc.Title = scrape.Text(div)
+			//				u, _ := url.Parse(scrape.Attr(h3_a, "href"))
+			//			bc.Subject = day.Source.ResolveReference(u)
+
+			bc.Title = strings.TrimSpace(bc.Title)
+			for idx1, a := range scrape.FindAll(div, func(n *html.Node) bool {
+				return atom.A == n.DataAtom
+			}) {
+				if idx1 != 0 {
+					err = errors.New("There was more than 1 <a>")
+					return
+				}
+				u, _ := url.Parse(scrape.Attr(a, "href"))
 				bc.Subject = day.Source.ResolveReference(u)
 			}
-
-			desc_node := tit.Parent
-			desc_node.RemoveChild(tit)
-			{
-				// Description
-				var desc string = r.TextWithBr(desc_node)
-				re := regexp.MustCompile("[ ]*(\\s)[ ]*") // collapse whitespace, keep \n
-				t := desc                                 // mark paragraphs with a double \n
-				t = re.ReplaceAllString(t, "$1")          // collapse whitespace (not the \n\n however)
-				t = strings.TrimSpace(t)
-				bc.Description = &t
-			}
-			// fmt.Fprintf(os.Stderr, "\n")
 		}
-		ret[index] = &bc
+		// fmt.Fprintf(os.Stderr, "\n")
+		ret = append(ret, &bc)
+		index += 1
 	}
 	// fmt.Fprintf(os.Stderr, "len(ret) = %d '%s'\n", len(ret), day.Source.String())
-	if len(nodes) > 0 {
+	if index > 0 {
 		midnight := time.Date(day.Year(), day.Month(), day.Day(), 24, 0, 0, 0, day.TimeZone)
-		ret[len(nodes)-1].DtEnd = &midnight
+		ret[index-1].DtEnd = &midnight
 	}
 	return
 }
@@ -183,7 +193,12 @@ func (day *dayUrl) parseBroadcastsFromReader(read io.Reader) (ret []*r.Broadcast
 }
 
 func (day *dayUrl) parseBroadcastsFromURL() (ret []*r.Broadcast, err error) {
-	resp, err := http.Get(day.Source.String())
+	s := day.Source.String()
+	m, err := url.ParseQuery(s)
+	if nil != err {
+		return
+	}
+	resp, err := http.PostForm(s, m)
 	if nil != err {
 		return
 	}
