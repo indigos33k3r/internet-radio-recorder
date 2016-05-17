@@ -3,8 +3,12 @@
 #
 
 cd "$(dirname "$0")"
+# $ uname -s -m
+# Darwin x86_64
+# Linux x86_64
+# Linux armv6l
 
-VERSION=0.2.0
+VERSION=0.2.1
 
 rm "scrape"-*-"$VERSION" 2>/dev/null
 
