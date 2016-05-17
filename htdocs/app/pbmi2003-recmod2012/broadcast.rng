@@ -3,13 +3,13 @@
   indeed, a relative default namespace. Unorthodox but useful to avoid a central server 
   and still enable GRDDL.
   
-  Find the RelaxNG schema at http://purl.mro.name/internet-radio-recorder/pbmi2003-recmod2012/broadcast.rnc
+  Find the RelaxNG schema at http://purl.mro.name/recorder/pbmi2003-recmod2012/broadcast.rnc
   
   About RelaxNG see http://purl.mro.name/relaxng
 -->
 <grammar ns="../../../../../assets/2013/radio-pi.rdf" xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <start>
-    <a:documentation>Copyright (c) 2013-2015 Marcus Rohrmoser, http://purl.mro.name/internet-radio-recorder/
+    <a:documentation>Copyright (c) 2013-2016 Marcus Rohrmoser, http://purl.mro.name/recorder
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -32,7 +32,7 @@ not: Ontology for Media Resources 1.0 http://www.w3.org/TR/mediaont-10/
 not: EBU http://tech.ebu.ch/lang/en/MetadataEbuCore
 
 use e.g.
-$ xmllint --noout --relaxng http://purl.mro.name/internet-radio-recorder/pbmi2003-recmod2012/broadcast.rng htdocs/stations/*/????/??/??/*.xml 2&gt;&amp;1 | grep fail
+$ xmllint --noout --relaxng http://purl.mro.name/recorder/pbmi2003-recmod2012/broadcast.rng htdocs/stations/*/????/??/??/*.xml 2&gt;&amp;1 | grep fail
 </a:documentation>
     <choice>
       <ref name="broadcast">

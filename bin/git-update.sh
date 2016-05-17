@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2013-2015 Marcus Rohrmoser, https://github.com/mro/radio-pi
+# Copyright (c) 2013-2016 Marcus Rohrmoser, http://purl.mro.name/recorder
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 # associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -33,12 +33,12 @@ cd "$base_dir"
 
 for i in htdocs/stations/*/.git htdocs/podcasts/*/.git
 do
-  cd "$i"/.. \
-  && pwd \
-  && git add --all . \
-  && git commit -m "update" \
-  && git update-server-info
-  cd "$base_dir"
+	cd "$i"/.. \
+	&& pwd \
+	&& git add --all . \
+	&& git commit -m "update" \
+	&& git update-server-info
+	cd "$base_dir"
 done
 
 # for i in htdocs/*/*/.git ; do cd "$i"/.. ; time sudo -u www-data git gc ; cd - ; done

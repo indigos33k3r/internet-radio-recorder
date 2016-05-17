@@ -132,7 +132,7 @@ input[type="submit"] {
   animation-duration: 5s;
   animation-iteration-count: infinite;
 }
-.has_podcast.is_past    #title:before { content:"@ "; }
+.has_podcast.is_past    #title:before { content:"✇ "; }
 
 /* disable recording button for past broadcasts */
 .is_past form#ad_hoc { display:none; }
@@ -156,6 +156,8 @@ input[type="submit"] {
 }
 
 ul > li > a.has_podcast:before { content:"* "; }
+ul > li > a.has_podcast.is_past:before { content:"✇ "; }
+ul > li > a.has_podcast.is_current:before { content:"♪ "; }
 
 /* This is a workaround for Browsers that insert additional <br> tags. 
  * See http://purl.mro.name/safari-xslt-br-bug */

@@ -1,6 +1,6 @@
 #!/usr/bin/env lua
 --[[
--- Copyright (c) 2013-2015 Marcus Rohrmoser, http://purl.mro.name/internet-radio-recorder
+-- Copyright (c) 2013-2016 Marcus Rohrmoser, http://purl.mro.name/recorder
 --
 -- Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 -- associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -96,7 +96,8 @@ end
 
 
 function Enclosure:dir_mp3_temp()
-  return self:filename()
+  -- limit streamripper destination directory name length
+  return string.sub(self:filename(), 1, 86)
 end
 
 
@@ -238,7 +239,7 @@ function Enclosure:id3tag_mp3(dry_run)
 end
 
 
-local dry_run = arg[1] == '--dry-run'
+local dry_run = '--dry-run' == arg[1]
 local enc = nil
 if dry_run then
   enc = assert(Broadcast.from_file( arg[2] ), "can't use broadcast " ..  arg[2]):enclosure()

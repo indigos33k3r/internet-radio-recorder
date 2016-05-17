@@ -10,7 +10,7 @@
 
   See stations/dlf/app/broadcast2html.xslt for an example for xsl:import.
 
- Copyright (c) 2013-2015 Marcus Rohrmoser, http://purl.mro.name/internet-radio-recorder
+ Copyright (c) 2013-2016 Marcus Rohrmoser, http://purl.mro.name/recorder
 
  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -193,7 +193,7 @@
         </form>
         <p id="enclosure">
           <!-- audio controls="controls" style="display:none">Doesn't play well with auth...<source type="audio/mpeg" /></audio -->
-          <a id="enclosure_link">mp3</a></p>
+          <a id="enclosure_link">✇ mp3</a></p>
         <hr/>
         <ul id="allday" class="nobullet" style="display:none"><li>Dummy</li></ul>
         <p><a href=".">Verzeichnis Index</a></p>
@@ -207,7 +207,7 @@
           <img alt="CSS ist valide!" src="http://jigsaw.w3.org/css-validator/images/vcss-blue" style="border:0;width:88px;height:31px"/>
           </a>
           -->
-          Powered by <a href="http://purl.mro.name/internet-radio-recorder">github.com/mro/internet-radio-recorder</a><br class="br"/>
+          Powered by <a href="http://purl.mro.name/recorder">github.com/mro/internet-radio-recorder</a><br class="br"/>
           <a href="http://www.w3.org/RDF/">RDF</a>:<br class="br"/>
           <tt>$ <a href="http://librdf.org/raptor/rapper.html">rapper</a> -i grddl -o turtle '<span class="canonical-url url">&lt;url from address bar&gt;</span>'</tt><br class="br"/>
           <tt>$ <a href="http://librdf.org/raptor/rapper.html">rapper</a> -i grddl -o rdfxml-abbrev '<span class="canonical-url">&lt;url from address bar&gt;</span>'</tt><br class="br"/>
@@ -241,7 +241,7 @@
         <h1 title="{@date}"><xsl:value-of select="@date"/></h1>
         <ol style='list-style-type: none;'>
           <xsl:for-each select="rec:broadcast">
-            <xsl:variable name="rowid" select="translate(substring(rec:meta[@name='DC.format.timestart']/@content, 11, 6), ':', '_')"/>
+            <xsl:variable name="rowid" select="translate(substring(rec:meta[@name='DC.format.timestart']/@content, 11, 6), ':', '')"/>
             <xsl:variable name="duration_minutes" select="number(rec:meta[@name='DC.format.duration']/@content) div 60"/>
             <li class="broadcast vevent" id="{$rowid}">
               <a class="dtstart" href="#{$rowid}" title="{rec:meta[@name='DC.format.timestart']/@content}"><xsl:value-of select="substring(rec:meta[@name='DC.format.timestart']/@content, 12, 5)"/></a>
@@ -267,7 +267,7 @@
           <img alt="CSS ist valide!" src="http://jigsaw.w3.org/css-validator/images/vcss-blue" style="border:0;width:88px;height:31px"/>
           </a>
           -->
-          Powered by <a href="http://purl.mro.name/internet-radio-recorder/">github.com/mro/internet-radio-recorder</a><br class="br"/>
+          Powered by <a href="http://purl.mro.name/recorder">github.com/mro/internet-radio-recorder</a><br class="br"/>
           <a href="http://www.w3.org/RDF/">RDF</a>:<br class="br"/>
           <tt>$ <a href="http://librdf.org/raptor/rapper.html">rapper</a> -i grddl -o turtle '<span class="canonical-url">&lt;url from address bar&gt;</span>'</tt><br class="br"/>
           <tt>$ <a href="http://librdf.org/raptor/rapper.html">rapper</a> -i grddl -o rdfxml-abbrev '<span class="canonical-url">&lt;url from address bar&gt;</span>'</tt><br class="br"/>

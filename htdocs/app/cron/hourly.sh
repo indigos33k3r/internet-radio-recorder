@@ -1,6 +1,6 @@
 #!/bin/dash
 #
-# Copyright (c) 2013-2015 Marcus Rohrmoser, http://purl.mro.name/internet-radio-recorder
+# Copyright (c) 2013-2016 Marcus Rohrmoser, http://purl.mro.name/recorder
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 # associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -19,27 +19,33 @@
 #
 # MIT License http://opensource.org/licenses/MIT
 
-parallel --version >/dev/null || { echo "install 'parallel'" && exit 1;}
-
 cd "$(dirname "$0")"/../..
 me="$(basename "$0")"
 
-/bin/date 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log
-for scraper in stations/*/app/scraper.??
-do
-  case "$scraper" in
-    *.rb)
-      echo "bundle exec $scraper --incremental"
-    ;;
-    *)
-      echo "$scraper --incremental"
-    ;;
-  esac
-done \
-| parallel 2>> log/"$me".stderr.log \
+echo "Start  $(/bin/date +'%F %T')" 1>&2 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log
+
+if [ -x ../bin/scrape-linux-amd64-0.2.0 ] ; then
+  ../bin/scrape-linux-amd64-0.2.0 2>> log/"$me".stderr.log
+else
+  parallel --version >/dev/null || { echo "install 'parallel'" && exit 1;}
+
+  for scraper in stations/*/app/scraper.??
+  do
+    case "$scraper" in
+      *.rb)
+        echo "bundle exec $scraper --incremental"
+      ;;
+      *)
+        echo "$scraper --incremental"
+      ;;
+    esac
+  done \
+  | parallel 2>> log/"$me".stderr.log
+fi \
+| tee log/"$me".stdout.dat \
 | app/broadcast-render.lua --stdin 2>> log/"$me".stderr.log \
 1>> log/"$me".stdout.log
 
 nice app/calendar.lua stations/* podcasts/* 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log
 
-/bin/date 1>> log/"$me".stdout.log
+echo "Finish $(/bin/date +'%F %T')" 1>&2 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log

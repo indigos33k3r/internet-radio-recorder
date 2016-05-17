@@ -1,6 +1,6 @@
 #!/usr/bin/env lua
 --[[
--- Copyright (c) 2013-2015 Marcus Rohrmoser, http://purl.mro.name/internet-radio-recorder
+-- Copyright (c) 2013-2016 Marcus Rohrmoser, http://purl.mro.name/recorder
 --
 -- Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 -- associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -36,8 +36,11 @@ Usage:
   display this help info
   $ broadcast-render.lua --help
 
-  update/create broadcasts from meta data
+  update/create future broadcasts from meta data
   $ broadcast-render.lua --stdin
+
+  update/create all broadcasts from meta data
+  $ broadcast-render.lua --stdin --update-past
 ]])
   os.exit(0)
 end
@@ -67,7 +70,7 @@ if arg[1] == '--stdin' then
   if arg[2] == '--update-past' then time_limit_min = 0 end
   local process = function(meta)
     local bc = Broadcast.from_meta(meta)
-    if bc:dtstart() <= time_limit_min then return bc:filename('xml'),'ignored' end -- never overwrite already started or past broadcasts
+    if bc:dtstart() <= time_limit_min then return bc:filename('xml'),'ignored' end -- don't overwrite already started or past broadcasts
     bc:match_podcasts()
     return bc:save()
   end

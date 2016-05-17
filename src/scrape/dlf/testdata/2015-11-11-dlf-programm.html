@@ -1,0 +1,818 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de-DE" xml:lang="de-DE"><head><script type="text/javascript" src="http://www.deutschlandfunk.de/themes/dradio/script/jwplayer.js"> </script><meta name="stationcode" content="DLF"></meta><meta name="category" content="none"></meta><meta name="searchable" content="false"></meta><meta name="broadcast" content="none"></meta><title>Deutschlandfunk - Programmvorschau</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta><meta http-equiv="Content-Script-Type" content="text/javascript"></meta><meta http-equiv="X-UA-Compatible" content="IE=edge"></meta><link rel="shortcut icon" href="http://www.deutschlandfunk.de/favicon.ico"></link><meta name="date" content="2015-04-15T12:15:25+0200"></meta><meta name="robots" content="index,follow,noarchive"></meta><meta name="googlebot" content="noarchive"></meta><link rel="stylesheet" type="text/css" media="screen, projection" href="http://www.deutschlandfunk.de/themes/dradio/css.php?files=dlf2015.css,dlf2015.fonts.css,dlf2015.beitrag.css,dlf2015.chosen.css,dlf2015.jquery.bxslider.css,dlf2015.custom.css,gallery.css&amp;19078"></link><link rel="stylesheet" type="text/css" media="print" href="http://www.deutschlandfunk.de/themes/dradio/css.php?files=dlf2015.css,dlf2015.fonts.css,dlf2015.beitrag.css,dlf2015.chosen.css,dlf2015.jquery.bxslider.css,dlf2015.custom.css&amp;19078"></link><!--[if IE 9]><link rel="stylesheet" type="text/css" href="http://www.deutschlandfunk.de/themes/dradio/dlf_2015.ie9.css?19078" media="screen, projection"/><![endif]--><!--[if IE 8]><link rel="stylesheet" type="text/css" href="http://www.deutschlandfunk.de/themes/dradio/dlf_2015.ie8.css?19078" media="screen, projection"/><![endif]--><link rel="stylesheet" type="text/css" href="http://www.deutschlandfunk.de/themes/dradio/print.css?19078" media="print"></link><noscript><link rel="stylesheet" type="text/css" href="http://www.deutschlandfunk.de/themes/dradio/dlf2015.nojs.css?19078"></link></noscript><script type="text/javascript">
+        THEME_FILES = 'http://www.deutschlandfunk.de/themes/dradio/';
+      </script><script type="text/javascript" src="http://www.deutschlandfunk.de/themes/dradio/js.php?files=script/jquery-2.1.4.min.js,script/jquery-ui-1.11.3.min.js,script/jquery.cookie.js,script/mobileView.js,script/dlf2015/dlf2015.script.js,script/jquery.bxslider.min.js,script/chosen.jquery.min.js,script/dlf2015/dlf2015.custom.js,script/dlf-audioplayer.js,script/popup.js,script/jquery.lightboxMhtml.js,script/jquery.gallery.js,script/aod/jquery.mkdraod.interface.js&amp;19078"> </script><script type="text/javascript"><!--
+        if (!navigator.userAgent.match(/msie [6]/i)) {
+          $(function() {
+            if ( $('input.date').length > 0 ) {
+              $('input.date').datepicker('option', 'dayNames', ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag']);
+              $('input.date').datepicker('option', 'dayNamesShort', ['Son', 'Mon', 'Die', 'Mit', 'Don', 'Fre', 'Sam']);
+              $('input.date').datepicker('option', 'dayNamesMin', ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa']);
+              $('input.date').datepicker('option', 'monthNames', ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember']);
+              $('input.date').datepicker('option', 'monthNamesShort', ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez']);
+            }
+          });
+        }
+      
+      //--></script><script type="text/javascript" src="https://script.ioam.de/iam.js"></script><link rel="alternate nofollow" type="application/rss+xml" href="programmvorschau.281.de.rss"></link><meta property="og:site_name" content="Deutschlandfunk"></meta><meta property="og:locale" content="de_DE"></meta></head><body><div id="wrapper"><noindex><header class="dlf-floatbox"><div class="dlf-floatnavielement"><span class="menuicon"></span><h1><a href="/" class="menulogo"></a></h1><nav><ul class="dlf-floatnavi">
+  <li>
+    <a href="/nachrichten.353.de.html">Nachrichten</a>
+  </li>
+  <li>
+    <a href="/politik.1499.de.html">Politik</a>
+  </li>
+  <li>
+    <a href="/wirtschaft.1498.de.html">Wirtschaft</a>
+  </li>
+  <li>
+    <a href="/wissen.1497.de.html">Wissen</a>
+  </li>
+  <li>
+    <a href="/kultur.1495.de.html">Kultur</a>
+  </li>
+  <li>
+    <a href="/europa.1863.de.html">Europa</a>
+  </li>
+  <li>
+    <a href="/gesellschaft.1574.de.html">Gesellschaft</a>
+  </li>
+  <li>
+    <a href="/sport.1494.de.html">Sport</a>
+  </li>
+  <li>
+    <a href="/blogs.1884.de.html">Blogs</a>
+  </li>
+  <li class="dlf-floatsearch">
+    <form class="dlf-searchform" method="get" action="/suchergebnisse.448.de.html">
+      <input class="dlf-searchtext" name="search[word]" type="text" size="10" maxlength="255" placeholder="SUCHEN">
+      <input type="hidden" name="search[submit]" value="1">
+      <input type="hidden" name="search[withNews][]" value="WithNews">
+      <button class="dlf-searchbutton" name="dlf-searchbutton" type="submit" value="">
+        <img src="/themes/dradio/dlf2015/img/floatsearch_icon.png" alt="Suche">
+      </button>
+      <div class="search-reset"></div>
+    </form>
+  </li>
+</ul></nav><div class="dlf-floatarticle"><div class="clear"> </div></div><div class="dlf-livestream"><div class="dlf-player"><a href="#" class="liveplay" onclick="javascript:$(window).mkdraod_interface('openAODwithStream', $(window).mkdraod_interface('consts').stream.MKDRAOD_STREAM_DEUTSCHLANDFUNK);return false;"></a></div><div class="dlf-livesendung">Seit 14:30 Uhr <a href="die-nachrichten.353.de.html">Nachrichten</a>
+</div><div style="width:1px;height:1px;position:fixed;top:-9999px">
+  <div class="dlf-aod"> </div>
+</div><div class="dlf-player dlf-player-main" style="display:none" data-hidePlayerDelayInSeconds="10" data-textSpeed="40">
+  <a class="dlf-pausebutton dlf-player-state liveplay "> </a>
+  <div class="dlf-progress dlf-player-progressbar">
+    <div class="progress">
+      <div class="dlf-player-progressbar-text-outer percent">
+        <span class="percent dlf-player-progressbar-text-inner"> </span>
+        <span class="percent dlf-player-progressbar-text-inner" style="left:100%"> </span>
+      </div>
+      <div class="bar dlf-player-progressbar-runner"> </div>
+    </div>
+  </div>
+  <div class="dlf-playtime dlf-player-progressbar-time">0:00</div>
+  <a class="dlf-download dlf-player-download" href="#" target="_blank" type="application/octet-stream" download="download"> </a>
+</div>
+</div></div></header><script>
+      $(window).mkdraod_interface({
+        baseURL: 'http://srv.deutschlandradio.de/themes/dradio/script/aod/index.html',
+      });
+    </script><header><div class="dlf-header"><span class="dlf-date"><span>Mittwoch, </span>11.11.2015</span><nav><ul class="dlf-subnavigation">
+  <li>
+    <a href="/alle-sendungen.348.de.html">Sendungen</a>
+  </li>
+  <li>
+    <a href="/programmvorschau.281.de.html">Programm</a>
+  </li>
+  <li>
+    <a href="/hoeren.2055.de.html">Hören</a>
+  </li>
+  <li>
+    <a href="/tagesplaylist.278.de.html">Playlist</a>
+  </li>
+  <li>
+    <a href="http://www.deutschlandradio.de/hoererservice.359.de.html">Kontakt</a>
+  </li>
+  <li>
+    <a href="http://m.deutschlandfunk.de/">Mobilversion</a>
+  </li>
+</ul></nav></div><div class="dlf-headsocial"><ul>
+  <li>
+    <a href="http://facebook.com/deutschlandfunk" target="_blank" title="Deutschlandfunk bei Facebook"><img src="http://www.deutschlandfunk.de/media/files/a/acc84408d509040e44789910e222c4f5v1.jpg" class="dradioImage" style=" display: block; margin-left: auto;  margin-right: auto; margin-bottom: 9px; height: 25px;" alt="Deutschlandfunk bei Facebook" /></a>
+  </li>
+  <li>
+    <a href="http://twitter.com/dlf" target="_blank" title="Deutschlandfunk bei Twitter"><img src="http://www.deutschlandfunk.de/media/files/f/fc906a2ace8e5c312e235af2be3efde3v1.jpg" class="dradioImage" style=" display: block; margin-left: auto;  margin-right: auto; margin-bottom: 9px; height: 25px;" alt="Deutschlandfunk bei Twitter" /></a>
+  </li>
+  <li>
+    <a href="http://plus.google.com/101621968582875339372/posts" target="_blank" title="Deutschlandfunk bei Google+"><img src="http://www.deutschlandfunk.de/media/files/a/a29d760711a706fd244c653dc9456dbbv1.jpg" class="dradioImage" style=" display: block; margin-left: auto;  margin-right: auto; margin-bottom: 9px; height: 25px;" alt="Deutschlandfunk bei Google+" /></a>
+  </li>
+  <li>
+    <a href="http://instagram.com/deutschlandfunk/" target="_blank" title="Deutschlandfunk bei Instagram"><img src="http://www.deutschlandfunk.de/media/files/2/2269b3da2409689396fbb9ecda68b13ev1.jpg" class="dradioImage" style=" display: block; margin-left: auto;  margin-right: auto; margin-bottom: 9px; height: 25px;" alt="Deutschlandfunk bei Instagram" /></a>
+  </li>
+</ul></div><h1><a href="/" class="logo">Deutschlandfunk</a></h1><div class="dlf-livestream"><div class="dlf-live"><a href="#" class="livebutton" onclick="javascript:$(window).mkdraod_interface('openAODwithStream', $(window).mkdraod_interface('consts').stream.MKDRAOD_STREAM_DEUTSCHLANDFUNK);return false;">LIVE STREAM</a></div><div style="width:1px;height:1px;position:fixed;top:-9999px">
+  <div class="dlf-aod"> </div>
+</div><div class="dlf-player dlf-player-main" style="display:none" data-hidePlayerDelayInSeconds="10" data-textSpeed="40">
+  <a class="dlf-pausebutton dlf-player-state liveplay "> </a>
+  <div class="dlf-progress dlf-player-progressbar">
+    <div class="progress">
+      <div class="dlf-player-progressbar-text-outer percent">
+        <span class="percent dlf-player-progressbar-text-inner"> </span>
+        <span class="percent dlf-player-progressbar-text-inner" style="left:100%"> </span>
+      </div>
+      <div class="bar dlf-player-progressbar-runner"> </div>
+    </div>
+  </div>
+  <div class="dlf-playtime dlf-player-progressbar-time">0:00</div>
+  <a class="dlf-download dlf-player-download" href="#" target="_blank" type="application/octet-stream" download="download"> </a>
+</div>
+<div class="dlf-livesendung" id="dlf-player-jetzt-im-radio">Seit 14:30 Uhr <a href="die-nachrichten.353.de.html">Nachrichten</a>
+</div></div><div class="clear"></div><div class="dlf-navibar"><nav><ul class="dlf-mainnav">
+  <li>
+    <a href="/nachrichten.353.de.html">Nachrichten</a>
+  </li>
+  <li>
+    <a href="/politik.1499.de.html">Politik</a>
+  </li>
+  <li>
+    <a href="/wirtschaft.1498.de.html">Wirtschaft</a>
+  </li>
+  <li>
+    <a href="/wissen.1497.de.html">Wissen</a>
+  </li>
+  <li>
+    <a href="/kultur.1495.de.html">Kultur</a>
+  </li>
+  <li>
+    <a href="/europa.1863.de.html">Europa</a>
+  </li>
+  <li>
+    <a href="/gesellschaft.1574.de.html">Gesellschaft</a>
+  </li>
+  <li>
+    <a href="/sport.1494.de.html">Sport</a>
+  </li>
+  <li>
+    <a href="/blogs.1884.de.html">Blogs</a>
+  </li>
+</ul></nav><div class="dlf-search">
+  <form action="suchergebnisse.448.de.html" method="get" class="dlf-searchform">
+    <input type="hidden" name="search[submit]" value="1"/>
+    <input type="hidden" name="search[withNews][]" value="WithNews"/>
+    <input size="10" class="dlf-searchtext" type="text" name="search[word]" value="" autocomplete="off" title="Seiten durchsuchen" placeholder="SUCHEN"/>
+    <button type="submit" class="dlf-searchbutton">
+      <img src="http://www.deutschlandfunk.de/themes/dradio/dlf2015/img/search_icon.png" alt="Suche"/>
+    </button>
+    <div class="search-reset">
+      
+    </div>
+  </form>
+</div><script type="text/javascript">
+      var searchConfigData = {
+        core: 'live'
+      };
+    </script>
+</div></header></noindex><div class="content padding10"><section class="dlf-container"><div class="dlf-contentleft nomargin"><div class="contenttitlebox bigtype border nomargin"><h2 class="contenttitle">Programm: Vor- und Rückschau</h2><span class="contenttitle-date">Mittwoch, 11.11.2015</span></div><table><tbody><tr id="anc9999"><td class="time">Seit <a href="#anc1430">14:30 Uhr</a><a id="9999" name="9999"></a></td><td class="description"><h3><a title="Nachrichten" href="die-nachrichten.353.de.html">Nachrichten</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CNachrichten%7C127%7C20151111143000%7C20151111143500%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3></td></tr><tr id="anc0000" class="overrideFirst"><td class="time">00:00 Uhr<a id="0000" name="0000"></a></td><td class="description"><h3><a title="Nachrichten" href="die-nachrichten.353.de.html">Nachrichten</a><a class="psradio" title="" href=""></a></h3></td></tr><tr id="anc0005"><td class="time">00:05 Uhr<a id="0005" name="0005"></a></td><td class="description"><h3><a title="Deutschlandfunk Radionacht" href="deutschlandfunk-radionacht.1746.de.html">Deutschlandfunk Radionacht</a><a class="psradio" title="" href=""></a></h3><p class="subDescription"><span class="title">00:05</span> <span class="title">Fazit</span><p>Kultur vom Tage<br>(Wdh.)</p></p><p class="subDescription"><span class="title">01:00</span> <span class="title"><a href="die-nachrichten.353.de.html" title="Nachrichten">Nachrichten</a> </span></p><p class="subDescription"><span class="title">01:05</span> <span class="title"><a href="kalenderblatt.870.de.html" title="Kalenderblatt">Kalenderblatt</a> </span></p><p class="subDescription"><span class="title">01:10</span> <span class="title"><a href="hintergrund.723.de.html" title="Hintergrund">Hintergrund</a> </span><p>(Wdh.)</p></p><p class="subDescription"><span class="title">01:30</span> <span class="title"><a href="tag-fuer-tag.885.de.html" title="Tag für Tag">Tag für Tag</a> </span><p>Aus Religion und Gesellschaft<br>(Wdh.)</p></p><p class="subDescription"><span class="title">02:00</span> <span class="title"><a href="die-nachrichten.353.de.html" title="Nachrichten">Nachrichten</a> </span></p><p class="subDescription"><span class="title">02:05</span> <span class="title"><a href="kommentare-und-themen-der-woche.719.de.html" title="Kommentare und Themen der Woche">Kommentare und Themen der Woche</a> </span><p>(Wdh.)</p></p><p class="subDescription"><span class="title">02:10</span> <span class="title"><a href="aus-religion-und-gesellschaft.777.de.html" title="Aus Religion und Gesellschaft">Aus Religion und Gesellschaft</a> </span></p><p class="subDescription"><span class="title">02:30</span> <span class="title">Lesezeit</span></p><p class="subDescription"><span class="title">02:57</span> <span class="title"><a href="sternzeit.731.de.html" title="Sternzeit">Sternzeit</a> </span></p><p class="subDescription"><span class="title">03:00</span> <span class="title"><a href="die-nachrichten.353.de.html" title="Nachrichten">Nachrichten</a> </span></p><p class="subDescription"><span class="title">03:05</span> <span class="title">Weltzeit</span><p>(Wdh.)</p></p><p class="subDescription"><span class="title">03:30</span> <span class="title"><a href="forschung-aktuell.675.de.html" title="Forschung aktuell">Forschung aktuell</a> </span><p>Aus Naturwissenschaft und Technik<br>(Wdh.)</p></p><p class="subDescription"><span class="title">03:52</span> <span class="title"><a href="kalenderblatt.870.de.html" title="Kalenderblatt">Kalenderblatt</a> </span></p><p class="subDescription"><span class="title">04:00</span> <span class="title"><a href="die-nachrichten.353.de.html" title="Nachrichten">Nachrichten</a> </span></p><p class="subDescription"><span class="title">04:05</span> <span class="title">Radionacht Information</span><p>Nachrichten um 4:30 Uhr</p></p></td></tr><tr id="anc0500"><td class="time">05:00 Uhr<a id="0500" name="0500"></a></td><td class="description"><h3><a title="Nachrichten" href="die-nachrichten.353.de.html">Nachrichten</a><a class="psradio" title="" href=""></a></h3></td></tr><tr id="anc0505"><td class="time">05:05 Uhr<a id="0505" name="0505"></a></td><td class="description"><h3><a title="Informationen am Morgen" href="informationen-am-morgen.1764.de.html">Informationen am Morgen</a><a class="psradio" title="" href=""></a></h3><p>Berichte, Interviews, Reportagen</p><p></p><p class="subDescription"><span class="title">05:30</span> <span class="title"><a href="die-nachrichten.353.de.html" title="Nachrichten">Nachrichten</a> </span></p><p class="subDescription"><span class="title">05:35</span> <span class="title"><a href="aktuelle-presseschau.354.de.html" title="Presseschau">Presseschau</a> </span><p>Aus deutschen Zeitungen</p></p><p class="subDescription"><span class="title">06:00</span> <span class="title"><a href="die-nachrichten.353.de.html" title="Nachrichten">Nachrichten</a> </span></p><p class="subDescription"><span class="title">06:30</span> <span class="title"><a href="die-nachrichten.353.de.html" title="Nachrichten">Nachrichten</a> </span></p><p class="subDescription"><span class="title">06:35</span> <span class="title"><a href="kirchensendungen.915.de.html" title="Morgenandacht">Morgenandacht</a> </span><p>Pfarrer Lutz Nehk, Berlin</p></p><p class="subDescription"><span class="title">06:50</span> <span class="title"><a href="interview.693.de.html" title="Interview">Interview</a> </span></p><p class="subDescription"><span class="title">07:00</span> <span class="title"><a href="die-nachrichten.353.de.html" title="Nachrichten">Nachrichten</a> </span></p><p class="subDescription"><span class="title">07:05</span> <span class="title"><a href="aktuelle-presseschau.354.de.html" title="Presseschau">Presseschau</a> </span><p>Aus deutschen Zeitungen</p></p><p class="subDescription"><span class="title">07:15</span> <span class="title"><a href="interview.693.de.html" title="Interview">Interview</a> </span></p><p class="subDescription"><span class="title">07:30</span> <span class="title"><a href="die-nachrichten.353.de.html" title="Nachrichten">Nachrichten</a> </span></p><p class="subDescription"><span class="title">07:35</span> <span class="title"><a href="boerse-am-morgen.1774.de.html" title="Börse">Börse</a> </span></p><p class="subDescription"><span class="title">07:56</span> <span class="title"><a href="sport-am-wochenende.1345.de.html" title="Sport am Morgen">Sport am Morgen</a> </span></p><p class="subDescription"><span class="title">08:00</span> <span class="title"><a href="die-nachrichten.353.de.html" title="Nachrichten">Nachrichten</a> </span></p><p class="subDescription"><span class="title">08:10</span> <span class="title"><a href="interview.693.de.html" title="Interview">Interview</a> </span></p><p class="subDescription"><span class="title">08:30</span> <span class="title"><a href="die-nachrichten.353.de.html" title="Nachrichten">Nachrichten</a> </span></p><p class="subDescription"><span class="title">08:35</span> <span class="title">Wirtschaft</span></p><p class="subDescription"><span class="title">08:47</span> <span class="title"><a href="sport-am-wochenende.1345.de.html" title="Sport am Morgen">Sport am Morgen</a> </span></p><p class="subDescription"><span class="title">08:50</span> <span class="title"><a href="aktuelle-presseschau.354.de.html" title="Presseschau">Presseschau</a> </span><p>Aus deutschen und ausländischen Zeitungen<br><br>Am Mikrofon: Christiane Kaess</p></p></td></tr><tr id="anc0900"><td class="time">09:00 Uhr<a id="0900" name="0900"></a></td><td class="description"><h3><a title="Nachrichten" href="die-nachrichten.353.de.html">Nachrichten</a><a class="psradio" title="" href=""></a></h3></td></tr><tr id="anc0905"><td class="time">09:05 Uhr<a id="0905" name="0905"></a></td><td class="description"><h3><a title="Kalenderblatt" href="kalenderblatt.870.de.html">Kalenderblatt</a><a class="psradio" title="" href=""></a></h3><p>Vor 25 Jahren: Der griechische Lyriker Jannis Ritsos gestorben</p><p></p></td></tr><tr id="anc0910"><td class="time">09:10 Uhr<a id="0910" name="0910"></a></td><td class="description"><h3><a title="Europa heute" href="europa-heute.794.de.html">Europa heute</a><a class="psradio" title="" href=""></a></h3><p>Malta: Zur Situation der Flüchtlinge im Umfeld des EU-Afrika-Gipfels<br><br>Rumänien: Kämpferin für Gerechtigkeit - Die Antikorruptionsbehörde DNA<br><br>Ukraine: Der "vergessene" Krieg und die Mühen der Ebene<br><br>Am Mikrofon: Robert Baag</p><p></p></td></tr><tr id="anc0930"><td class="time">09:30 Uhr<a id="0930" name="0930"></a></td><td class="description"><h3><a title="Nachrichten" href="die-nachrichten.353.de.html">Nachrichten</a><a class="psradio" title="" href=""></a></h3></td></tr><tr id="anc0935"><td class="time">09:35 Uhr<a id="0935" name="0935"></a></td><td class="description"><h3><a title="Tag für Tag" href="tag-fuer-tag.885.de.html">Tag für Tag</a><a class="psradio" title="" href=""></a></h3><p>Aus Religion und Gesellschaft<br><br>Ideen eines liberalen Islams<br>Der Publizist Ziauddin Sardar ist mit seinen BBC-Produktionen und seinen Büchern einer der einflussreichsten muslimischen Intellektuellen in Großbritannien<br><br>Meldungen aus Religion und Gesellschaft<br><br>Augustinus - der Vater der abendländischen Theologie<br>Teil 3: Der Bischof von Hippo und der Staat im Dienst der Kirche<br><br>Am Mikrofon: Susanne Fritz</p><p></p></td></tr><tr id="anc1000"><td class="time">10:00 Uhr<a id="1000" name="1000"></a></td><td class="description"><h3><a title="Nachrichten" href="die-nachrichten.353.de.html">Nachrichten</a><a class="psradio" title="" href=""></a></h3></td></tr><tr id="anc1010"><td class="time">10:10 Uhr<a id="1010" name="1010"></a></td><td class="description"><h3><a title="Länderzeit" href="laenderzeit.1770.de.html">Länderzeit</a><a class="psradio" title="" href=""></a></h3><p>Aussichtsloser Kampf?<br>Rheinland-Pfalz geht verstärkt gegen wachsende Internet-Kriminalität vor<br><br>Gesprächsgäste:<br>Jürgen Brauer, Leiter der Generalstaatsanwaltschaft Koblenz <br>Randolf Stich, Staatssekretär im  Ministerium des Innern für Sport und Infrastruktur, Rheinland-Pfalz<br>Deborah Klein, Bundesverband der Deutschen Industrie e.V., Referentin IT-Sicherheit, Digitalisierung und industrielle Wertschöpfungsstrukturen<br>Barbara Steinhöfel, Referentin für Telekommunikation und Medien, Verbraucherzentrale Rheinland-Pfalz e.V.<br><br>Am Mikrofon: Petra Ensminger<br>Hörertel.: 00800 - 4464 4464<br>laenderzeit@deutschlandfunk.de</p><p>Wir hören sie nicht, wir sehen sie nicht, unbemerkt greifen sie uns an, stehlen Daten, suchen Informationen: Kriminelle im Netz. Wie viele Angriffe es gibt, kann nur schwer ermittelt werden, aber das Deutsche Institut für Wirtschaftsforschung geht nach einer breit angelegten Befragung davon aus, dass jeder fünfte Bürger hierzulande bereits Opfer einer Attacke war. Und nicht nur Privatpersonen sind betroffen. Deutsche Unternehmen tun gut daran, sich gegen Cyberangriffe zu rüsten. Das hat auch die Bundesregierung im Blick und nach dem Hacker-Angriff auf den Bundestag ein IT-Sicherheitsgesetz beschlossen. Doch was heißt Sicherheit? Gibt es die im weltweiten Datennetz? Rheinland-Pfalz und mehrere andere Bundesländer haben eigene Stellen eingerichtet, in denen es ausschließlich um Ermittlungen im Bereich Cybercrime geht. Was aber können die Mitarbeiter der Cybercrime-Stellen tatsächlich ausrichten?</p><div style="margin-bottom: 8px" class="articleDetailLink"><a href="rheinland-pfalz-kampf-gegen-wachsende-internet-kriminalitaet.1771.de.html?dram:article_id=336501">Kampf gegen wachsende Internet-Kriminalität</a></div><p class="subDescription"><span class="title">10:30</span> <span class="title"><a href="die-nachrichten.353.de.html" title="Nachrichten">Nachrichten</a> </span></p><p class="subDescription"><span class="title">11:00</span> <span class="title"><a href="die-nachrichten.353.de.html" title="Nachrichten">Nachrichten</a> </span></p></td></tr><tr id="anc1130"><td class="time">11:30 Uhr<a id="1130" name="1130"></a></td><td class="description"><h3><a title="Nachrichten" href="die-nachrichten.353.de.html">Nachrichten</a><a class="psradio" title="" href=""></a></h3></td></tr><tr id="anc1135"><td class="time">11:35 Uhr<a id="1135" name="1135"></a></td><td class="description"><h3><a title="Umwelt und Verbraucher" href="umwelt-und-verbraucher.696.de.html">Umwelt und Verbraucher</a><a class="psradio" title="" href=""></a></h3><p>Bundesratsinitiative: Mehr Schutz gegen Fluglärm<br><br>World Ocean Review: Wie wir unsere Meere nachhaltig nutzen können<br><br>Am Mikrofon: Stefan Römermann</p><p></p><p class="subDescription"><span class="title">11:55</span> <span class="title"><a href="verbrauchertipp.734.de.html" title="Verbrauchertipp">Verbrauchertipp</a> </span><p>Cabrios winterfest machen</p></p></td></tr><tr id="anc1200"><td class="time">12:00 Uhr<a id="1200" name="1200"></a></td><td class="description"><h3><a title="Nachrichten" href="die-nachrichten.353.de.html">Nachrichten</a><a class="psradio" title="" href=""></a></h3></td></tr><tr id="anc1210"><td class="time">12:10 Uhr<a id="1210" name="1210"></a></td><td class="description"><h3><a title="Informationen am Mittag" href="informationen-am-mittag.1765.de.html">Informationen am Mittag</a><a class="psradio" title="" href=""></a></h3><p>Berichte, Interviews, Musik<br>Flüchtlingskrise: Chaostage in der GroKo<br>Interview mit Gunther Krichbaum, Europaausschuss des BT<br><br>Trauer um Helmut Schmidt<br><br>Chaos bei der Lufthansa<br><br>Eon schreibt Milliardenverluste<br><br>Flüchtlingselend in Eritrea<br><br>BND spioniert gegen eigene Diplomaten<br><br>Wirtschaftsgutachten der fünf Weisen<br><br>EU-Afrika-Gipfel<br><br>Slowenien baut Grenzzaun<br><br>NN Druck auf Zwielichtgestalt Beckenbauer<br><br>Am Mikrofon: Martin Zagatta</p><p></p><p class="subDescription"><span class="title">12:30</span> <span class="title"><a href="die-nachrichten.353.de.html" title="Nachrichten">Nachrichten</a> </span></p><p class="subDescription"><span class="title">12:50</span> <span class="title"><a href="internationale-presseschau.435.de.html" title="Internationale Presseschau">Internationale Presseschau</a> </span></p><p class="subDescription"><span class="title">13:00</span> <span class="title"><a href="die-nachrichten.353.de.html" title="Nachrichten">Nachrichten</a> </span></p></td></tr><tr id="anc1330"><td class="time">13:30 Uhr<a id="1330" name="1330"></a></td><td class="description"><h3><a title="Nachrichten" href="die-nachrichten.353.de.html">Nachrichten</a><a class="psradio" title="" href=""></a></h3></td></tr><tr id="anc1335"><td class="time">13:35 Uhr<a id="1335" name="1335"></a></td><td class="description"><h3><a title="Wirtschaft am Mittag" href="wirtschaft-am-mittag.765.de.html">Wirtschaft am Mittag</a><a class="psradio" title="" href=""></a></h3><p>Milliardenverlust bei Eon <br><br>Börsenbericht, darin: Interview mit Thomas Deser Union Investment zu Eon/RWE <br><br>Fehlgriff in der IT - Deutsche Post meldet Gewinneinbruch <br><br>Gutes Sommergeschäft und trotzdem angeschlagen - Quartalsgewinn bei Airberlin <br><br>Wirtschaftsnachrichten <br><br>Wirtschaftspresseschau</p><p></p><p class="subDescription"><span class="title">13:56</span> <span class="title"><a href="wirtschaftspresseschau.436.de.html" title="Wirtschaftspresseschau">Wirtschaftspresseschau</a> </span></p></td></tr><tr id="anc1400"><td class="time">14:00 Uhr<a id="1400" name="1400"></a></td><td class="description"><h3><a title="Nachrichten" href="die-nachrichten.353.de.html">Nachrichten</a><a class="psradio" title="" href=""></a></h3></td></tr><tr id="anc1410"><td class="time">14:10 Uhr<a id="1410" name="1410"></a></td><td class="description"><h3><a title="Deutschland heute" href="deutschland-heute.1665.de.html">Deutschland heute</a><a class="psradio" title="" href=""></a></h3><p>Schweigeminute für Helmut Schmidt: Hamburg trauert um seinen Ehrenbürger <br><br>In Meck-Pomm gestrandet: Schweden lehnt Flüchtlinge aus Deutschland ab<br><br>Neue Nachbarn im Pfarrhaus: Kirchengemeinden in NRW nehmen Flüchtlinge auf<br><br>Am Mikrofon: Sarah Zerback</p><p></p></td></tr><tr id="anc1430"><td class="time">14:30 Uhr<a id="1430" name="1430"></a></td><td class="description"><h3><a title="Nachrichten" href="die-nachrichten.353.de.html">Nachrichten</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CNachrichten%7C127%7C20151111143000%7C20151111143500%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3></td></tr><tr id="anc1435"><td class="time">14:35 Uhr<a id="1435" name="1435"></a></td><td class="description"><h3><a title="Campus &amp; Karriere" href="campus-karriere.679.de.html">Campus &amp; Karriere</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CCampus+%26amp%3B+Karriere%7C127%7C20151111143500%7C20151111150000%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3><p>Das Bildungsmagazin<br>Drittmittel erfolgreich einwerben<br>Beim Schreiben von Anträgen für Forschungsgelder gibt es viele Regeln zu beachten.<br>Interview mit Enke Zimmermann, Coaching für junge Forscher.<br><br>Betriebspraktikum an der Uni <br>Anstelle eines Betriebspraktikums können sich Schüler in Hannover auch den Hochschulbetrieb anschauen. <br><br>Deutsch-Französische Arbeitsvermittlung<br>Zwischen den beiden Ländern wird Arbeit in speziellen Angeboten auch über die Grenze hinweg vermittelt.<br><br>Am Mikrofon: Michael Böddeker</p><p></p></td></tr><tr id="anc1500"><td class="time">15:00 Uhr<a id="1500" name="1500"></a></td><td class="description"><h3><a title="Nachrichten" href="die-nachrichten.353.de.html">Nachrichten</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CNachrichten%7C127%7C20151111150000%7C20151111150500%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3></td></tr><tr id="anc1505"><td class="time">15:05 Uhr<a id="1505" name="1505"></a></td><td class="description"><h3><a title="Corso - Kultur nach 3" href="corso.806.de.html">Corso - Kultur nach 3</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CCorso+-+Kultur+nach+3%7C127%7C20151111150500%7C20151111160000%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3><p>Film der Woche:<br>„Steve Jobs“ von Danny Boyle<br><br>Neue Filme:<br>„Alki Alki“ von Axel Ranisch,<br>„Virgin Mountain“  von Dagur Kári,<br>„Irrational  Man“ von Woody Allan,<br>„Eisenstein in Guanajuato“ von Peter Greenaway<br><br>Regisseur Peter Greenaway im Corso-Gespräch mit Florian Fricke über seine Sergej Eisenstein Filmographie „Eisenstein in Guanajuato“.<br><br>„Kriegerin“<br>Der Film von David Wnendt kommt auf die Bühne im Gripstheater.<br><br>Am Mikrofon: Marietta Schwarz</p><p></p><p class="subDescription"><span class="title">15:30</span> <span class="title"><a href="die-nachrichten.353.de.html" title="Nachrichten">Nachrichten</a>  <a href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CNachrichten%7C127%7C20151111153000%7C20151111153500%7C0%7C0%7C0%7C0%7C0" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder"><img src="http://www.deutschlandfunk.de/themes/dradio//img/reddot.gif" border="0"></img></a></span></p></td></tr><tr id="anc1600"><td class="time">16:00 Uhr<a id="1600" name="1600"></a></td><td class="description"><h3><a title="Nachrichten" href="die-nachrichten.353.de.html">Nachrichten</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CNachrichten%7C127%7C20151111160000%7C20151111161000%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3></td></tr><tr id="anc1610"><td class="time">16:10 Uhr<a id="1610" name="1610"></a></td><td class="description"><h3><a title="Büchermarkt" href="buechermarkt.699.de.html">Büchermarkt</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CB%C3%BCchermarkt%7C127%7C20151111161000%7C20151111163000%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3><p>Aus dem literarischen Leben<br>Alain Mabanckous: Morgen werde ich zwanzig<br>(Verlagsbuchhandlung Liebeskind, München)<br>Eine Besprechung von Cornelius Wüllenkemper<br><br>Boris Hillen: Agfa Leverkusen<br>(S. Fischer Verlag, Frankfurt a.M.)<br>Ein Beitrag von Christoph Schröder<br><br>Stephan Wackwitz: Die Bilder meiner Mutter<br>(S. Fischer Verlag, Frankfurt a.M.)<br>Eine Rezension von Michael Opitz<br><br>Am Mikrofon: Hubert Winkels</p><p></p></td></tr><tr id="anc1630"><td class="time">16:30 Uhr<a id="1630" name="1630"></a></td><td class="description"><h3><a title="Nachrichten" href="die-nachrichten.353.de.html">Nachrichten</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CNachrichten%7C127%7C20151111163000%7C20151111163500%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3></td></tr><tr id="anc1635"><td class="time">16:35 Uhr<a id="1635" name="1635"></a></td><td class="description"><h3><a title="Forschung aktuell" href="forschung-aktuell.675.de.html">Forschung aktuell</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CForschung+aktuell%7C127%7C20151111163500%7C20151111170000%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3><p>Aus Naturwissenschaft und Technik<br>Wasser in der Wüste<br>In der Sahara gab's einst ein ausgedehntes Flusssystem<br><br>Cyber-Defence<br>Konferenzbericht aus Bonn<br><br>Meldungen aus der Wissenschaft<br><br>Sternzeit, 11. November 2015<br>Neumond zu Divali<br><br>Am Mikrofon: Ralf Krauter</p><p></p></td></tr><tr id="anc1700"><td class="time">17:00 Uhr<a id="1700" name="1700"></a></td><td class="description"><h3><a title="Nachrichten" href="die-nachrichten.353.de.html">Nachrichten</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CNachrichten%7C127%7C20151111170000%7C20151111170500%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3></td></tr><tr id="anc1705"><td class="time">17:05 Uhr<a id="1705" name="1705"></a></td><td class="description"><h3><a title="Wirtschaft und Gesellschaft" href="wirtschaft-und-gesellschaft.768.de.html">Wirtschaft und Gesellschaft</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CWirtschaft+und+Gesellschaft%7C127%7C20151111170500%7C20151111173000%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3></td></tr><tr id="anc1730"><td class="time">17:30 Uhr<a id="1730" name="1730"></a></td><td class="description"><h3><a title="Nachrichten" href="die-nachrichten.353.de.html">Nachrichten</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CNachrichten%7C127%7C20151111173000%7C20151111173500%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3></td></tr><tr id="anc1735"><td class="time">17:35 Uhr<a id="1735" name="1735"></a></td><td class="description"><h3><a title="Kultur heute" href="kultur-heute.690.de.html">Kultur heute</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CKultur+heute%7C127%7C20151111173500%7C20151111180000%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3><p>Berichte, Meinungen, Rezensionen</p><p></p></td></tr><tr id="anc1800"><td class="time">18:00 Uhr<a id="1800" name="1800"></a></td><td class="description"><h3><a title="Nachrichten" href="die-nachrichten.353.de.html">Nachrichten</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CNachrichten%7C127%7C20151111180000%7C20151111181000%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3></td></tr><tr id="anc1810"><td class="time">18:10 Uhr<a id="1810" name="1810"></a></td><td class="description"><h3><a title="Informationen am Abend" href="informationen-am-abend.1767.de.html">Informationen am Abend</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CInformationen+am+Abend%7C127%7C20151111181000%7C20151111184000%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3></td></tr><tr id="anc1840"><td class="time">18:40 Uhr<a id="1840" name="1840"></a></td><td class="description"><h3><a title="Hintergrund" href="hintergrund.723.de.html">Hintergrund</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CHintergrund%7C127%7C20151111184000%7C20151111190000%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3></td></tr><tr id="anc1900"><td class="time">19:00 Uhr<a id="1900" name="1900"></a></td><td class="description"><h3><a title="Nachrichten" href="die-nachrichten.353.de.html">Nachrichten</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CNachrichten%7C127%7C20151111190000%7C20151111190500%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3></td></tr><tr id="anc1905"><td class="time">19:05 Uhr<a id="1905" name="1905"></a></td><td class="description"><h3><a title="Kommentar" href="kommentare-und-themen-der-woche.719.de.html">Kommentar</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CKommentar%7C127%7C20151111190500%7C20151111191500%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3></td></tr><tr id="anc1915"><td class="time">19:15 Uhr<a id="1915" name="1915"></a></td><td class="description"><h3><a title="Zur Diskussion" href="zur-diskussion.1756.de.html">Zur Diskussion</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CZur+Diskussion%7C127%7C20151111191500%7C20151111200000%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3><p>Die Digitalisierung der Gesellschaft:<br>Die Nachhaltigkeit eines Megatrends<br><br>Diskussionsleitung:<br>Klemens Kindermann, Deutschlandradio<br><br>Es diskutieren:<br>Rüdiger Grube, Deutsche Bahn AG<br>Hildegard Müller, Bundesverband der Energie- und Wasserwirtschaft BDEW<br>Stephan Rammler, Hochschule für Bildende Künste Braunschweig HBK<br><br>Aufzeichnung einer Podiumsdiskussion vom Samstag, 7. November 2015, aus dem Colosseum Theater Essen</p><p></p><div style="margin-bottom: 8px" class="articleDetailLink"><a href="digitalisierung-der-gesellschaft-die-nachhaltigkeit-eines.2011.de.html?dram:article_id=336499">Die Nachhaltigkeit eines Megatrends</a></div></td></tr><tr id="anc2000"><td class="time">20:00 Uhr<a id="2000" name="2000"></a></td><td class="description"><h3><a title="Nachrichten" href="die-nachrichten.353.de.html">Nachrichten</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CNachrichten%7C127%7C20151111200000%7C20151111201000%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3></td></tr><tr id="anc2010"><td class="time">20:10 Uhr<a id="2010" name="2010"></a></td><td class="description"><h3><a title="Aus Religion und Gesellschaft" href="aus-religion-und-gesellschaft.777.de.html">Aus Religion und Gesellschaft</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CAus+Religion+und+Gesellschaft%7C127%7C20151111201000%7C20151111203000%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3><p>Begegnungen im Jenseits<br>Reiseskizzen aus Dantes Göttlicher Komödie<br>Teil 2: Inferno Station 2<br>Das Abenteuer, die Welt in ihrer ganzen Wirklichkeit zu entdecken<br>Von Rüdiger Achenbach<br>(Teil 3 am 18.11.15)</p><p></p></td></tr><tr id="anc2030"><td class="time">20:30 Uhr<a id="2030" name="2030"></a></td><td class="description"><h3>Lesezeit<a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CLesezeit%7C127%7C20151111203000%7C20151111210000%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3><p>Jackie Thomae: "Momente der Klarheit" (2/2)</p><p>MIt 43 Jahren das erste literarische Buch schreiben, sofort den Nerv des gegenwärtigen großstädtischen Lebens treffen, die Qualen des Hedonismus, die Abgründe der Medienglanzoberflächen und das in einem leichten federnden Stil, in einem guten Dutzend zusammenhängender Episoden, mit gutem Timing und der feinen Pointe nicht abgeneigt - das ist der Berliner Autorin Jackie Thomae jetzt mit ihrem reigenartigen Episodenromen "Momente der Klarheit" gelungen. <br>Jackie Thomae, 1972 in Halle an der Saale geboren, ist Journalistin und Fernsehautorin. Gemeinsam mit Heike Blümner schrieb sie den Bestseller "Eine Frau. Ein Buch" (2008). Und eine auf Interviews beruhende große buchförmige Reportage über das Älterwerden: "Let´s face it". Und jetzt die "Momente der Klarheit". Hart, komisch, traurig, wahr: eine unromantische Komödie über Liebe heute - und über Menschen, denen sie abhandenkommt: Engelhardt nimmt Anlauf und verlässt die Party durch das Fenster im ersten Stock. Seine beste Freundin Maren trinkt nicht mehr und verwandelt sich in ihr höheres Ich. Marens Ex-Lover Clemens fühlt sich mittelmäßig, hat dafür aber originellen Sex, und Bender, auf dessen Hochzeit sich alle treffen, regelt seine Angelegenheiten und verschwindet, wahrscheinlich für immer. Allen gemeinsam ist, dass sie rastlos und unglücklich sind, obwohl es ihnen eigentlich ganz gut geht. Und dass sie ihre Liebe in einem hellen Moment als das sehen, was sie ist, nämlich vorbei. Jackie Thomaes Debütroman, hart und komisch, ist eine unromantisch kaschierte romantische Komödie über die menschliche Sehnsucht in den Städten von heute. Jackie Thomae liest nun eine weitere Geschichten aus "Momente der Klarheit", die Titelgeschichte nämlich.</p></td></tr><tr id="anc2100"><td class="time">21:00 Uhr<a id="2100" name="2100"></a></td><td class="description"><h3><a title="Nachrichten" href="die-nachrichten.353.de.html">Nachrichten</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CNachrichten%7C127%7C20151111210000%7C20151111210500%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3></td></tr><tr id="anc2105"><td class="time">21:05 Uhr<a id="2105" name="2105"></a></td><td class="description"><h3><a title="Querköpfe" href="querkoepfe.843.de.html">Querköpfe</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CQuerk%C3%B6pfe%7C127%7C20151111210500%7C20151111220000%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3><p>Kabarett, Comedy &amp; schräge Lieder<br>Menschen mögen, Sachen sagen, Lieder singen<br>Die Hamburger Künstlerin Katie Freudenschuss<br>Von Anja Buchmann</p><p>Katie Freudenschuss - mit diesem Namen hatte die Hamburgerin nach eigener Aussage nur drei Berufsmöglichkeiten: Dealerin, Pornodarstellerin oder Künstlerin. In den ersten beiden Jobmodellen war sie nicht qualifiziert genug, sodass sie sich für Plan C entschieden hat. Ihre musikalische Basis legte Katie Freudenschuss im jugendlichen Alter mit ihrer Farfisaorgel namens Melanie. Über diverse Bandprojekte ging es schließlich aus Hessen nach Hamburg, wo sie den Popkurs an der Musikhochschule besuchte. Nachdem sie einige Zeit nebenberuflich als Hamburgs schlechteste Kellnerin agierte, konnte die Künstlerin allmählich im musikalischen Feld Fuß fassen: Sie spielte und sang für und mit Dirk Darmstädter, Klaus Lage oder Tic Tac Toe und ist Keyboarderin in der Tourband von Lena Meyer-Landrut. Sie schreibt Songs für andere und immer mehr auch für sich und entdeckt zusätzlich ihr komödiantisches Talent. 'Bis Hollywood is eh zu weit' heißt ihr Solodebüt, in dem sie als "Sachen sagende Songschreiberin" auf die Bühne tritt. Irgendwo zwischen Melancholie und Sarkasmus, Menschen- und Alltagsbeobachtungen und kleinen Hollywood-Momenten, etwa wenn Freudenschuss den umgetexteten Tom-Waits-Song 'Schiri, we know where your car is parked' mit Reibeisenstimme ins Mikro knarzt.</p><div style="margin-bottom: 8px" class="articleDetailLink"><a href="menschen-moegen-sachen-sagen-lieder-singen-die-hamburger.844.de.html?dram:article_id=333738">Die Hamburger Künstlerin Katie Freudenschuss</a></div></td></tr><tr id="anc2200"><td class="time">22:00 Uhr<a id="2200" name="2200"></a></td><td class="description"><h3><a title="Nachrichten" href="die-nachrichten.353.de.html">Nachrichten</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CNachrichten%7C127%7C20151111220000%7C20151111220500%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3></td></tr><tr id="anc2205"><td class="time">22:05 Uhr<a id="2205" name="2205"></a></td><td class="description"><h3><a title="Musikforum" href="musikforum.834.de.html">Musikforum</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CMusikforum%7C127%7C20151111220500%7C20151111225000%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3><p>Bläserfestival Ma'alot 2015<br><br>Antonín Dvořák <br>'Amerikanisches Quartett' F-Dur, op. 96<br>bearbeitet für Bläserquintett<br><br>Ma'alot Quintett:<br>Stephanie Winker, Flöte<br>Christian Wetzel, Oboe<br>Ulf-Guido Schäfer, Klarinette <br>Sibylle Mahni, Horn<br>Volker Tessmann, Fagott<br><br>Aufnahme vom 10.5.15 vom Rittergut Störmede</p><p>Die Mission war klar: Als Antonín Dvořák Ende des 19. Jahrhunderts Direktor am New Yorker Konservatorium wurde, sollte er den Amerikanern zu einer eigenständigen Nationalmusik verhelfen. Dvořák blieb sich selbst dabei treu. Sein Amerikanisches Streichquartett hat wenig mit Spirituals und indigenen Regentänzen zu tun. Dafür umso mehr mit den beschwingten Rhythmen und Melodien der böhmischen Volksmusik. Wie es klingt, wenn fünf Bläser Dvořáks berühmtes Streichquartett spielen, das konnte das Publikum beim diesjährigen Bläserfestival Ma'alot im Rittergut Störmede erleben.</p></td></tr><tr id="anc2250"><td class="time">22:50 Uhr<a id="2250" name="2250"></a></td><td class="description"><h3><a title="Sport aktuell" href="sport-aktuell.889.de.html">Sport aktuell</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CSport+aktuell%7C127%7C20151111225000%7C20151111230000%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3></td></tr><tr id="anc2300"><td class="time">23:00 Uhr<a id="2300" name="2300"></a></td><td class="description"><h3><a title="Nachrichten" href="die-nachrichten.353.de.html">Nachrichten</a><a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CNachrichten%7C127%7C20151111230000%7C20151111231000%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3></td></tr><tr id="anc2310"><td class="time">23:10 Uhr<a id="2310" name="2310"></a></td><td class="description"><h3>Das war der Tag<a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CDas+war+der+Tag%7C127%7C20151111231000%7C20151111235700%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3><p>Journal vor Mitternacht</p><p></p></td></tr><tr id="anc2357"><td class="time">23:57 Uhr<a id="2357" name="2357"></a></td><td class="description"><h3>National- und Europahymne<a class="psradio" title="Sendung mitschneiden - Sie benötigen den kostenlosen dradio-Recorder" href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CNational-+und+Europahymne%7C127%7C20151111235700%7C20151111235900%7C0%7C0%7C0%7C0%7C0">aufnehmen</a></h3></td></tr></tbody></table></div><div class="dlf-contentright"><div class="dlf-sidebox transparent"><h4 class="dlf-sidetitle noborder">Auswahl nach Datum</h4><div class="dlf-calendar">
+  <div class="dlf-calendardates" data-boxid="168">
+    <span class="dlf-calendarmonth">
+      <select name="calendarmonth" id="calendarmonth" title="Monat">
+        <option value="programmvorschau.281.de.html?cal:month=1">Januar</option>
+        <option value="programmvorschau.281.de.html?cal:month=2">Februar</option>
+        <option value="programmvorschau.281.de.html?cal:month=3">März</option>
+        <option value="programmvorschau.281.de.html?cal:month=4">April</option>
+        <option value="programmvorschau.281.de.html?cal:month=5">Mai</option>
+        <option value="programmvorschau.281.de.html?cal:month=6">Juni</option>
+        <option value="programmvorschau.281.de.html?cal:month=7">Juli</option>
+        <option value="programmvorschau.281.de.html?cal:month=8">August</option>
+        <option value="programmvorschau.281.de.html?cal:month=9">September</option>
+        <option value="programmvorschau.281.de.html?cal:month=10">Oktober</option>
+        <option value="programmvorschau.281.de.html?cal:month=11" selected="selected">November</option>
+        <option value="programmvorschau.281.de.html?cal:month=12">Dezember</option>
+      </select>
+    </span>
+    <span class="dlf-calendaryear">
+      <select name="calendaryear" id="calendaryear" title="Jahr">
+        <option value="programmvorschau.281.de.html?cal:month=11&amp;cal:year=2016">2016</option>
+        <option value="programmvorschau.281.de.html?cal:month=11" selected="selected">2015</option>
+        <option value="programmvorschau.281.de.html?cal:month=11&amp;cal:year=2014">2014</option>
+        <option value="programmvorschau.281.de.html?cal:month=11&amp;cal:year=2013">2013</option>
+      </select>
+    </span>
+  </div>
+  <table class="cal">
+    <thead>
+      <tr>
+        <th>MO</th>
+        <th>DI</th>
+        <th>MI</th>
+        <th>DO</th>
+        <th>FR</th>
+        <th>SA</th>
+        <th>SO</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="disabled">
+          <a href="#" onclick="return false;">26</a>
+        </td>
+        <td class="disabled">
+          <a href="#" onclick="return false;">27</a>
+        </td>
+        <td class="disabled">
+          <a href="#" onclick="return false;">28</a>
+        </td>
+        <td class="disabled">
+          <a href="#" onclick="return false;">29</a>
+        </td>
+        <td class="disabled">
+          <a href="#" onclick="return false;">30</a>
+        </td>
+        <td class="disabled">
+          <a href="#" onclick="return false;">31</a>
+        </td>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=01.11.2015">1</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=02.11.2015">2</a>
+        </td>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=03.11.2015">3</a>
+        </td>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=04.11.2015">4</a>
+        </td>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=05.11.2015">5</a>
+        </td>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=06.11.2015">6</a>
+        </td>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=07.11.2015">7</a>
+        </td>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=08.11.2015">8</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=09.11.2015">9</a>
+        </td>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=10.11.2015">10</a>
+        </td>
+        <td class="auswahl">
+          <a href="programmvorschau.281.de.html?drbm:date=11.11.2015">11</a>
+        </td>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=12.11.2015">12</a>
+        </td>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=13.11.2015">13</a>
+        </td>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=14.11.2015">14</a>
+        </td>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=15.11.2015">15</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=16.11.2015">16</a>
+        </td>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=17.11.2015">17</a>
+        </td>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=18.11.2015">18</a>
+        </td>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=19.11.2015">19</a>
+        </td>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=20.11.2015">20</a>
+        </td>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=21.11.2015">21</a>
+        </td>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=22.11.2015">22</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=23.11.2015">23</a>
+        </td>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=24.11.2015">24</a>
+        </td>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=25.11.2015">25</a>
+        </td>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=26.11.2015">26</a>
+        </td>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=27.11.2015">27</a>
+        </td>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=28.11.2015">28</a>
+        </td>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=29.11.2015">29</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="active">
+          <a href="programmvorschau.281.de.html?drbm:date=30.11.2015">30</a>
+        </td>
+        <td class="disabled">
+          <a href="#" onclick="return false;">1</a>
+        </td>
+        <td class="disabled">
+          <a href="#" onclick="return false;">2</a>
+        </td>
+        <td class="disabled">
+          <a href="#" onclick="return false;">3</a>
+        </td>
+        <td class="disabled">
+          <a href="#" onclick="return false;">4</a>
+        </td>
+        <td class="disabled">
+          <a href="#" onclick="return false;">5</a>
+        </td>
+        <td class="disabled">
+          <a href="#" onclick="return false;">6</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</div><div class="dlf-sidebox"><h4 class="dlf-sidetitle"><a href="http://www.deutschlandradio.de/programmvorschau-als-pdf.427.de.html">Wochenvorschau als PDF</a></h4><article class="dlf-sidearticle sidebig smalltype"><p>
+  <a href="dlf-2015-45-pdf.media.65d199a0681d30b99a3b4f4b6eedaf4d.pdf" title="" target="_blank">45. KW 02.11.15 bis 08.11.15</a>
+</p><p>
+  <a href="dlf-2015-46.media.15424c99762a3a9c3d7fdbb2e2439a90.pdf" title="" target="_blank">46. KW 09.11.15 bis 15.11.15</a>
+</p><p>
+  <a href="dlf-2015-47.media.784f210741aea6e516949f5446c3bc26.pdf" title="" target="_blank">47. KW 16.11.15 bis 22.11.15</a>
+</p><p>
+  <a href="dlf-2015-48.media.2a30c1cd77954a10b2da00f3f3317bb8.pdf" title="" target="_blank">48. KW 23.11.15 bis 29.11.15</a>
+</p><p>
+  <a href="dlf-2015-49.media.5e4f2ff1b7d59ce1ffea49414195d90a.pdf" title="" target="_blank">49. KW 30.11.15 bis 06.12.15</a>
+</p><p>
+  <a href="dlf-2015-50.media.9c005e2e88731810710b5b30e1d9bbad.pdf" title="" target="_blank">50. KW 07.12.15 bis 13.12.15</a>
+</p><p>
+  <a href="dlf-2015-51.media.359b1d9980783b15a9e33d0ba5439bf9.pdf" title="" target="_blank">51. KW 14.12.15 bis 20.12.15</a>
+</p><p>
+  <a href="dlf-2015-52.media.54cf627875a6ad13658c45ccc5d444c7.pdf" title="" target="_blank">52. KW 21.12.15 bis 27.12.15</a>
+</p>
+</article></div><div class="dlf-sidebox"><h4 class="dlf-sidetitle"><a href="http://www.deutschlandradio.de/podcasts.226.de.html" target="">Herunterladen und Nachhören</a></h4><article class="dlf-sidearticle sidebig smalltype"><div class="image">
+  <img src="http://www.deutschlandfunk.de/media/thumbs/9/995b4e5dfad4770dc07afd1a3a65902fv1_mincrop_330x140_b3535db83dc50e27c1bb1392364c95a2.jpg" alt="" width="330" height="140" style="width: 330px; height: 140px;"/>
+</div><p>
+  <a href="alle-podcasts-auf-einen-blick.346.de.html" class="dradioLink" target="_self">Alle Podcasts auf einen Blick</a>
+</p><p>Ob in der U-Bahn, beim Sport oder in der Mittagspause - mit unseren Podcasts haben Sie Ihre Lieblingssendung immer dabei.</p>
+</article></div><div class="dlf-sidebox"><h4 class="dlf-sidetitle"><a href="http://www.deutschlandradio.de/erste-schritte.440.de.html" target="">Aufnehmen statt Herunterladen</a></h4><article class="dlf-sidearticle sidebig smalltype"><div class="image">
+  <img src="http://www.deutschlandfunk.de/media/thumbs/6/614c88be683ee40deb7d1ccc604ffe95v1_max_330x186_b3535db83dc50e27c1bb1392364c95a2.jpg" alt="" width="330" height="186" style="width: 330px; height: 186px;"/>
+</div><p>Wer möchte nicht gern von den Sendezeiten im Radio unabhängig sein? Der Deutschlandradio-Rekorder macht es möglich! Radio wann immer Sie wollen, wo immer Sie wollen - kostenlos und kinderleicht. Schneiden Sie Ihre Lieblingssendungen als MP3-Datei mit, indem Sie einfach in unserer <a href="http://www.deutschlandradio.de/programmvorschau-als-pdf.427.de.html" class="dradioLink" target="_self">Programmvorschau</a> auf den roten <strong>Aufnehmen</strong>-Knopf rechts neben der gewünschten Sendung klicken.</p><p>
+  <a href="http://www.deutschlandradio.de/installation-und-bedienung-des-deutschlandradio-rekorders.440.de.html" class="dradioLink" target="_self">Installation und Bedienung des Deutschlandradio-Rekorders</a>
+</p>
+</article></div><div class="dlf-sidebox"><h4 class="dlf-sidetitle"><a href="programmtipps.1640.de.html">Programmtipps</a></h4><article class="dlf-sidearticle programbig">
+  <a href="digitalisierung-der-gesellschaft-die-nachhaltigkeit-eines.2011.de.html?dram:article_id=336499">
+    <img src="http://www.deutschlandfunk.de/media/thumbs/b/bd5dd90feba5ec3e18b87efd3860c63av1_max_330x186_b3535db83dc50e27c1bb1392364c95a2.jpg" class="dradioImage" style="width: 330px; height: 186px;" alt="Christian Schneider, Produktionstechnologe in Ausbildung, arbeitet am 19.08.2015 im Stammwerk von Trumpf in Ditzingen (Baden-Württemberg) an einem Laserresonator. (picture-alliance / dpa / Wolfram Kastl)"/>
+  </a>
+  <h5>
+    <a href="digitalisierung-der-gesellschaft-die-nachhaltigkeit-eines.2011.de.html?dram:article_id=336499"><span class="overline">Digitalisierung der Gesellschaft</span>Die Nachhaltigkeit eines Megatrends</a>
+  </h5>
+  <span class="sideprogram"><span>Zur Diskussion</span> 11.11.2015 | 19:15 Uhr</span>
+  <p>Die digitale Transformation der Industrie ist in vollem Gange. Sie konfrontiert unsere Volkswirtschaften mit einem substanziellen Strukturwandel, denn: Neue Daten, Vernetzung, Automatisierung und die digitale Kundenschnittstelle sprengen bestehende Wertschöpfungsketten. Was heißt das für Unternehmen,  Beschäftigte und Kunden konkret?</p>
+</article><article class="dlf-sidearticle programsmall">
+  <a href="menschen-moegen-sachen-sagen-lieder-singen-die-hamburger.844.de.html?dram:article_id=333738">
+    <img src="http://www.deutschlandfunk.de/media/thumbs/e/e3aacd0b6b849abbbe6af16bba40108av1_max_160x90_b3535db83dc50e27c1bb1392364c95a2.jpg" class="dradioImage" style="width: 160px; height: 90px;" alt="Porträtfoto der Sängerin, Pianistin, Songschreiberin und Komikerin Katie Freudenschuss. (picture-alliance / dpa / Horst Galuschka)"/>
+  </a>
+  <h5>
+    <a href="menschen-moegen-sachen-sagen-lieder-singen-die-hamburger.844.de.html?dram:article_id=333738"><span class="overline">Menschen mögen, Sachen sagen, Lieder singen</span>Die Hamburger Künstlerin Katie Freudenschuss</a>
+  </h5>
+  <span class="sideprogram"><span>Querköpfe</span> 11.11.2015 | 21:05 Uhr</span>
+</article><article class="dlf-sidearticle programsmall">
+  <a href="sicher-posten-und-mailen-verschluesselung-fuer-den.772.de.html?dram:article_id=334118">
+    <img src="http://www.deutschlandfunk.de/media/thumbs/4/415277f235cb7a83c982cf84b35f9bafv1_max_160x90_b3535db83dc50e27c1bb1392364c95a2.jpg" class="dradioImage" style="width: 160px; height: 90px;" alt="Ein Passwort wird auf einem Laptop über die Tastatur eingegeben. Die Hände auf der Tastatur tragen schwarze Stulpen. Auf dem Monitor sind die Worte &quot;Enter Password&quot; zu lesen. Im Hintergrund erkennt man verschwommen weitere Bildschirme.  (picture alliance / dpa / Oliver Berg)"/>
+  </a>
+  <h5>
+    <a href="sicher-posten-und-mailen-verschluesselung-fuer-den.772.de.html?dram:article_id=334118"><span class="overline">Sicher posten und mailen</span>Verschlüsselung für den Alltagsgebrauch</a>
+  </h5>
+  <span class="sideprogram"><span>Marktplatz</span> 12.11.2015 | 10:10 Uhr</span>
+</article>
+</div><div class="dlf-sidebox"><h4 class="dlf-sidetitle"><a href="politik.1499.de.html">Politik</a></h4><article class="dlf-sidearticle sidebig lastVisible" id="article-336484-224">
+  <a href="spionageaffaere-ausspaehen-unter-freunden-das-geht.1773.de.html?dram:article_id=336484">
+    <img src="http://www.deutschlandfunk.de/media/thumbs/f/fb64ce17d8eae3117afaf23b3f181caev1_max_330x186_b3535db83dc50e27c1bb1392364c95a2.jpg" alt="Graues Schild mit blauer Aufschrift &quot;Bundesnachrichtendienst&quot; vor einer grauen Mauer und blauem Himmel (dpa/picture alliance/Stephan Jansen)"/>
+  </a>
+  <h3>
+    <a href="spionageaffaere-ausspaehen-unter-freunden-das-geht.1773.de.html?dram:article_id=336484"><span class="overline">Abhöraffäre</span>Spionage unter Freunden - das geht</a>
+  </h3>
+  <p>
+    <a href="spionageaffaere-ausspaehen-unter-freunden-das-geht.1773.de.html?dram:article_id=336484">Der Bundesnachrichtendienst hat offenbar selbst stärker verbotene Ziele ausspioniert als bisher bekannt. Unter anderem überwachte er den deutschen Diplomaten Hansjörg Haber und den französischen Außenminister Laurent Fabius, außerdem den Internationalen Strafgerichtshof und UNICEF. Das Kanzleramt beendete die Spitzelei im Oktober 2013.</a>
+  </p>
+</article>
+</div><div class="dlf-sidebox"><h4 class="dlf-sidetitle"><a href="wirtschaft-umwelt-und-verbraucher.1498.de.html">Wirtschaft</a></h4><article class="dlf-sidearticle sidebig lastVisible" id="article-336462-225">
+  <a href="bauwirtschaft-wohnungsknappheit-in-grossstaedten.766.de.html?dram:article_id=336462">
+    <img src="http://www.deutschlandfunk.de/media/thumbs/b/ba14ba05f53e41ab5591548b672199d6v1_max_330x186_b3535db83dc50e27c1bb1392364c95a2.jpg" alt="Wohnungsgesuch an einem Baum in München."/>
+  </a>
+  <h3>
+    <a href="bauwirtschaft-wohnungsknappheit-in-grossstaedten.766.de.html?dram:article_id=336462"><span class="overline">Bauwirtschaft</span>Wohnungsknappheit in Großstädten</a>
+  </h3>
+  <p>
+    <a href="bauwirtschaft-wohnungsknappheit-in-grossstaedten.766.de.html?dram:article_id=336462">Wohnungen, Häuser, Wohnraum - all das ist in vielen Gebieten begrenzt. Die Bauindustrie stemmt sich zwar dagegen, aber kommt kaum hinterher. So fehlen in diesem Jahr 800.000 Wohnungen, wie der Bundesverband deutscher Wohnungs- und Immobilienunternehmen (GdW) ausgerechnet hat. Und Flüchtlinge mit langfristiger Bleibeperspektive haben natürlich auch Wohnungsbedarf. </a>
+  </p>
+</article>
+</div><div class="dlf-sidebox"><h4 class="dlf-sidetitle"><a href="wissen.1497.de.html">Wissen</a></h4><article class="dlf-sidearticle sidebig lastVisible" id="article-336468-218">
+  <a href="entstehung-von-planeten-kollisionen-im-vakuum.676.de.html?dram:article_id=336468">
+    <img src="http://www.deutschlandfunk.de/media/thumbs/8/82e8642b3d5cdb8a7900a84b4a1099abv1_max_330x186_b3535db83dc50e27c1bb1392364c95a2.jpg" alt="Jürgen Blum vor der Fallkammer mit der unteren Staubprobe. (Deutschlandradio/Blum)"/>
+  </a>
+  <h3>
+    <a href="entstehung-von-planeten-kollisionen-im-vakuum.676.de.html?dram:article_id=336468"><span class="overline">Entstehung von Planeten</span>Kollisionen im Vakuum</a>
+  </h3>
+  <p>
+    <a href="entstehung-von-planeten-kollisionen-im-vakuum.676.de.html?dram:article_id=336468">Das Sonnensystem besteht nicht nur aus Planeten, sondern auch aus einer Art Bruchware: kleinere Brocken aus Eis und Gestein. Diese Trümmer werden im Rahmen eines Forschungsverbunds von vier Universitäten erstmals untersucht. Diese lassen unter Vakuum zwei Staubbrocken aufeinanderprallen.</a>
+  </p>
+</article>
+</div><div class="dlf-sidebox"><h4 class="dlf-sidetitle"><a href="kultur.1495.de.html">Kultur</a></h4><article class="dlf-sidearticle sidebig lastVisible" id="article-336465-220">
+  <a href="kulturpolitiker-helmut-schmidt-fuersprecher-der-kuenstler.691.de.html?dram:article_id=336465">
+    <img src="http://www.deutschlandfunk.de/media/thumbs/e/e7835cfa4594574dee29104c6bfe26a7v1_max_330x186_b3535db83dc50e27c1bb1392364c95a2.jpg" alt="Helmut Schmidt am Klavier bei einem Mozart-Konzert 1983 in Zürich in der Schweiz. (picture alliance / dpa / DB UPI)"/>
+  </a>
+  <h3>
+    <a href="kulturpolitiker-helmut-schmidt-fuersprecher-der-kuenstler.691.de.html?dram:article_id=336465"><span class="overline">Kulturpolitiker Helmut Schmidt</span>Fürsprecher der Künstler</a>
+  </h3>
+  <p>
+    <a href="kulturpolitiker-helmut-schmidt-fuersprecher-der-kuenstler.691.de.html?dram:article_id=336465">Der verstorbene Helmut Schmidt war ein Klavier spielender Bundeskanzler, der Philosophen las und zitierte. In einer Regierungserklärung setzte er sich für die Künstler ein: Er beabsichtigte, eine Künstlersozialversicherung und Nationalstiftung zur Förderung von Kunst und Kultur einzuführen. </a>
+  </p>
+</article>
+</div><div class="dlf-sidebox"><h4 class="dlf-sidetitle"><a href="musik.1795.de.html">Musik </a></h4><article class="dlf-sidearticle sidebig lastVisible" id="article-336258-223">
+  <a href="15-jahre-ensemble-modern-medien-der-weitblick-eines-labels.727.de.html?dram:article_id=336258">
+    <img src="http://www.deutschlandfunk.de/media/thumbs/0/056dcb24df70826b365340be1f316646v1_max_330x186_b3535db83dc50e27c1bb1392364c95a2.jpg" alt="Ein Taktstock in einer Hand (dpa/Britta Pedersen)"/>
+  </a>
+  <h3>
+    <a href="15-jahre-ensemble-modern-medien-der-weitblick-eines-labels.727.de.html?dram:article_id=336258"><span class="overline">15 Jahre Ensemble Modern Medien</span>Der Weitblick eines Labels </a>
+  </h3>
+  <p>
+    <a href="15-jahre-ensemble-modern-medien-der-weitblick-eines-labels.727.de.html?dram:article_id=336258">Seit 35 Jahren gibt es das 22-köpfige "Ensemble Modern", das sich durch seine musikalische Vielfalt auszeichnet. Immerhin schon seit dem Jahr 2000 besteht indes das Label der Formation, genannt Ensemble Modern Medien. Ein Streifzug durch 15 Jahre Labelgeschichte - mit Beethoven, Schönberg und zahlreichen weiteren. </a>
+  </p>
+</article>
+</div><div class="dlf-sidebox"><h4 class="dlf-sidetitle">Gesellschaft</h4><article class="dlf-sidearticle sidebig lastVisible" id="article-336435-216">
+  <a href="zum-tod-von-andre-glucksmann-der-ewige-provokateur.700.de.html?dram:article_id=336435">
+    <img src="http://www.deutschlandfunk.de/media/thumbs/7/71e4bd8c83f607a7da047832bc740781v1_max_330x186_b3535db83dc50e27c1bb1392364c95a2.jpg" alt="Der französische Schriftsteller und Philosoph André Glucksmann, aufgenommen am 08.01.2008 bei einer Rede zur Eröffnung des Dahlem Humanties Center der Freien Universität Berlin. (Claudia Esch-Kenkel / dpa)"/>
+  </a>
+  <h3>
+    <a href="zum-tod-von-andre-glucksmann-der-ewige-provokateur.700.de.html?dram:article_id=336435"><span class="overline">Zum Tod von André Glucksmann</span>Der ewige Provokateur</a>
+  </h3>
+  <p>
+    <a href="zum-tod-von-andre-glucksmann-der-ewige-provokateur.700.de.html?dram:article_id=336435">Einer der namhaftesten, provozierenden und umstrittensten Denker unserer Zeit ist 78-jährig gestorben: der französische Philosoph André Glucksmann. Kaum ein anderer Intellektueller hat sich so stark in politische Debatten eingemischt. Seine Waffen: die Rede und das Megaphon. "Diskurs über den Krieg" hieß sein erstes Buch - ein flammendes Plädoyer für den Frieden.</a>
+  </p>
+</article>
+</div><div class="dlf-sidebox"><h4 class="dlf-sidetitle"><a href="sport.1494.de.html">Sport</a></h4><article class="dlf-sidearticle sidebig lastVisible" id="article-336389-231">
+  <a href="niersbachs-ruecktritt-ein-strategischer-schachzug.720.de.html?dram:article_id=336389">
+    <img src="http://www.deutschlandfunk.de/media/thumbs/7/78af415b0c0ca515cd756f98e32dd8d9v1_max_330x186_b3535db83dc50e27c1bb1392364c95a2.jpg" alt="Wolfgang Niersbach tritt vor die Mikrofone, um seinen Rücktritt bekannt zu geben. (AFP / Daniel Roland)"/>
+  </a>
+  <h3>
+    <a href="niersbachs-ruecktritt-ein-strategischer-schachzug.720.de.html?dram:article_id=336389"><span class="overline">Niersbachs Rücktritt </span>Ein strategischer Schachzug</a>
+  </h3>
+  <p>
+    <a href="niersbachs-ruecktritt-ein-strategischer-schachzug.720.de.html?dram:article_id=336389">Der Rücktritt von Wolfgang Niersbach ist von vielen erwartet worden und kam dann doch überraschend, kommentiert Matthias Friebe. Niersbach übernimmt die politische Verantwortung für die dubiose Zahlung in Höhe von 6,7 Millionen Euro. Doch dieser Schritt ist kein Schuldeingeständnis. Niersbach will Druck aus dem Kessel der WM-Affäre nehmen.</a>
+  </p>
+</article>
+</div></div></section><div class="clear"> </div><section class="dlf-relatedslide">
+  <h4>
+    <a href="heute-neu.377.de.html">Das könnte sie auch interessieren</a>
+  </h4>
+  <div class="relatedslidenav">
+    <span id="relatedslider-prev"> </span>
+    <span id="relatedslider-next"> </span>
+  </div>
+  <div class="dlf-relateditemslide">
+    <div class="slide" id="article-336525-2071">
+      <article class="dlf-slidearticle">
+        <a href="fluechtlingsstrom-slowenien-baut-grenzzaun-zu-kroatien.1766.de.html?dram:article_id=336525">
+          <img src="http://www.deutschlandfunk.de/media/thumbs/0/0c7660a46b77f57532d47257904e2beev1_mincrop_185x105_b3535db83dc50e27c1bb1392364c95a2.jpg" class="dradioImage" style="width: 185px; height: 105px;" alt="Armeefahrzeug neben einem Stacheldrahtzaun. (picture alliance / dpa / Antonio Bat)"/>
+        </a>
+        <a href="fluechtlingsstrom-slowenien-baut-grenzzaun-zu-kroatien.1766.de.html?dram:article_id=336525">
+          <h5><span class="overline">Flüchtlingsstrom</span> Slowenien baut Grenzzaun zu Kroatien</h5>
+        </a>
+      </article>
+    </div>
+    <div class="slide" id="article-336523-2071">
+      <article class="dlf-slidearticle">
+        <a href="dublin-regelungen-die-kommission-hat-zu-lange-weggeguckt.694.de.html?dram:article_id=336523">
+          <img src="http://www.deutschlandfunk.de/media/thumbs/d/d77fff0682c910fe3c8587537cd340a0v1_mincrop_185x105_b3535db83dc50e27c1bb1392364c95a2.jpg" class="dradioImage" style="width: 185px; height: 105px;" alt="Gunther Krichbaum, CDU, Vors. des Europaausschusses im Bundestag. (picture alliance / dpa / Zipi)"/>
+        </a>
+        <a href="dublin-regelungen-die-kommission-hat-zu-lange-weggeguckt.694.de.html?dram:article_id=336523">
+          <h5><span class="overline">Dublin-Regelungen</span> "Die Kommission hat zu lange weggeguckt"</h5>
+        </a>
+      </article>
+    </div>
+    <div class="slide" id="article-336515-2071">
+      <article class="dlf-slidearticle">
+        <a href="fluechtlinge-auf-dem-weg-nach-schweden-ende-der-durchreise.1773.de.html?dram:article_id=336515">
+          <img src="http://www.deutschlandfunk.de/media/thumbs/a/a8a9a6ace7fb9ea493f5db73af45fc2cv1_mincrop_185x105_b3535db83dc50e27c1bb1392364c95a2.jpg" class="dradioImage" style="width: 185px; height: 105px;" alt="Menschen gehen in ein Zelt, das vor einem Gebäude steht, auf dem die Namen verschiedener Fährunternehmen stehen. (Deutschlandradio/Silke Hasselmann)"/>
+        </a>
+        <a href="fluechtlinge-auf-dem-weg-nach-schweden-ende-der-durchreise.1773.de.html?dram:article_id=336515">
+          <h5><span class="overline">Flüchtlinge auf dem Weg nach Schweden</span> Ende der Durchreise?</h5>
+        </a>
+      </article>
+    </div>
+    <div class="slide" id="article-336512-2071">
+      <article class="dlf-slidearticle">
+        <a href="ukraine-momentaufnahmen-zur-politischen-stimmung.795.de.html?dram:article_id=336512">
+          <img src="http://www.deutschlandfunk.de/media/thumbs/8/89c9b80e3d820077c6cbbc4e15b1a274v1_mincrop_185x105_b3535db83dc50e27c1bb1392364c95a2.jpg" class="dradioImage" style="width: 185px; height: 105px;" alt=""/>
+        </a>
+        <a href="ukraine-momentaufnahmen-zur-politischen-stimmung.795.de.html?dram:article_id=336512">
+          <h5><span class="overline">Ukraine</span> Momentaufnahmen zur politischen Stimmung</h5>
+        </a>
+      </article>
+    </div>
+    <div class="slide" id="article-336511-2071">
+      <article class="dlf-slidearticle">
+        <a href="familiennachzug-wie-viele-kommen-ist-nicht-klar.1818.de.html?dram:article_id=336511">
+          <img src="http://www.deutschlandfunk.de/media/thumbs/e/efda3c01628a530c6b7d187df0ae57d5v1_mincrop_185x105_b3535db83dc50e27c1bb1392364c95a2.jpg" class="dradioImage" style="width: 185px; height: 105px;" alt="Vater, Mutter und zwei Kleinkinder auf ihren Armen gehen am Berliner Bahnhof Schönefeld zu einem Bus. (dpa / Bernd Settnik)"/>
+        </a>
+        <a href="familiennachzug-wie-viele-kommen-ist-nicht-klar.1818.de.html?dram:article_id=336511">
+          <h5><span class="overline">Familiennachzug</span> Wie viele kommen, ist nicht klar</h5>
+        </a>
+      </article>
+    </div>
+    <div class="slide" id="article-336510-2071">
+      <article class="dlf-slidearticle">
+        <a href="aenderung-des-luftverkehrsgesetzes-buerger-bei-flugrouten.697.de.html?dram:article_id=336510">
+          <img src="http://www.deutschlandfunk.de/media/thumbs/c/cdf2d133d6a9ceb07b3baed92ceff3d2v1_mincrop_185x105_b3535db83dc50e27c1bb1392364c95a2.jpg" class="dradioImage" style="width: 185px; height: 105px;" alt="Lufthansa-Maschinen stehen am 09.09.2015 am Flughafen von Frankfurt am Main (Hessen) am Boden. (picture alliance / dpa / Frank Rumpenhorst)"/>
+        </a>
+        <a href="aenderung-des-luftverkehrsgesetzes-buerger-bei-flugrouten.697.de.html?dram:article_id=336510">
+          <h5><span class="overline">Änderung des Luftverkehrsgesetzes</span> Bürger bei Flugrouten in Frankfurt beteiligt</h5>
+        </a>
+      </article>
+    </div>
+    <div class="slide" id="article-336509-2071">
+      <article class="dlf-slidearticle">
+        <a href="antikorruptionsbehoerde-von-rumaeniens-politikern.795.de.html?dram:article_id=336509">
+          <img src="http://www.deutschlandfunk.de/media/thumbs/e/ef6aa84d42bc37ad697191b1aba93b3av1_mincrop_185x105_b3535db83dc50e27c1bb1392364c95a2.jpg" class="dradioImage" style="width: 185px; height: 105px;" alt="Eine Frau hält ein Schild in die Luft, auf dem &quot;Romania Trezeste-te&quot; (Rumänien, wach auf) geschrieben steht. "/>
+        </a>
+        <a href="antikorruptionsbehoerde-von-rumaeniens-politikern.795.de.html?dram:article_id=336509">
+          <h5><span class="overline">Antikorruptionsbehörde </span> Von Rumäniens Politikern gefürchtet</h5>
+        </a>
+      </article>
+    </div>
+    <div class="slide" id="article-336501-2071">
+      <article class="dlf-slidearticle">
+        <a href="rheinland-pfalz-kampf-gegen-wachsende-internet-kriminalitaet.1771.de.html?dram:article_id=336501">
+          <img src="http://www.deutschlandfunk.de/media/thumbs/c/c950885de526bedf4595046a59757305v1_mincrop_185x105_b3535db83dc50e27c1bb1392364c95a2.jpg" class="dradioImage" style="width: 185px; height: 105px;" alt="Ein Mensch vor einem Laptop, an dessen Monitor der Schriftzug &quot;Passwort akzeptiert&quot; zu lesen ist. (picture alliance / dpa / Tobias Hase)"/>
+        </a>
+        <a href="rheinland-pfalz-kampf-gegen-wachsende-internet-kriminalitaet.1771.de.html?dram:article_id=336501">
+          <h5><span class="overline">Rheinland-Pfalz</span> Kampf gegen wachsende Internet-Kriminalität</h5>
+        </a>
+      </article>
+    </div>
+    <div class="slide" id="article-336498-2071">
+      <article class="dlf-slidearticle">
+        <a href="fuechtlinge-auf-malta-bestenfalls-wartehalle-oder-sackgasse.795.de.html?dram:article_id=336498">
+          <img src="http://www.deutschlandfunk.de/media/thumbs/c/cdf03c3db91ee590659a8abb634176d7v1_mincrop_185x105_b3535db83dc50e27c1bb1392364c95a2.jpg" class="dradioImage" style="width: 185px; height: 105px;" alt="Flüchlinge beobachten am 30.04.2015 am Rande des Geländes eines offenen Flüchtlingszentrum in Marsa (Malta) das Geschehen. Das Flüchtlingszentrum liegt am Rande eines Schiffsfriedhofs. (dpa / picture alliance / Rainer Jensen)"/>
+        </a>
+        <a href="fuechtlinge-auf-malta-bestenfalls-wartehalle-oder-sackgasse.795.de.html?dram:article_id=336498">
+          <h5><span class="overline">Füchtlinge auf Malta </span> Bestenfalls Wartehalle oder Sackgasse</h5>
+        </a>
+      </article>
+    </div>
+    <div class="slide" id="article-336496-2071">
+      <article class="dlf-slidearticle">
+        <a href="henry-kissinger-ueber-helmut-schmidt-die-welt-wird-ihn.1773.de.html?dram:article_id=336496">
+          <img src="http://www.deutschlandfunk.de/media/thumbs/5/5b4ba10633524d253ac19b3054ceba7dv1_mincrop_185x105_b3535db83dc50e27c1bb1392364c95a2.jpg" class="dradioImage" style="width: 185px; height: 105px;" alt="Bundeskanzler Helmut Schmidt und der ehemalige US-Außenminister Henry Kissinger 1979 (dpa / picture alliance / Peter Popp)"/>
+        </a>
+        <a href="henry-kissinger-ueber-helmut-schmidt-die-welt-wird-ihn.1773.de.html?dram:article_id=336496">
+          <h5><span class="overline">Henry Kissinger über Helmut Schmidt</span> "Die Welt wird ihn vermissen"</h5>
+        </a>
+      </article>
+    </div>
+    <div class="slide" id="article-336494-2071">
+      <article class="dlf-slidearticle">
+        <a href="fluechtlingschicksale-menschen-werden-weiter-sterben.1773.de.html?dram:article_id=336494">
+          <img src="http://www.deutschlandfunk.de/media/thumbs/5/5d7598c6e1b1fec4e9117ae801316394v1_mincrop_185x105_b3535db83dc50e27c1bb1392364c95a2.jpg" class="dradioImage" style="width: 185px; height: 105px;" alt="Flüchlinge vertreiben sich am 30.04.2015 auf dem Gelände eines offenen Flüchtlingszentrums in Marsa (Malta) die Zeit. (picture alliance / dpa / Rainer Jensen)"/>
+        </a>
+        <a href="fluechtlingschicksale-menschen-werden-weiter-sterben.1773.de.html?dram:article_id=336494">
+          <h5><span class="overline">Flüchtlingschicksale </span> "Menschen werden weiter sterben"</h5>
+        </a>
+      </article>
+    </div>
+    <div class="slide" id="article-336489-2071">
+      <article class="dlf-slidearticle">
+        <a href="zum-tod-von-helmut-schmidt-er-war-eben-nicht-nur-der-macher.694.de.html?dram:article_id=336489">
+          <img src="http://www.deutschlandfunk.de/media/thumbs/d/de09350f604f995af8717c3a6893c864v1_mincrop_185x105_b3535db83dc50e27c1bb1392364c95a2.jpg" class="dradioImage" style="width: 185px; height: 105px;" alt="Helmut Schmidt sitzt am Schreibtisch, links hinter ihm eine Bücherwand. (dpa)"/>
+        </a>
+        <a href="zum-tod-von-helmut-schmidt-er-war-eben-nicht-nur-der-macher.694.de.html?dram:article_id=336489">
+          <h5><span class="overline">Zum Tod von Helmut Schmidt</span> "Er war eben nicht nur der Macher"</h5>
+        </a>
+      </article>
+    </div>
+    <div class="slide" id="article-336488-2071">
+      <article class="dlf-slidearticle">
+        <a href="frankreich-trauert-um-altkanzler-schmidt-unter-der.1773.de.html?dram:article_id=336488">
+          <img src="http://www.deutschlandfunk.de/media/thumbs/f/f734cbf324ea2678439a4a5a6ced4b63v1_mincrop_185x105_b3535db83dc50e27c1bb1392364c95a2.jpg" class="dradioImage" style="width: 185px; height: 105px;" alt="Frankreichs Staatspräsident Valery Giscard d'Estaing (links) und Bundeskanzler Helmut Schmidt am 16.6.1977 im Bundeskanzleramt in Bonn (dpa / picture alliance / Alfred Hennig)"/>
+        </a>
+        <a href="frankreich-trauert-um-altkanzler-schmidt-unter-der.1773.de.html?dram:article_id=336488">
+          <h5><span class="overline">Frankreich trauert um Altkanzler Schmidt</span> "Unter der Rauchwolke: Helmut!"</h5>
+        </a>
+      </article>
+    </div>
+    <div class="slide" id="article-336486-2071">
+      <article class="dlf-slidearticle">
+        <a href="fraktionssitzung-bei-union-und-spd-uneinigkeit-in-der-union.1773.de.html?dram:article_id=336486">
+          <img src="http://www.deutschlandfunk.de/media/thumbs/4/4b275e9420413fdc07d9b74c9f260f8av1_mincrop_185x105_b3535db83dc50e27c1bb1392364c95a2.jpg" class="dradioImage" style="width: 185px; height: 105px;" alt="Horst Seehofer und Angela Merkel  (dpa/picture-alliance/ Bernd von Jutrczenka)"/>
+        </a>
+        <a href="fraktionssitzung-bei-union-und-spd-uneinigkeit-in-der-union.1773.de.html?dram:article_id=336486">
+          <h5><span class="overline">Fraktionssitzung bei Union und SPD</span> Uneinigkeit in der Union, Empörung bei der SPD</h5>
+        </a>
+      </article>
+    </div>
+    <div class="slide" id="article-336485-2071">
+      <article class="dlf-slidearticle">
+        <a href="eu-reformforderungen-cameron-will-neuen-politischen-druck.694.de.html?dram:article_id=336485">
+          <img src="http://www.deutschlandfunk.de/media/thumbs/7/79b83a0769972e8ebb3c03497f0a2689v1_mincrop_185x105_b3535db83dc50e27c1bb1392364c95a2.jpg" class="dradioImage" style="width: 185px; height: 105px;" alt="Daniel Gros, Director des Centre for European Policy Sutdies in Brüssel, Belgien (imago/Xinhua)"/>
+        </a>
+        <a href="eu-reformforderungen-cameron-will-neuen-politischen-druck.694.de.html?dram:article_id=336485">
+          <h5><span class="overline">EU-Reformforderungen</span> Cameron will neuen politischen Druck verhindern</h5>
+        </a>
+      </article>
+    </div>
+    <div class="slide" id="article-336484-2071">
+      <article class="dlf-slidearticle">
+        <a href="spionageaffaere-ausspaehen-unter-freunden-das-geht.1773.de.html?dram:article_id=336484">
+          <img src="http://www.deutschlandfunk.de/media/thumbs/f/fb64ce17d8eae3117afaf23b3f181caev1_mincrop_185x105_b3535db83dc50e27c1bb1392364c95a2.jpg" class="dradioImage" style="width: 185px; height: 105px;" alt="Graues Schild mit blauer Aufschrift &quot;Bundesnachrichtendienst&quot; vor einer grauen Mauer und blauem Himmel (dpa/picture alliance/Stephan Jansen)"/>
+        </a>
+        <a href="spionageaffaere-ausspaehen-unter-freunden-das-geht.1773.de.html?dram:article_id=336484">
+          <h5><span class="overline">Spionageaffäre</span> Ausspähen unter Freunden - das geht</h5>
+        </a>
+      </article>
+    </div>
+    <div class="slide" id="article-336481-2071">
+      <article class="dlf-slidearticle">
+        <a href="lufthansa-gericht-erlaubt-lufthansa-streiks.1818.de.html?dram:article_id=336481">
+          <img src="http://www.deutschlandfunk.de/media/thumbs/3/3e11957640e9bf1c6d1abef26a460ba7v1_mincrop_185x105_b3535db83dc50e27c1bb1392364c95a2.jpg" class="dradioImage" style="width: 185px; height: 105px;" alt="Mehrere Check-in-Terminals der Lufthansa sind mit Flatterband abgesperrt. (picture alliance / dpa / Rolf Vennenbernd)"/>
+        </a>
+        <a href="lufthansa-gericht-erlaubt-lufthansa-streiks.1818.de.html?dram:article_id=336481">
+          <h5><span class="overline">Lufthansa</span> Gericht erlaubt Lufthansa-Streiks</h5>
+        </a>
+      </article>
+    </div>
+    <div class="slide" id="article-336480-2071">
+      <article class="dlf-slidearticle">
+        <a href="gerhart-baum-fdp-zum-tod-von-helmut-schmidt-umweltschutz.694.de.html?dram:article_id=336480">
+          <img src="http://www.deutschlandfunk.de/media/thumbs/2/272ffe742be20e9c18fe694cda68cec2v1_mincrop_185x105_b3535db83dc50e27c1bb1392364c95a2.jpg" class="dradioImage" style="width: 185px; height: 105px;" alt="Bundeskanzler Helmut Schmidt (SPD, r) sitzt 1980 auf der Regierungsbank im Bonner Bundestag und liest den General-Anzeiger. Bundesaußenminister Hans Dietrich Genscher (FDP, M) liest mit. Links Innenminister Gerhart Baum (FDP). (dpa/picture-alliance/ DB Bundespresseamt)"/>
+        </a>
+        <a href="gerhart-baum-fdp-zum-tod-von-helmut-schmidt-umweltschutz.694.de.html?dram:article_id=336480">
+          <h5><span class="overline">Gerhart Baum (FDP) zum Tod von Helmut Schmidt</span> "Umweltschutz war für ihn kein Thema"</h5>
+        </a>
+      </article>
+    </div>
+    <div class="slide" id="article-336479-2071">
+      <article class="dlf-slidearticle">
+        <a href="flugbegleiter-streik-lufthansa-zieht-erneut-vor-gericht.1818.de.html?dram:article_id=336479">
+          <img src="http://www.deutschlandfunk.de/media/thumbs/c/cdd8e4f991eb7f138ae6195339faf30cv1_mincrop_185x105_b3535db83dc50e27c1bb1392364c95a2.jpg" class="dradioImage" style="width: 185px; height: 105px;" alt="Eine Flugbegleiterin steht in der Economy Class im Airbus A380 nach der Landung in München. (dpa / picture-alliance / Tobias Hase)"/>
+        </a>
+        <a href="flugbegleiter-streik-lufthansa-zieht-erneut-vor-gericht.1818.de.html?dram:article_id=336479">
+          <h5><span class="overline">Flugbegleiter-Streik</span> Lufthansa zieht erneut vor Gericht</h5>
+        </a>
+      </article>
+    </div>
+    <div class="slide" id="article-336478-2071">
+      <article class="dlf-slidearticle">
+        <a href="martin-schulz-zu-britischen-eu-reformforderungen-man-muss.694.de.html?dram:article_id=336478">
+          <img src="http://www.deutschlandfunk.de/media/thumbs/3/3f101f4dcf24fcb949a0886a4fbbdfd9v1_mincrop_185x105_b3535db83dc50e27c1bb1392364c95a2.jpg" class="dradioImage" style="width: 185px; height: 105px;" alt="Martin Schulz, Präsident des Europäischen Parlaments (picture alliance/dpa/Rolf Vennenbernd)"/>
+        </a>
+        <a href="martin-schulz-zu-britischen-eu-reformforderungen-man-muss.694.de.html?dram:article_id=336478">
+          <h5><span class="overline">Martin Schulz zu britischen EU-Reformforderungen</span> "Man muss Camerons Rhetorik von seinen Forderungen trennen"</h5>
+        </a>
+      </article>
+    </div>
+  </div>
+</section>
+<section class="dlf-prefooter"><h2>Entdecken sie den Deutschlandfunk</h2>
+<nav>
+  <ul class="dlf-submenu">
+    <li class="dlf-submain"><span class="dlf-subnavititle">Programm</span>
+      <ul class="dlf-submenuitem">
+        <li><a href="/vor-und-rueckschau.281.de.html">Vor und Rückschau</a></li>
+        <li><a href="/alle-sendungen.348.de.html">Alle Sendungen</a></li>
+        <li><a href="/nachrichten.353.de.html">Nachrichten</a></li>
+        <li><a href="/rezensionen.702.de.html">Rezensionen</a></li>
+        <li><a href="/heute-neu.377.de.html">Heute neu</a></li>
+      </ul>
+    </li>
+    <li class="dlf-submain"><span class="dlf-subnavititle">Hören</span>
+      <ul class="dlf-submenuitem">
+        <li><a href="/livestream.2396.de.html">Livestream</a></li>
+        <li><a href="#" onclick="javascript:$(window).mkdraod_interface('openAODwithStream', $(window).mkdraod_interface('consts').stream.MKDRAOD_STREAM_DEUTSCHLANDFUNK);return false;">Mediathek</a></li>
+        <li><a href="/audio-archiv.2386.de.html">Audios</a></li>
+        <li><a href="/podcast.346.de.html">Podcast</a></li>
+        <li><a href="/rekorder.2406.de.html">Rekorder</a></li>
+        <li><a href="http://www.deutschlandradio.de/frequenzen.212.de.html">Frequenzen</a></li>
+      </ul>
+    </li>
+    <li class="dlf-submain"><span class="dlf-subnavititle">Kontakt</span>
+      <ul class="dlf-submenuitem">
+        <li><a href="http://www.deutschlandradio.de/hoererservice.359.de.html">Hörerservice</a></li>
+        <li><a href="/sendungen-mit-hoererbeteiligung.1628.de.html">Sendung mit Hörerbeteiligung</a></li> 
+      </ul>
+    </li>
+    <li class="dlf-submain"><span class="dlf-subnavititle">Service</span>
+      <ul class="dlf-submenuitem">
+        <li><a href="http://www.deutschlandradio.de/wetter.268.de.html">Wetter</a></li>
+        <li><a href="http://www.deutschlandradio.de/seewetter.275.de.html">Seewetter</a></li>
+        <li><a href="http://www.deutschlandradio.de/verkehr.438.de.html">Verkehr</a></li>
+        <li><a href="/veranstaltungen.229.de.html">Veranstaltungen</a></li>
+        <li><a href="/playlist.278.de.html">Playlist</a></li>
+        <li><a href="http://srv.deutschlandradio.de/newsletter.276.de.html">Newsletter</a></li>
+      </ul>
+    </li>
+    <li class="dlf-submain"><span class="dlf-subnavititle">Über uns</span>
+      <ul class="dlf-submenuitem">
+        <li><a href="http://www.deutschlandradio.de/deutschlandradio.2067.de.html">Deutschlandradio</a></li>
+        <li><a href="http://www.deutschlandradio.de/funkhaus-koeln.2089.de.html">Funkhaus Köln</a></li>
+        <li><a href="http://50jahre.deutschlandfunk.de/" target="_blank">50 Jahre DLF</a></li>
+        <li><a href="http://www.deutschlandradio.de/presse.2079.de.html">Presse</a></li>
+        <li><a href="http://www.deutschlandradio.de/karriere.2108.de.html">Ausbildung und Karriere</a></li>
+       
+      </ul>
+    </li>
+  </ul>
+</nav></section></div><noindex><footer><div class="dlf-footer"><nav><ul class="dlf-footermenu">
+  <li class="dlf-footermain">
+    <a href="http://www.deutschlandradio.de/" class="dlf-footertitle lowercase">Deutschlandradio © 2009-2015</a>
+    <ul class="dlf-footeritem">
+      <li>
+        <a href="http://www.deutschlandradiokultur.de/" class="drk-link">Deutschlandradio Kultur</a>
+      </li>
+      <li>
+        <a href="http://dradiowissen.de/" class="drw-link">DRadio Wissen</a>
+      </li>
+    </ul>
+  </li>
+  <li class="dlf-footermain">
+    <a href="#" class="dlf-footertitle"><br></a>
+    <ul class="dlf-footeritem">
+      <li><a href="http://www.deutschlandradio.de/">Deutschlandradio</a></li>
+      <li><a href="http://www.deutschlandradio.de/datenschutz.1828.de.html">Datenschutz</a></li>
+      <li><a href="http://www.deutschlandradio.de/hilfe.215.de.html">Hilfe</a></li>
+    </ul>
+  </li>
+  <li class="dlf-footermain">
+    <a href="#" class="dlf-footertitle"><br></a>
+    <ul class="dlf-footeritem">
+      <li><a href="http://www.deutschlandradio.de/impressum.223.de.html">Impressum</a></li>
+      <li><a href="http://www.deutschlandradio.de/kontakt.359.de.html">Kontakt</a></li>
+      <li><a href="http://www.deutschlandradio.de/presse.2079.de.html">Presse</a></li>
+    </ul>
+  </li>
+  <li class="dlf-footermain">
+    <a href="#" class="dlf-footertitle">Partner</a>
+    <ul class="dlf-footeritem">
+      <li><a href="http://www.ard.de/">ARD</a></li>
+      <li><a href="http://www.zdf.de/">ZDF</a></li>
+      <li><a href="http://www.phoenix.de/">Phoenix</a></li>
+      <li><a href="http://www.arte.tv/">arte</a></li>
+      <li><a href="http://www.deutschlandradio.de/chronik-der-mauer.244.de.html">Chronik der Mauer</a></li>
+    </ul>
+  </li>
+</ul></nav></div><nav></nav></footer>
+<script type="text/javascript">
+<!--
+xtnv = document;
+xtsd = "http://logc279";
+xtsite = "537348";
+xtdmc = ".deutschlandfunk.de";
+xt_pageID = "";
+xt_pageDate = "201511110000";
+xt_chap = "";
+xtcustom = {"typ":"andere","page_name":"Programmvorschau","category1":"3","pub_datum":"2015-11-11","site_version":"desktop"};
+if (window.xtparam!=null){window.xtparam+="&pid="+xt_pageID+"&pchap="+xt_chap+"&pidt="+xt_pageDate;}
+else{window.xtparam="&pid="+xt_pageID+"&pchap="+xt_chap+"&pidt="+xt_pageDate;};
+//-->
+</script>
+<script type="text/javascript" src="/xtcore.js"></script>
+<noscript><img width="1" height="1" alt="" src="http://logc279.xiti.com/hit.xiti?s=537348&amp;pdidt=201511110000&amp;stc=%7B%22typ%22%3A%22andere%22%2C%22page_name%22%3A%22Programmvorschau%22%2C%22category1%22%3A%223%22%2C%22pub_datum%22%3A%222015-11-11%22%2C%22site_version%22%3A%22desktop%22%7D"></img></noscript><script type="text/javascript">
+      $('.dlf-player-embed').each(function() {
+        var attr = $(this).attr('href');
+        if (typeof attr === 'undefined' || attr === false) {
+          $(this).attr('href', '#');
+        }
+        $(this).click(function(event) {
+          event.preventDefault();
+        });
+      });
+    </script>
+<!-- SZM VERSION="2.0" -->
+<script type="text/javascript">
+var iam_data = {
+  "st":"dradio",
+  "cp":"dlf_vorschau",
+  "sv":"ke",
+  "co":"www.deutschlandradio.de%2FDeutschlandfunk%2FProgrammvorschau"
+}
+iom.c(iam_data);
+</script>
+<!-- /SZM -->
+</noindex></div></body></html>
