@@ -92,10 +92,10 @@ func main() {
 		}
 	}()
 
-	time.Sleep(time.Millisecond)
+	time.Sleep(time.Second)
 	wg_scrapers.Wait()
 	close(jobs)
 	close(results)
 	wg_write.Wait()
-	time.Sleep(10 * time.Second)
+	time.Sleep(25 * time.Second)
 }
