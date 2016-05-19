@@ -22,30 +22,17 @@
 cd "$(dirname "$0")"/../..
 me="$(basename "$0")"
 
-echo "Start  $(/bin/date +'%F %T')" 1>&2 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log
+echo "Start  $(/bin/date +'%FT%T')" 2>> log/"${me}".stderr.log | tee -a log/"${me}".stdout.log
 
-if [ -x ../bin/scrape-linux-amd64-0.2.0 ] ; then
-  ../bin/scrape-linux-amd64-0.2.0 2>> log/"$me".stderr.log
-else
-  parallel --version >/dev/null || { echo "install 'parallel'" && exit 1;}
+cmd=../bin/scrape-$(uname -s)-$(uname -m)-0.2.1
 
-  for scraper in stations/*/app/scraper.??
-  do
-    case "$scraper" in
-      *.rb)
-        echo "bundle exec $scraper --incremental"
-      ;;
-      *)
-        echo "$scraper --incremental"
-      ;;
-    esac
-  done \
-  | parallel 2>> log/"$me".stderr.log
-fi \
-| tee log/"$me".stdout.dat \
-| app/broadcast-render.lua --stdin 2>> log/"$me".stderr.log \
-1>> log/"$me".stdout.log
+[ -x "${cmd}" ] || { echo "Executable ${cmd} not found." 1>&2 && exit 1 ; }
 
-nice app/calendar.lua stations/* podcasts/* 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log
+${cmd} 2>> log/"${me}".stderr.log \
+| tee log/"${me}".stdout.dat \
+| app/broadcast-render.lua --stdin 2>> log/"${me}".stderr.log \
+1>> log/"${me}".stdout.log
 
-echo "Finish $(/bin/date +'%F %T')" 1>&2 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log
+nice app/calendar.lua stations/* podcasts/* 1>> log/"${me}".stdout.log 2>> log/"${me}".stderr.log
+
+echo "Finish $(/bin/date +'%FT%T')" 2>> log/"${me}".stderr.log | tee -a log/"${me}".stdout.log
