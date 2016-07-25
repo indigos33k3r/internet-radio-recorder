@@ -213,6 +213,14 @@ func MustParseInt(s string) int {
 	return int(ret)
 }
 
+func MustParseInt64(s string) int64 {
+	ret, err := strconv.ParseInt(s, 10, 12)
+	if nil != err {
+		panic(err)
+	}
+	return ret
+}
+
 func TextChildrenNoClimb(node *html.Node) string {
 	ret := []string{}
 	for n := node.FirstChild; nil != n; n = n.NextSibling {
