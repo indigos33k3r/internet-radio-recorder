@@ -8,7 +8,7 @@ cd "$(dirname "$0")"
 # Linux x86_64
 # Linux armv6l
 
-VERSION=0.2.1
+VERSION=0.2.2
 
 rm "scrape"-*-"$VERSION" 2>/dev/null
 
@@ -18,7 +18,7 @@ go get github.com/stretchr/testify
 
 CWD="$(pwd)"
 cd ..
-for dir in cmd scrape scrape/br scrape/b4 scrape/dlf scrape/m945 scrape/radiofabrik
+for dir in cmd scrape scrape/br scrape/b3 scrape/b4 scrape/dlf scrape/m945 scrape/radiofabrik
 do
   cd "$CWD/../$dir"
   go fmt && go test && \

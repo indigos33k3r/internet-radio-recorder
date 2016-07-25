@@ -26,6 +26,7 @@ import (
 	"time"
 
 	"purl.mro.name/recorder/radio/scrape"
+	"purl.mro.name/recorder/radio/scrape/b3"
 	"purl.mro.name/recorder/radio/scrape/b4"
 	"purl.mro.name/recorder/radio/scrape/br"
 	"purl.mro.name/recorder/radio/scrape/dlf"
@@ -47,7 +48,7 @@ func main() {
 		jobs <- dlf.Station("dlf")
 		jobs <- br.Station("b1")
 		jobs <- br.Station("b2")
-		// jobs <- br.Station("b3")
+		jobs <- b3.Station("b3")
 		jobs <- b4.Station("b4")
 		jobs <- br.Station("b5")
 		jobs <- br.Station("b+")
