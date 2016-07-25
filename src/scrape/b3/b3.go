@@ -112,6 +112,7 @@ func init() {
 func (bcu *calItemRangeURL) parseBroadcastsData(raw interface{}) (bcs []r.Broadcast, err error) {
 	language := "de"
 	author := "Bayerischer Rundfunk"
+	empty := ""
 	// https://blog.golang.org/json-and-go#TOC_5.
 	root := raw.(map[string]interface{})
 	bc_arr := root["broadcasts"].([]interface{})
@@ -127,6 +128,7 @@ func (bcu *calItemRangeURL) parseBroadcastsData(raw interface{}) (bcs []r.Broadc
 			Author:   &author,
 			// Creator:  &bcu.Station.Name,
 			// Copyright: &bcu.Station.Name,
+			Description: &empty,
 		}
 		bc := bc_raw.(map[string]interface{})
 		{ // Title

@@ -153,19 +153,21 @@ type WdrProgramm struct {
 func (day *dayUrl) parseBroadcastsFromData(programm WdrProgramm) (ret []*r.Broadcast, err error) {
 	lang_de := "de"
 	publisher := "Westdeutscher Rundfunk"
+	empty := ""
 	for _, b := range programm.Sendungen {
 		bc := r.Broadcast{
 			BroadcastURL: r.BroadcastURL{
-				TimeURL: day.TimeURL,
+				TimeURL: r.TimeURL{
+					Source:  *day.Source.ResolveReference(r.MustParseURL(b.EpgLink)),
+					Time:    time.Unix(b.Start/1000, 0),
+					Station: day.Station,
+				},
+				Title: b.HauptTitel,
 			},
+			Language:    &lang_de,
+			Publisher:   &publisher,
+			Description: &empty,
 		}
-		bc.Source = *bc.Source.ResolveReference(r.MustParseURL(b.EpgLink))
-		// some defaults
-		bc.Language = &lang_de
-		bc.Publisher = &publisher
-
-		bc.Title = b.HauptTitel
-		bc.Time = time.Unix(b.Start/1000, 0)
 		{
 			t := time.Unix(b.Ende/1000, 0)
 			bc.DtEnd = &t

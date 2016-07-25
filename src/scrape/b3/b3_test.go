@@ -65,6 +65,6 @@ func TestUnmarshalBroadcasts(t *testing.T) {
 	assert.Nil(t, bc.Subject, "ouch: Subject")
 	assert.Nil(t, bc.Modified, "ouch: Modified")
 	assert.Equal(t, "Bayerischer Rundfunk", *bc.Author, "ouch: Author")
-	assert.Nil(t, bc.Description, "ouch: Description")
+	assert.Equal(t, "", *bc.Description, "ouch: Description")
 	assert.Nil(t, bc.Image, "ouch: Image")
 }

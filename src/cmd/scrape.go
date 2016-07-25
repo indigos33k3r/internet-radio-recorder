@@ -95,7 +95,7 @@ func main() {
 		}
 	}()
 
-	time.Sleep(time.Second)
+	time.Sleep(1 * time.Second)
 	wg_scrapers.Wait()
 	close(jobs)
 	close(results)
