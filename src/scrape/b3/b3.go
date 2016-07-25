@@ -17,7 +17,7 @@
 //
 // MIT License http://opensource.org/licenses/MIT
 
-// Scrape http://br-klassik.de program schedule + broadcast pages.
+// Scrape http://bayern3.de program.
 //
 // import "purl.mro.name/recorder/radio/scrape/b3"
 package b3
@@ -109,14 +109,19 @@ func init() {
 /// Parse broadcasts
 /////////////////////////////////////////////////////////////////////////////
 
-func (bcu *calItemRangeURL) parseBroadcastsData(raw interface{}) (bcs []r.Broadcast, err error) {
+type B3Programm struct {
+	Broadcasts []struct {
+		Headline  string
+		StartTime string
+		EndTime   string
+	}
+}
+
+func (bcu *calItemRangeURL) parseBroadcastsFromData(programm B3Programm) (bcs []r.Broadcast, err error) {
 	language := "de"
 	author := "Bayerischer Rundfunk"
 	empty := ""
-	// https://blog.golang.org/json-and-go#TOC_5.
-	root := raw.(map[string]interface{})
-	bc_arr := root["broadcasts"].([]interface{})
-	for _, bc_raw := range bc_arr {
+	for _, b3 := range programm.Broadcasts {
 		// fill one broadcast from JSON to r.Broadcast
 		b := r.Broadcast{
 			BroadcastURL: r.BroadcastURL{
@@ -130,9 +135,8 @@ func (bcu *calItemRangeURL) parseBroadcastsData(raw interface{}) (bcs []r.Broadc
 			// Copyright: &bcu.Station.Name,
 			Description: &empty,
 		}
-		bc := bc_raw.(map[string]interface{})
 		{ // Title
-			title := bc["headline"].(string)
+			title := b3.Headline
 			if strings.HasPrefix(title, "BAYERN 3 - ") {
 				title = title[len("BAYERN 3 - "):len(title)]
 			}
@@ -142,7 +146,7 @@ func (bcu *calItemRangeURL) parseBroadcastsData(raw interface{}) (bcs []r.Broadc
 			b.BroadcastURL.Title = title
 		}
 		{ // Time (start)
-			start, err0 := time.Parse(time.RFC3339, bc["startTime"].(string))
+			start, err0 := time.Parse(time.RFC3339, b3.StartTime)
 			err = err0
 			if nil != err {
 				continue
@@ -150,7 +154,7 @@ func (bcu *calItemRangeURL) parseBroadcastsData(raw interface{}) (bcs []r.Broadc
 			b.BroadcastURL.TimeURL.Time = start
 		}
 		{ // DtEnd
-			end, err1 := time.Parse(time.RFC3339, bc["endTime"].(string))
+			end, err1 := time.Parse(time.RFC3339, b3.EndTime)
 			err = err1
 			if nil != err {
 				continue
@@ -164,13 +168,14 @@ func (bcu *calItemRangeURL) parseBroadcastsData(raw interface{}) (bcs []r.Broadc
 
 func (url *calItemRangeURL) parseBroadcastsReader(read io.Reader) (bcs []r.Broadcast, err error) {
 	cr := r.NewCountingReader(read)
-	var f interface{}
-	err = json.NewDecoder(read).Decode(&f)
+	var f B3Programm
+	err = json.NewDecoder(cr).Decode(&f)
 	fmt.Fprintf(os.Stderr, "parsed %d bytes\n", cr.TotalBytes)
 	if nil != err {
+		panic(err)
 		return
 	}
-	return url.parseBroadcastsData(f)
+	return url.parseBroadcastsFromData(f)
 }
 
 func (url *calItemRangeURL) parseBroadcasts() (bcs []r.Broadcast, err error) {

@@ -17,7 +17,7 @@
 //
 // MIT License http://opensource.org/licenses/MIT
 
-// Scrape http://br-klassik.de program schedule + broadcast pages.
+// Scrape wdr schedule.
 //
 // import "purl.mro.name/recorder/radio/scrape/wdr"
 package wdr
@@ -27,9 +27,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	//	"net/url"
 	"os"
-	//	"strings"
 	"time"
 
 	r "purl.mro.name/recorder/radio/scrape"
@@ -124,30 +122,13 @@ func init() {
 /// Parse broadcasts
 /////////////////////////////////////////////////////////////////////////////
 
-type WdrSendung struct {
-	Start          int64  `json:"start"`
-	Mediathek      bool   `json:"mediathek"`
-	StartDDMMYYYY  string `json:"startDDMMYYYY"`  //		"": "25.07.16",
-	StartWochentag string `json:"startWochentag"` // : "Montag",
-	SenderId       int16  `json:"senderId"`       // : 5,
-	Ende           int64  `json:"ende"`           //: 1469397900000,
-	Laenge         int    `json:"laenge"`         //: 5,
-	EpgLink        string `json:"epgLink"`        //: "/programmvorschau/wdr5/sendung/2016-07-25/40944229/wdr-aktuell.html",
-	HauptTitel     string `json:"hauptTitel"`     //: "WDR Aktuell",
-	EndeHHMM       string `json:"endeHHMM"`       // : "00.05",
-	StartHHMM      string `json:"startHHMM"`      //: "00.00",
-	Id             int32  `json:"id"`             //: 40944229
-}
-
 type WdrProgramm struct {
-	SenderLiveURL     string       `json:"senderLiveURL"` //: "http://www1.wdr.de/radio/player/streams/audiostream-wdr--livestream-104.html",
-	Sendungen         []WdrSendung `json:"sendungen"`
-	SenderLiveType    string       `json:"senderLiveType"`    //: "audio",
-	SenderId          int16        `json:"senderId"`          //: 5,
-	SenderName        string       `json:"senderName"`        //: "WDR 5",
-	SenderEpgId       *string      `json:"senderEpgId"`       //: null,
-	Tv                bool         `json:"tv"`                //: false,
-	SenderUrlFragment string       `json:"senderUrlFragment"` //: "wdr5"
+	Sendungen []struct {
+		Start      int64
+		Ende       int64
+		EpgLink    string
+		HauptTitel string
+	}
 }
 
 func (day *dayUrl) parseBroadcastsFromData(programm WdrProgramm) (ret []*r.Broadcast, err error) {
@@ -181,7 +162,7 @@ func (day *dayUrl) parseBroadcastsFromData(programm WdrProgramm) (ret []*r.Broad
 func (day *dayUrl) parseBroadcastsFromReader(read io.Reader) (ret []*r.Broadcast, err error) {
 	cr := r.NewCountingReader(read)
 	var f WdrProgramm
-	err = json.NewDecoder(read).Decode(&f)
+	err = json.NewDecoder(cr).Decode(&f)
 	fmt.Fprintf(os.Stderr, "parsed %d bytes\n", cr.TotalBytes)
 	if nil != err {
 		panic(err)

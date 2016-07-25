@@ -27,7 +27,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -136,12 +135,14 @@ func (rangeURL *calItemRangeURL) parseCalendarItems() (cis []calendarItem, err e
 }
 
 func (rangeURL *calItemRangeURL) parseCalendarItemsReader(read io.Reader) (cis []calendarItem, err error) {
-	body, err := ioutil.ReadAll(io.LimitReader(read, 1048576))
-	if err != nil {
-		panic(err)
-	}
+	cr := r.NewCountingReader(io.LimitReader(read, 1048576))
 	cis = make([]calendarItem, 0)
-	err = json.Unmarshal(body, &cis)
+	err = json.NewDecoder(cr).Decode(&cis)
+	fmt.Fprintf(os.Stderr, "parsed %d bytes\n", cr.TotalBytes)
+	if nil != err {
+		panic(err)
+		return
+	}
 	for i, _ := range cis {
 		cis[i].Station = &rangeURL.Station
 	}
@@ -179,9 +180,9 @@ func init() {
 /// item from JSON response
 /// https://www.br-klassik.de/programm/radio/radiosendungen-100~calendarItems.jsp?rows=800&from=2015-11-30T04:59:59&to=2015-11-30T06:00:00
 type calendarItem struct {
-	Time    Time   `json:"datetime"`
-	Html    string `json:"html"`
-	Station *r.Station
+	DateTime Time
+	Html     string
+	Station  *r.Station
 }
 
 func (item *calendarItem) parseBroadcastSeedString(htm *string) (bc *broadcastURL, err error) {
@@ -196,7 +197,7 @@ func (item *calendarItem) parseBroadcastSeedString(htm *string) (bc *broadcastUR
 func (item *calendarItem) parseBroadcastSeedNode(root *html.Node) (bc *broadcastURL, err error) {
 	bc = &broadcastURL{}
 	bc.Station = *item.Station
-	bc.Time = item.Time.Time
+	bc.Time = item.DateTime.Time
 	for _, a := range scrape.FindAll(root, func(n *html.Node) bool {
 		if atom.A != n.DataAtom {
 			return false
