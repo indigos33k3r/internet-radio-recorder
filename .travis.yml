@@ -6,7 +6,6 @@ go: # https://github.com/atotto/travisci-golang-example
  - 1.4.2
  - 1.5.1
  - 1.6
- - release
  - tip
 before_install:
  - mkdir -p "$GOPATH/src/purl.mro.name/recorder"
