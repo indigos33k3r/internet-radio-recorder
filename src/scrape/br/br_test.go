@@ -104,7 +104,7 @@ func TestParseScheduleForBroadcasts(t *testing.T) {
 	assert.Nil(t, err, "ouch")
 
 	s := Station("b2")
-	u := dayUrl{
+	u := timeURL{
 		Time:    time.Date(2015, time.October, 21, 5, 0, 0, 0, localLoc),
 		Source:  *r.MustParseURL("http://www.br.de/radio/bayern2/programmkalender/programmfahne102~_date-2015-10-21_-5ddeec3fc12bdd255a6c45c650f068b54f7b010b.html"),
 		Station: r.Station(*s),
@@ -136,8 +136,10 @@ func TestParseBroadcast_0(t *testing.T) {
 		Title: "Concerto bavarese",
 	}
 	// http://rec.mro.name/stations/b2/2015/10/21/0012%20Concerto%20bavarese
-	bc, err := t0.parseBroadcastReader(f)
+	bcs, err := t0.parseBroadcastReader(f)
 	assert.Nil(t, err, "ouch")
+	assert.Equal(t, 1, len(bcs), "ouch")
+	bc := bcs[0]
 	assert.Equal(t, "b2", bc.Station.Identifier, "ouch: Station.Identifier")
 	assert.Equal(t, "Concerto bavarese", bc.Title, "ouch: Title")
 	assert.Equal(t, "http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-472548.html", bc.Source.String(), "ouch: Source")
@@ -173,8 +175,10 @@ func TestParseBroadcast_1(t *testing.T) {
 	}
 
 	// http://rec.mro.name/stations/b2/2015/10/21/1005%20Notizbuch
-	bc, err := t0.parseBroadcastReader(f)
+	bcs, err := t0.parseBroadcastReader(f)
 	assert.Nil(t, err, "ouch")
+	assert.Equal(t, 1, len(bcs), "ouch")
+	bc := bcs[0]
 	assert.Equal(t, "b2", bc.Station.Identifier, "ouch: Station.Identifier")
 	assert.Equal(t, "Notizbuch", bc.Title, "ouch: Title")
 	assert.Equal(t, "http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-472576.html", bc.Source.String(), "ouch: Source")
@@ -210,8 +214,10 @@ func TestParseBroadcastUntilMidnight(t *testing.T) {
 	}
 
 	// http://rec.mro.name/stations/b2/2015/10/21/2305%20Nachtmix
-	bc, err := t0.parseBroadcastReader(f)
+	bcs, err := t0.parseBroadcastReader(f)
 	assert.Nil(t, err, "ouch")
+	assert.Equal(t, 1, len(bcs), "ouch")
+	bc := bcs[0]
 	assert.Equal(t, "b2", bc.Station.Identifier, "ouch: Station.Identifier")
 	assert.Equal(t, "Nachtmix", bc.Title, "ouch: Title")
 	assert.Equal(t, "http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-472628.html", bc.Source.String(), "ouch: Source")
@@ -247,8 +253,10 @@ func TestParseBroadcastWithImage1(t *testing.T) {
 	}
 
 	// http://rec.mro.name/stations/b2/2015/11/16/1605%20Eins%20zu%20Eins.%20Der%20Talk
-	bc, err := t0.parseBroadcastReader(f)
+	bcs, err := t0.parseBroadcastReader(f)
 	assert.Nil(t, err, "ouch")
+	assert.Equal(t, 1, len(bcs), "ouch")
+	bc := bcs[0]
 	assert.Equal(t, "b2", bc.Station.Identifier, "ouch: Station.Identifier")
 	assert.Equal(t, "Stefan Parrisius im Gespräch mit Yvonne Hofstetter, Big Data Managing Director\nWiederholung um 22.05 Uhr\nAls Podcast verfügbar\n\nErfahrungen und Einsichten, einschneidende Erlebnisse und große Erfolge: Biografische Gespräche mit Menschen, die eine spannende Lebensgeschichte oder einen außergewöhnlichen Beruf haben.", *bc.Description, "ouch: Description")
 	//
@@ -272,8 +280,10 @@ func TestParseBroadcast23h55min(t *testing.T) {
 	}
 
 	// http://rec.mro.name/stations/b%2b/2015/11/15/0005%20Bayern%20plus%20-%20Meine%20Schlager%20h%C3%B6ren
-	bc, err := t0.parseBroadcastReader(f)
+	bcs, err := t0.parseBroadcastReader(f)
 	assert.Nil(t, err, "ouch")
+	assert.Equal(t, 1, len(bcs), "ouch")
+	bc := bcs[0]
 	assert.Equal(t, "b+", bc.Station.Identifier, "ouch: Station.Identifier")
 	assert.Equal(t, "Bayern plus - Meine Schlager hören", bc.Title, "ouch: Title")
 	assert.Equal(t, "http://www.br.de/radio/bayern-plus/programmkalender/ausstrahlung-497666.html", bc.Source.String(), "ouch: Source")
@@ -312,8 +322,10 @@ func TestParseBroadcastDescriptionWhitespace(t *testing.T) {
 	}
 
 	// http://rec.mro.name/stations/b2/2015/11/15/0900%20Nachrichten%2c%20Wetter.xml
-	bc, err := t0.parseBroadcastReader(f)
+	bcs, err := t0.parseBroadcastReader(f)
 	assert.Nil(t, err, "ouch")
+	assert.Equal(t, 1, len(bcs), "ouch")
+	bc := bcs[0]
 	assert.Equal(t, "b2", bc.Station.Identifier, "ouch: Station.Identifier")
 	assert.Equal(t, "Die aktuellen Nachrichten des Bayerischen Rundfunks - auch hier auf BR.de zum Nachlesen.", *bc.Description, "ouch: Description")
 }

@@ -22,7 +22,6 @@ package m945 // import "purl.mro.name/recorder/radio/scrape/m945"
 import (
 	"fmt"
 	"io"
-	"net/http"
 	"net/url"
 	"os"
 	"regexp"
@@ -71,13 +70,12 @@ func (s *station) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error
 ///////////////////////////////////////////////////////////////////////
 // http://www.m945.de/programm/?daterequest=2015-11-14
 
-func (s *station) dayURLForDate(day time.Time) (ret *dayUrl, err error) {
-	r := dayUrl(
-		r.TimeURL{
-			Time:    time.Date(day.Year(), day.Month(), day.Day(), 0, 0, 0, 0, s.TimeZone),
-			Source:  *r.MustParseURL(s.ProgramURL.String() + day.Format("?daterequest=2006-01-02")),
-			Station: r.Station(*s),
-		})
+func (s *station) dayURLForDate(day time.Time) (ret *timeURL, err error) {
+	r := timeURL(r.TimeURL{
+		Time:    time.Date(day.Year(), day.Month(), day.Day(), 0, 0, 0, 0, s.TimeZone),
+		Source:  *r.MustParseURL(s.ProgramURL.String() + day.Format("?daterequest=2006-01-02")),
+		Station: r.Station(*s),
+	})
 	ret = &r
 	// err = errors.New("Not ümplemented yet.")
 	return
@@ -85,15 +83,15 @@ func (s *station) dayURLForDate(day time.Time) (ret *dayUrl, err error) {
 
 /////////////////////////////////////////////////////////////////////////////
 /// Just wrap TimeURL into a distinct, local type - a Scraper, naturally
-type dayUrl r.TimeURL
+type timeURL r.TimeURL
 
 /// r.Scraper
-func (day dayUrl) Matches(nows []time.Time) (ok bool) {
+func (day timeURL) Matches(nows []time.Time) (ok bool) {
 	return true
 }
 
 // Scrape broadcasts from a day page.
-func (day dayUrl) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error) {
+func (day timeURL) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error) {
 	bcs, err := day.parseBroadcastsFromURL()
 	if nil == err {
 		for _, bc := range bcs {
@@ -108,7 +106,7 @@ var (
 	publisher string = "http://www.m945.de/"
 )
 
-func (day *dayUrl) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast, err error) {
+func (day *timeURL) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast, err error) {
 	nodes := scrape.FindAll(root, func(n *html.Node) bool { return atom.Div == n.DataAtom && "time" == scrape.Attr(n, "class") })
 	ret = make([]*r.Broadcast, len(nodes))
 	for index, tim := range nodes {
@@ -168,7 +166,7 @@ func (day *dayUrl) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast,
 	return
 }
 
-func (day *dayUrl) parseBroadcastsFromReader(read io.Reader) (ret []*r.Broadcast, err error) {
+func (day *timeURL) parseBroadcastsFromReader(read io.Reader) (ret []*r.Broadcast, err error) {
 	cr := r.NewCountingReader(read)
 	root, err := html.Parse(cr)
 	fmt.Fprintf(os.Stderr, "parsed %d bytes 🐦 %s\n", cr.TotalBytes, day.Source.String())
@@ -178,8 +176,8 @@ func (day *dayUrl) parseBroadcastsFromReader(read io.Reader) (ret []*r.Broadcast
 	return day.parseBroadcastsFromNode(root)
 }
 
-func (day *dayUrl) parseBroadcastsFromURL() (ret []*r.Broadcast, err error) {
-	resp, err := http.Get(day.Source.String())
+func (day *timeURL) parseBroadcastsFromURL() (ret []*r.Broadcast, err error) {
+	resp, err := r.CreateHttpGet(day.Source)
 	if nil != err {
 		return
 	}

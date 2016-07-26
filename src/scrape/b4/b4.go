@@ -27,7 +27,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"net/http"
 	"net/url"
 	"os"
 	"regexp"
@@ -122,7 +121,7 @@ func (day *calItemRangeURL) Matches(nows []time.Time) (ok bool) {
 
 func (rangeURL *calItemRangeURL) parseCalendarItems() (cis []calendarItem, err error) {
 	// fmt.Fprintf(os.Stderr, "GET %s\n", rangeURL.Source.String())
-	resp, err := http.Get(rangeURL.Source.String())
+	resp, err := r.CreateHttpGet(rangeURL.Source)
 	if nil != err {
 		return
 	}
@@ -136,7 +135,6 @@ func (rangeURL *calItemRangeURL) parseCalendarItemsReader(read io.Reader) (cis [
 	err = json.NewDecoder(cr).Decode(&cis)
 	fmt.Fprintf(os.Stderr, "parsed %d bytes 🐦 %s\n", cr.TotalBytes, rangeURL.Source.String())
 	if nil != err {
-		panic(err)
 		return
 	}
 	for i, _ := range cis {
@@ -358,7 +356,7 @@ func (bcu *broadcastURL) parseBroadcastReader(read io.Reader) (bc r.Broadcast, e
 }
 
 func (bcu *broadcastURL) parseBroadcast() (bc r.Broadcast, err error) {
-	resp, err := http.Get(bcu.Source.String())
+	resp, err := r.CreateHttpGet(bcu.Source)
 	if nil != err {
 		return
 	}

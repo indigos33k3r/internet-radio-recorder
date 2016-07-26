@@ -26,7 +26,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"net/http"
 	"os"
 	"time"
 
@@ -73,13 +72,12 @@ func (s *station) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error
 
 ///////////////////////////////////////////////////////////////////////
 // https://www.wdr.de/programmvorschau/ajax/alle/uebersicht/2016-07-23/
-func (s *station) dayURLForDate(day time.Time) (ret *dayUrl, err error) {
-	r := dayUrl(
-		r.TimeURL{
-			Time:    time.Date(day.Year(), day.Month(), day.Day(), 0, 0, 0, 0, s.TimeZone),
-			Source:  *r.MustParseURL(s.ProgramURL.String() + day.Format("2006-01-02/")),
-			Station: r.Station(*s),
-		})
+func (s *station) dayURLForDate(day time.Time) (ret *timeURL, err error) {
+	r := timeURL(r.TimeURL{
+		Time:    time.Date(day.Year(), day.Month(), day.Day(), 0, 0, 0, 0, s.TimeZone),
+		Source:  *r.MustParseURL(s.ProgramURL.String() + day.Format("2006-01-02/")),
+		Station: r.Station(*s),
+	})
 	ret = &r
 	// err = errors.New("Not ümplemented yet.")
 	return
@@ -87,13 +85,13 @@ func (s *station) dayURLForDate(day time.Time) (ret *dayUrl, err error) {
 
 /////////////////////////////////////////////////////////////////////////////
 /// Just wrap TimeURL into a distinct, local type - a Scraper, naturally
-type dayUrl r.TimeURL
+type timeURL r.TimeURL
 
-func (day dayUrl) Matches(nows []time.Time) (ok bool) {
+func (day timeURL) Matches(nows []time.Time) (ok bool) {
 	return true
 }
 
-func (day dayUrl) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error) {
+func (day timeURL) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error) {
 	bcs, err := day.parseBroadcastsFromURL()
 	if nil == err {
 		for _, bc := range bcs {
@@ -128,7 +126,7 @@ type WdrProgramm struct {
 	}
 }
 
-func (day *dayUrl) parseBroadcastsFromData(programm WdrProgramm) (ret []*r.Broadcast, err error) {
+func (day *timeURL) parseBroadcastsFromData(programm WdrProgramm) (ret []*r.Broadcast, err error) {
 	lang_de := "de"
 	publisher := "Westdeutscher Rundfunk"
 	empty := ""
@@ -156,20 +154,19 @@ func (day *dayUrl) parseBroadcastsFromData(programm WdrProgramm) (ret []*r.Broad
 	return
 }
 
-func (day *dayUrl) parseBroadcastsFromReader(read io.Reader) (ret []*r.Broadcast, err error) {
+func (day *timeURL) parseBroadcastsFromReader(read io.Reader) (ret []*r.Broadcast, err error) {
 	cr := r.NewCountingReader(read)
 	var f WdrProgramm
 	err = json.NewDecoder(cr).Decode(&f)
 	fmt.Fprintf(os.Stderr, "parsed %d bytes 🐦 %s\n", cr.TotalBytes, day.Source.String())
 	if nil != err {
-		panic(err)
 		return
 	}
 	return day.parseBroadcastsFromData(f)
 }
 
-func (day *dayUrl) parseBroadcastsFromURL() (ret []*r.Broadcast, err error) {
-	resp, err := http.Get(day.Source.String())
+func (day *timeURL) parseBroadcastsFromURL() (ret []*r.Broadcast, err error) {
+	resp, err := r.CreateHttpGet(day.Source)
 	if nil != err {
 		return
 	}

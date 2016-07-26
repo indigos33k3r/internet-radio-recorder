@@ -26,7 +26,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"net/http"
 	"os"
 	"strings"
 	"time"
@@ -170,17 +169,11 @@ func (url *calItemRangeURL) parseBroadcastsReader(read io.Reader) (bcs []r.Broad
 	err = json.NewDecoder(cr).Decode(&f)
 	fmt.Fprintf(os.Stderr, "parsed %d bytes 🐦 %s\n", cr.TotalBytes, url.Source.String())
 	if nil != err {
-		panic(err)
 		return
 	}
 	return url.parseBroadcastsFromData(f)
 }
 
-func (url *calItemRangeURL) parseBroadcasts() (bcs []r.Broadcast, err error) {
-	resp, err := http.Get(url.Source.String())
-	if nil != err {
-		return
-	}
-	defer resp.Body.Close()
-	return url.parseBroadcastsReader(resp.Body)
+func (url *calItemRangeURL) parseBroadcasts() (bc []r.Broadcast, err error) {
+	return r.GenericParseBroadcastFromURL(url.Source, func(r io.Reader) ([]r.Broadcast, error) { return url.parseBroadcastsReader(r) })
 }

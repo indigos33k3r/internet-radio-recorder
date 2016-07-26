@@ -43,6 +43,6 @@ env GOOS=darwin GOARCH=amd64 go build -o scrape-darwin-amd64-$VERSION
 # scp "scrape-linux-arm-$VERSION" raspi:~/"Downloads/scrape-linux-arm-$VERSION"
 # time ssh raspi "Downloads/scrape-linux-arm-$VERSION"
 
-ssh con rm "Downloads/scrape-linux-amd64-$VERSION"
+ssh con rm "Downloads/scrape-Linux-amd64-$VERSION"
 scp "scrape-linux-amd64-$VERSION" con:~/"Downloads/scrape-Linux-x86_64-$VERSION"
 # time ssh con "Downloads/scrape-linux-amd64-$VERSION"

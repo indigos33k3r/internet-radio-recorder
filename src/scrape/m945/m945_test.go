@@ -60,7 +60,7 @@ func TestParseBroadcasts(t *testing.T) {
 	assert.Nil(t, err, "ouch")
 
 	s := Station("m945")
-	u := dayUrl{
+	u := timeURL{
 		r.TimeURL{
 			Time:    time.Date(2015, time.October, 25, 0, 0, 0, 0, s.TimeZone),
 			Source:  *r.MustParseURL("http://www.deutschlandfunk.de/programmvorschau.281.de.html?cal:month=10&drbm:date=25.10.2015"),
@@ -127,7 +127,7 @@ func TestParseBroadcasts_1(t *testing.T) {
 	assert.Nil(t, err, "ouch")
 
 	s := Station("m945")
-	u := dayUrl(r.TimeURL{
+	u := timeURL(r.TimeURL{
 		Time:    time.Date(2015, time.November, 14, 0, 0, 0, 0, s.TimeZone),
 		Source:  *r.MustParseURL("http://www.m945.de/programm/?daterequest=2015-11-14"),
 		Station: r.Station(*s),
