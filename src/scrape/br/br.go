@@ -119,7 +119,8 @@ func (s *station) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error
 	if nil == err {
 		for _, v := range dayUrls {
 			// fmt.Fprintf(os.Stderr, "jobs slice   %s\n", v)
-			jobs = append(jobs, &v)
+			vv := v
+			jobs = append(jobs, &vv)
 		}
 	}
 	return
