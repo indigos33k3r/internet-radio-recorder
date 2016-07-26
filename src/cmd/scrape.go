@@ -40,6 +40,16 @@ func main() {
 	jobs := make(chan scrape.Scraper, 15)
 
 	var wg_jobs sync.WaitGroup
+
+	for _, s := range []string{"b1", "b2", "b5", "b+", "brheimat", "puls"} {
+		wg_jobs.Add(1)
+		jobs <- br.Station(s)
+	}
+	wg_jobs.Add(1)
+	jobs <- b3.Station("b3")
+	wg_jobs.Add(1)
+	jobs <- b4.Station("b4")
+
 	wg_jobs.Add(1)
 	jobs <- radiofabrik.Station("radiofabrik")
 	wg_jobs.Add(1)
@@ -48,15 +58,6 @@ func main() {
 	jobs <- dlf.Station("dlf")
 	wg_jobs.Add(1)
 	jobs <- wdr.Station("wdr5")
-	wg_jobs.Add(1)
-	jobs <- b3.Station("b3")
-	wg_jobs.Add(1)
-	jobs <- b4.Station("b4")
-	wg_jobs.Add(1)
-	for _, s := range []string{"b1", "b2", "b5", "b+", "brheimat", "puls"} {
-		wg_jobs.Add(1)
-		jobs <- br.Station(s)
-	}
 
 	now := time.Now()
 	var wg_write sync.WaitGroup

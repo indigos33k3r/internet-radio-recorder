@@ -97,9 +97,6 @@ func (s *station) parseDayURLsReader(read io.Reader) (ret []dayUrl, err error) {
 		return
 	}
 	ret, err = s.parseDayURLsNode(root)
-	//for _, d := range ret {
-	//	fmt.Fprintf(os.Stderr, "  -> %s\n", d.Source.String())
-	//}
 	return
 }
 
@@ -118,7 +115,6 @@ func (s *station) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error
 	dayUrls, err := s.parseDayURLs()
 	if nil == err {
 		for _, v := range dayUrls {
-			// fmt.Fprintf(os.Stderr, "jobs slice   %s\n", v)
 			vv := v
 			jobs = append(jobs, &vv)
 		}
