@@ -127,13 +127,11 @@ func TestParseBroadcasts_1(t *testing.T) {
 	assert.Nil(t, err, "ouch")
 
 	s := Station("m945")
-	u := dayUrl{
-		r.TimeURL{
-			Time:    time.Date(2015, time.November, 14, 0, 0, 0, 0, s.TimeZone),
-			Source:  *r.MustParseURL("http://www.m945.de/programm/?daterequest=2015-11-14"),
-			Station: s.Station,
-		},
-	}
+	u := dayUrl(r.TimeURL{
+		Time:    time.Date(2015, time.November, 14, 0, 0, 0, 0, s.TimeZone),
+		Source:  *r.MustParseURL("http://www.m945.de/programm/?daterequest=2015-11-14"),
+		Station: r.Station(*s),
+	})
 
 	bcs, err := u.parseBroadcastsFromReader(f)
 	assert.NotNil(t, bcs, "ouch")

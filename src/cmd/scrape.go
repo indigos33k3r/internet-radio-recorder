@@ -30,9 +30,9 @@ import (
 	"purl.mro.name/recorder/radio/scrape/b4"
 	"purl.mro.name/recorder/radio/scrape/br"
 	"purl.mro.name/recorder/radio/scrape/dlf"
+	"purl.mro.name/recorder/radio/scrape/m945"
 	"purl.mro.name/recorder/radio/scrape/wdr"
 	/*
-		"purl.mro.name/recorder/radio/scrape/m945"
 		"purl.mro.name/recorder/radio/scrape/radiofabrik"
 	*/)
 
@@ -44,11 +44,11 @@ func main() {
 	/*
 		wg_jobs.Add(1)
 		jobs <- radiofabrik.Station("radiofabrik")
-		wg_jobs.Add(1)
-		jobs <- m945.Station("m945")
 	*/
-	jobs <- dlf.Station("dlf")
 	wg_jobs.Add(1)
+	jobs <- m945.Station("m945")
+	wg_jobs.Add(1)
+	jobs <- dlf.Station("dlf")
 	wg_jobs.Add(1)
 	jobs <- wdr.Station("wdr5")
 	wg_jobs.Add(1)
@@ -56,17 +56,10 @@ func main() {
 	wg_jobs.Add(1)
 	jobs <- b4.Station("b4")
 	wg_jobs.Add(1)
-	jobs <- br.Station("b1")
-	wg_jobs.Add(1)
-	jobs <- br.Station("b2")
-	wg_jobs.Add(1)
-	jobs <- br.Station("b5")
-	wg_jobs.Add(1)
-	jobs <- br.Station("b+")
-	wg_jobs.Add(1)
-	jobs <- br.Station("brheimat")
-	wg_jobs.Add(1)
-	jobs <- br.Station("puls")
+	for _, s := range []string{"b1", "b2", "b5", "b+", "brheimat", "puls"} {
+		wg_jobs.Add(1)
+		jobs <- br.Station(s)
+	}
 
 	now := time.Now()
 	var wg_write sync.WaitGroup
