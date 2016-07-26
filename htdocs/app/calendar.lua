@@ -54,6 +54,7 @@ for idx,argv in ipairs(arg) do
 	if not o then
 		io.write('Cannot use arg \'', argv, '\'', "\n")
 	else
-		o:save_ics()
+		ok,err = pcall(handler.save_ics, o)
+		if not ok then io.write('ERROR: ', err, "\n") end
 	end
 end

@@ -137,7 +137,8 @@
           <xsl:for-each select="$now_fellows_xml/*/rec:broadcast">
             <xsl:variable name="fellow_station_name" select="substring-before(rec:meta[@name='DC.identifier']/@content, '/')"/> 
             <li><a href="../../../../{rec:meta[@name='DC.identifier']/@content}">
-              <span class="station"><xsl:value-of select="$fellow_station_name"/></span>
+              <span class="station"><xsl:value-of select="$fellow_station_name"/></span><xsl:text> </xsl:text>
+              <img style="display:none;max-height:1.7ex;max-width:15ex" alt="" src="{rec:meta[@name='DC.image']/@content}"/>
               <br class='br'/>
               <span class="broadcast"><xsl:value-of select="rec:meta[@name='DC.title']/@content"/></span>
             </a></li>

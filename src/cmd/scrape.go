@@ -36,41 +36,46 @@ import (
 )
 
 func main() {
-	results := make(chan scrape.Broadcaster)
-	jobs := make(chan scrape.Scraper, 15)
+	results := make(chan scrape.Broadcaster) // sequential
+	jobs := make(chan scrape.Scraper, 15)    // concurrent
+	defer close(results)
+	defer close(jobs)
 
 	var wg_jobs sync.WaitGroup
+	var wg_results sync.WaitGroup
 
-	for _, s := range []string{"b1", "b2", "b5", "b+", "brheimat", "puls"} {
+	{
+		// seed all the radio stations to scrape
+		for _, s := range []string{"b1", "b2", "b5", "b+", "brheimat", "puls"} {
+			wg_jobs.Add(1)
+			jobs <- br.Station(s)
+		}
 		wg_jobs.Add(1)
-		jobs <- br.Station(s)
+		jobs <- b3.Station("b3")
+		wg_jobs.Add(1)
+		jobs <- b4.Station("b4")
+
+		wg_jobs.Add(1)
+		jobs <- radiofabrik.Station("radiofabrik")
+		wg_jobs.Add(1)
+		jobs <- m945.Station("m945")
+		wg_jobs.Add(1)
+		jobs <- dlf.Station("dlf")
+		wg_jobs.Add(1)
+		jobs <- wdr.Station("wdr5")
 	}
-	wg_jobs.Add(1)
-	jobs <- b3.Station("b3")
-	wg_jobs.Add(1)
-	jobs <- b4.Station("b4")
 
-	wg_jobs.Add(1)
-	jobs <- radiofabrik.Station("radiofabrik")
-	wg_jobs.Add(1)
-	jobs <- m945.Station("m945")
-	wg_jobs.Add(1)
-	jobs <- dlf.Station("dlf")
-	wg_jobs.Add(1)
-	jobs <- wdr.Station("wdr5")
+	nows := scrape.IncrementalNows(time.Now())
 
-	now := time.Now()
-	var wg_write sync.WaitGroup
+	// scrape and write concurrently
 
-	nows := scrape.IncrementalNows(now)
-
-	// scrape and write in parallel
-	go func() { // Scraper loop
+	// scraper loop
+	go func() {
 		for jobb := range jobs {
 			job := jobb
 			go func() {
-				// fmt.Fprintf(os.Stderr, "jobs process %p %s\n", job, job)
 				defer wg_jobs.Done()
+				// fmt.Fprintf(os.Stderr, "jobs process %p %s\n", job, job)
 				scrapers, bcs, err := job.Scrape()
 				if nil != err {
 					fmt.Fprintf(os.Stderr, "error %s %s\n", job, err)
@@ -83,7 +88,7 @@ func main() {
 					}
 				}
 				for _, b := range bcs {
-					wg_write.Add(1)
+					wg_results.Add(1)
 					results <- b
 				}
 			}()
@@ -93,13 +98,11 @@ func main() {
 	// write loop
 	go func() {
 		for bc := range results {
-			// bcc := bc.Broadcast()
-			// fmt.Fprintf(os.Stderr, "done     %s - %s '%s' %s\n", bcc.Time, bcc.DtEnd, bcc.Title, bcc.Source.String())
+			defer wg_results.Done()
 			bc.WriteAsLuaTable(os.Stdout)
-			wg_write.Done()
 		}
 	}()
 
 	wg_jobs.Wait()
-	wg_write.Wait()
+	wg_results.Wait()
 }
