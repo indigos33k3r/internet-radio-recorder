@@ -26,9 +26,9 @@ import (
 	"time"
 
 	"purl.mro.name/recorder/radio/scrape"
+	"purl.mro.name/recorder/radio/scrape/b3"
 	"purl.mro.name/recorder/radio/scrape/br"
-	/*	"purl.mro.name/recorder/radio/scrape/b3"
-		"purl.mro.name/recorder/radio/scrape/b4"
+	/*	"purl.mro.name/recorder/radio/scrape/b4"
 		"purl.mro.name/recorder/radio/scrape/dlf"
 		"purl.mro.name/recorder/radio/scrape/m945"
 		"purl.mro.name/recorder/radio/scrape/radiofabrik"
@@ -44,8 +44,6 @@ func main() {
 		wg_jobs.Add(1)
 		jobs <- wdr.Station("wdr5")
 		wg_jobs.Add(1)
-		jobs <- b3.Station("b3")
-		wg_jobs.Add(1)
 		jobs <- radiofabrik.Station("radiofabrik")
 		wg_jobs.Add(1)
 		jobs <- m945.Station("m945")
@@ -56,18 +54,20 @@ func main() {
 		wg_jobs.Add(1)
 	*/
 	wg_jobs.Add(1)
+	jobs <- b3.Station("b3")
+	wg_jobs.Add(1)
 	jobs <- br.Station("b1")
-	wg_jobs.Add(1)
-	jobs <- br.Station("b2")
-	wg_jobs.Add(1)
-	jobs <- br.Station("b5")
-	wg_jobs.Add(1)
-	jobs <- br.Station("b+")
-	wg_jobs.Add(1)
-	jobs <- br.Station("brheimat")
-	wg_jobs.Add(1)
-	jobs <- br.Station("puls")
-
+	/*	wg_jobs.Add(1)
+		jobs <- br.Station("b2")
+		wg_jobs.Add(1)
+		jobs <- br.Station("b5")
+		wg_jobs.Add(1)
+		jobs <- br.Station("b+")
+		wg_jobs.Add(1)
+		jobs <- br.Station("brheimat")
+		wg_jobs.Add(1)
+		jobs <- br.Station("puls")
+	*/
 	now := time.Now()
 	var wg_write sync.WaitGroup
 
@@ -78,7 +78,7 @@ func main() {
 		for jobb := range jobs {
 			job := jobb
 			go func() {
-				fmt.Fprintf(os.Stderr, "jobs process %p %s\n", job, job)
+				// fmt.Fprintf(os.Stderr, "jobs process %p %s\n", job, job)
 				defer wg_jobs.Done()
 				scrapers, bcs, err := job.Scrape()
 				if nil != err {
@@ -87,7 +87,7 @@ func main() {
 				for _, s := range scrapers {
 					if s.Matches(nows) {
 						wg_jobs.Add(1)
-						fmt.Fprintf(os.Stderr, "jobs queue   %p %s\n", s, s)
+						// fmt.Fprintf(os.Stderr, "jobs queue   %p %s\n", s, s)
 						jobs <- s
 					}
 				}

@@ -39,9 +39,7 @@ import (
 
 /////////////////////////////////////////////////////////////////////////////
 /// Just wrap Station into a distinct, local type.
-type station struct {
-	r.Station
-}
+type station r.Station
 
 // Station Factory
 //
@@ -50,44 +48,44 @@ func Station(identifier string) *station {
 	switch identifier {
 	case
 		"b3":
-		return &station{Station: r.Station{Name: "Bayern 3", CloseDown: "00:00", ProgramURL: r.MustParseURL("https://www.br.de/mediathek/audio/bayern3-audio-livestream-100~radioplayer.json"), Identifier: identifier, TimeZone: localLoc}}
+		s := station(r.Station{Name: "Bayern 3", CloseDown: "00:00", ProgramURL: r.MustParseURL("http://www.br.de/mediathek/audio/bayern3-audio-livestream-100~radioplayer.json"), Identifier: identifier, TimeZone: localLoc})
+		return &s
 	}
 	return nil
 }
 
 func (s *station) String() string {
-	return fmt.Sprintf("Station '%s'", s.Station.Name)
+	return fmt.Sprintf("Station '%s'", s.Name)
 }
 
-func (s *station) Matches(now *time.Time) (ok bool) {
+func (s *station) Matches(nows []time.Time) (ok bool) {
 	return true
 }
 
 // queue one scrape job: now!
-func (s *station) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (err error) {
-	jobs <- &calItemRangeURL{r.TimeURL{
+func (s *station) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error) {
+	i := calItemRangeURL(r.TimeURL{
 		Time:    time.Now(),
-		Source:  *s.Station.ProgramURL,
-		Station: s.Station,
-	}}
+		Source:  *s.ProgramURL,
+		Station: r.Station(*s),
+	})
+	jobs = append(jobs, &i)
 	return
 }
 
 /////////////////////////////////////////////////////////////////////////////
 /// Just wrap TimeURL into a distinct, local type - a Scraper, naturally
-type calItemRangeURL struct {
-	r.TimeURL
-}
+type calItemRangeURL r.TimeURL
 
-func (url *calItemRangeURL) Matches(now *time.Time) (ok bool) {
+func (url *calItemRangeURL) Matches(nows []time.Time) (ok bool) {
 	return true
 }
 
-func (url *calItemRangeURL) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (err error) {
+func (url *calItemRangeURL) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error) {
 	bcs, err := url.parseBroadcasts()
 	if nil == err {
 		for _, bc := range bcs {
-			results <- bc
+			results = append(results, bc)
 		}
 	}
 	return
@@ -170,7 +168,7 @@ func (url *calItemRangeURL) parseBroadcastsReader(read io.Reader) (bcs []r.Broad
 	cr := r.NewCountingReader(read)
 	var f B3Programm
 	err = json.NewDecoder(cr).Decode(&f)
-	fmt.Fprintf(os.Stderr, "parsed %d bytes\n", cr.TotalBytes)
+	fmt.Fprintf(os.Stderr, "parsed %d bytes 🐦 %s\n", cr.TotalBytes, url.Source.String())
 	if nil != err {
 		panic(err)
 		return

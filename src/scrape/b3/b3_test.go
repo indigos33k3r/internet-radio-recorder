@@ -42,11 +42,11 @@ func TestUnmarshalBroadcasts(t *testing.T) {
 	assert.Nil(t, err, "ouch")
 
 	s := Station("b3")
-	u := calItemRangeURL{r.TimeURL{
+	u := calItemRangeURL(r.TimeURL{
 		Time:    time.Now(),
-		Source:  *s.Station.ProgramURL,
-		Station: s.Station,
-	}}
+		Source:  *s.ProgramURL,
+		Station: r.Station(*s),
+	})
 
 	res, err := u.parseBroadcastsReader(f)
 	assert.Equal(t, 3, len(res), "53")

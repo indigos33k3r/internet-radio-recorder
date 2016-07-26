@@ -62,7 +62,7 @@ func Station(identifier string) *station {
 		"brheimat": station(r.Station{Name: "BR Heimat", CloseDown: "05:00", ProgramURL: r.MustParseURL("http://www.br.de/radio/br-heimat/programmkalender/br-heimat-116.html"), Identifier: identifier, TimeZone: tz}),
 		"puls":     station(r.Station{Name: "Puls", CloseDown: "07:00", ProgramURL: r.MustParseURL("http://www.br.de/puls/programm/puls-radio/programmkalender/programmfahne104.html"), Identifier: identifier, TimeZone: tz}),
 	}[identifier]
-	fmt.Fprintf(os.Stderr, "             %p %s\n", &s, s.Name)
+	// fmt.Fprintf(os.Stderr, "             %p %s\n", &s, s.Name)
 	return &s
 }
 
@@ -119,8 +119,7 @@ func (s *station) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error
 	if nil == err {
 		for _, v := range dayUrls {
 			// fmt.Fprintf(os.Stderr, "jobs slice   %s\n", v)
-			vv := dayUrl(v)
-			jobs = append(jobs, &vv)
+			jobs = append(jobs, &v)
 		}
 	}
 	return
