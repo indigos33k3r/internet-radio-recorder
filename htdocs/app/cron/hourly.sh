@@ -24,7 +24,7 @@ me="$(basename "$0")"
 
 echo "Start  $(/bin/date +'%FT%T')" 2>> log/"${me}".stderr.log | tee -a log/"${me}".stdout.log
 
-cmd=../bin/scrape-$(uname -s)-$(uname -m)-0.2.3
+cmd=../bin/scrape-$(uname -s)-$(uname -m)-0.2.4
 
 [ -x "${cmd}" ] || { echo "Executable ${cmd} not found." 1>&2 && exit 1 ; }
 

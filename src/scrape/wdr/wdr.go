@@ -38,9 +38,7 @@ import (
 
 /////////////////////////////////////////////////////////////////////////////
 /// Just wrap Station into a distinct, local type.
-type station struct {
-	r.Station
-}
+type station r.Station
 
 // Station Factory
 //
@@ -49,25 +47,26 @@ func Station(identifier string) *station {
 	switch identifier {
 	case
 		"wdr5":
-		return &station{Station: r.Station{Name: "WDR 5", CloseDown: "00:00", ProgramURL: r.MustParseURL("http://www.wdr.de/programmvorschau/ajax/wdr5/uebersicht/"), Identifier: identifier, TimeZone: localLoc}}
+		s := station(r.Station{Name: "WDR 5", CloseDown: "00:00", ProgramURL: r.MustParseURL("http://www.wdr.de/programmvorschau/ajax/wdr5/uebersicht/"), Identifier: identifier, TimeZone: localLoc})
+		return &s
 	}
 	return nil
 }
 
 func (s *station) String() string {
-	return fmt.Sprintf("Station '%s'", s.Station.Name)
+	return fmt.Sprintf("Station '%s'", s.Name)
 }
 
-func (s *station) Matches(now *time.Time) (ok bool) {
+func (s *station) Matches(nows []time.Time) (ok bool) {
 	return true
 }
 
 // Synthesise the day urls for incremental scraping.
-func (s *station) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (err error) {
-	t0 := time.Now()
-	for _, now := range r.IncrementalNows(&t0) {
-		day, _ := s.dayURLForDate(now)
-		jobs <- day
+func (s *station) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error) {
+	now := time.Now()
+	for _, t0 := range r.IncrementalNows(now) {
+		day, _ := s.dayURLForDate(t0)
+		jobs = append(jobs, r.Scraper(*day))
 	}
 	return
 }
@@ -75,32 +74,30 @@ func (s *station) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (e
 ///////////////////////////////////////////////////////////////////////
 // https://www.wdr.de/programmvorschau/ajax/alle/uebersicht/2016-07-23/
 func (s *station) dayURLForDate(day time.Time) (ret *dayUrl, err error) {
-	ret = &dayUrl{
-		TimeURL: r.TimeURL{
+	r := dayUrl(
+		r.TimeURL{
 			Time:    time.Date(day.Year(), day.Month(), day.Day(), 0, 0, 0, 0, s.TimeZone),
 			Source:  *r.MustParseURL(s.ProgramURL.String() + day.Format("2006-01-02/")),
-			Station: s.Station,
-		},
-	}
+			Station: r.Station(*s),
+		})
+	ret = &r
 	// err = errors.New("Not ümplemented yet.")
 	return
 }
 
 /////////////////////////////////////////////////////////////////////////////
 /// Just wrap TimeURL into a distinct, local type - a Scraper, naturally
-type dayUrl struct {
-	r.TimeURL
-}
+type dayUrl r.TimeURL
 
-func (day dayUrl) Matches(now *time.Time) (ok bool) {
+func (day dayUrl) Matches(nows []time.Time) (ok bool) {
 	return true
 }
 
-func (day dayUrl) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (err error) {
+func (day dayUrl) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error) {
 	bcs, err := day.parseBroadcastsFromURL()
 	if nil == err {
 		for _, bc := range bcs {
-			results <- bc
+			results = append(results, bc)
 		}
 	}
 	return
@@ -163,7 +160,7 @@ func (day *dayUrl) parseBroadcastsFromReader(read io.Reader) (ret []*r.Broadcast
 	cr := r.NewCountingReader(read)
 	var f WdrProgramm
 	err = json.NewDecoder(cr).Decode(&f)
-	fmt.Fprintf(os.Stderr, "parsed %d bytes\n", cr.TotalBytes)
+	fmt.Fprintf(os.Stderr, "parsed %d bytes 🐦 %s\n", cr.TotalBytes, day.Source.String())
 	if nil != err {
 		panic(err)
 		return

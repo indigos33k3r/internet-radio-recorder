@@ -42,11 +42,11 @@ func TestUnmarshalBroadcasts(t *testing.T) {
 	assert.Nil(t, err, "ouch")
 
 	s := Station("wdr5")
-	u := dayUrl{r.TimeURL{
-		Time:    time.Now(),
+	u := dayUrl(r.TimeURL{
+		Time:    time.Date(2015, time.October, 25, 0, 0, 0, 0, s.TimeZone),
 		Source:  *r.MustParseURL("http://www.wdr.de/programmvorschau/ajax/wdr5/uebersicht/2016-07-25/"),
-		Station: s.Station,
-	}}
+		Station: r.Station(*s),
+	})
 
 	res, err := u.parseBroadcastsFromReader(f)
 	assert.Equal(t, 86, len(res), "53")
