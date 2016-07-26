@@ -31,20 +31,17 @@ import (
 	"purl.mro.name/recorder/radio/scrape/br"
 	"purl.mro.name/recorder/radio/scrape/dlf"
 	"purl.mro.name/recorder/radio/scrape/m945"
+	"purl.mro.name/recorder/radio/scrape/radiofabrik"
 	"purl.mro.name/recorder/radio/scrape/wdr"
-	/*
-		"purl.mro.name/recorder/radio/scrape/radiofabrik"
-	*/)
+)
 
 func main() {
 	results := make(chan scrape.Broadcaster)
 	jobs := make(chan scrape.Scraper, 15)
 
 	var wg_jobs sync.WaitGroup
-	/*
-		wg_jobs.Add(1)
-		jobs <- radiofabrik.Station("radiofabrik")
-	*/
+	wg_jobs.Add(1)
+	jobs <- radiofabrik.Station("radiofabrik")
 	wg_jobs.Add(1)
 	jobs <- m945.Station("m945")
 	wg_jobs.Add(1)
