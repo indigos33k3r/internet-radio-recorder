@@ -98,7 +98,7 @@ func main() {
 	// write loop
 	go func() {
 		for bc := range results {
-			defer wg_results.Done()
+			wg_results.Done()
 			bc.WriteAsLuaTable(os.Stdout)
 		}
 	}()
