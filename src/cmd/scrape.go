@@ -75,7 +75,8 @@ func main() {
 
 	// scrape and write in parallel
 	go func() { // Scraper loop
-		for job := range jobs {
+		for jobb := range jobs {
+			job := jobb
 			go func() {
 				fmt.Fprintf(os.Stderr, "jobs process %p %s\n", job, job)
 				defer wg_jobs.Done()
