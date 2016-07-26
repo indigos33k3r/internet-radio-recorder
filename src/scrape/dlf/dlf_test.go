@@ -58,13 +58,11 @@ func TestParseBroadcasts(t *testing.T) {
 	assert.Nil(t, err, "ouch")
 
 	s := Station("dlf")
-	u := dayUrl{
-		r.TimeURL{
-			Time:    time.Date(2015, time.October, 25, 0, 0, 0, 0, s.TimeZone),
-			Source:  *r.MustParseURL("http://www.deutschlandfunk.de/programmvorschau.281.de.html?cal:month=10&drbm:date=25.10.2015"),
-			Station: s.Station,
-		},
-	}
+	u := dayUrl(r.TimeURL{
+		Time:    time.Date(2015, time.October, 25, 0, 0, 0, 0, s.TimeZone),
+		Source:  *r.MustParseURL("http://www.deutschlandfunk.de/programmvorschau.281.de.html?cal:month=10&drbm:date=25.10.2015"),
+		Station: r.Station(*s),
+	})
 
 	bcs, err := u.parseBroadcastsFromReader(f)
 	assert.NotNil(t, bcs, "ouch")
@@ -126,13 +124,11 @@ func TestParseBroadcasts_1(t *testing.T) {
 	assert.Nil(t, err, "ouch")
 
 	s := Station("dlf")
-	u := dayUrl{
-		r.TimeURL{
-			Time:    time.Date(2015, time.November, 14, 0, 0, 0, 0, s.TimeZone),
-			Source:  *r.MustParseURL("http://www.deutschlandfunk.de/programmvorschau.281.de.html?cal:month=10&drbm:date=14.11.2015"),
-			Station: s.Station,
-		},
-	}
+	u := dayUrl(r.TimeURL{
+		Time:    time.Date(2015, time.November, 14, 0, 0, 0, 0, s.TimeZone),
+		Source:  *r.MustParseURL("http://www.deutschlandfunk.de/programmvorschau.281.de.html?cal:month=10&drbm:date=14.11.2015"),
+		Station: r.Station(*s),
+	})
 
 	bcs, err := u.parseBroadcastsFromReader(f)
 	assert.NotNil(t, bcs, "ouch")

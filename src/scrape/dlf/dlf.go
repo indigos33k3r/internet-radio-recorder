@@ -38,20 +38,18 @@ import (
 
 /////////////////////////////////////////////////////////////////////////////
 /// Just wrap Station into a distinct, local type - a Scraper, naturally
-type station struct {
-	r.Station
-}
+type station r.Station
 
 // Station Factory
 func Station(identifier string) *station {
-	tz, err := time.LoadLocation("Europe/Berlin")
-	if nil != err {
-		panic(err)
+	tz, _ := time.LoadLocation("Europe/Berlin")
+	switch identifier {
+	case
+		"dlf":
+		s := station(r.Station{Name: "Deutschlandfunk", CloseDown: "00:00", ProgramURL: r.MustParseURL("http://www.deutschlandfunk.de/programmvorschau.281.de.html"), Identifier: identifier, TimeZone: tz})
+		return &s
 	}
-	s := map[string]*station{
-		"dlf": &station{Station: r.Station{Name: "Deutschlandfunk", CloseDown: "00:00", ProgramURL: r.MustParseURL("http://www.deutschlandfunk.de/programmvorschau.281.de.html"), Identifier: identifier, TimeZone: tz}},
-	}[identifier]
-	return s
+	return nil
 }
 
 /// Stringer
@@ -59,17 +57,16 @@ func (s *station) String() string {
 	return fmt.Sprintf("Station '%s'", s.Name)
 }
 
-/// r.Scraper
-func (s *station) Matches(now *time.Time) (ok bool) {
+func (s *station) Matches(nows []time.Time) (ok bool) {
 	return true
 }
 
-// Synthesise the day urls for incremental scraping.
-func (s *station) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (err error) {
-	t0 := time.Now()
-	for _, now := range r.IncrementalNows(&t0) {
-		day, _ := s.dayURLForDate(now)
-		jobs <- day
+// Synthesise calItemRangeURLs for incremental scraping and queue them up
+func (s *station) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error) {
+	now := time.Now()
+	for _, t0 := range r.IncrementalNows(now) {
+		day, _ := s.dayURLForDate(t0)
+		jobs = append(jobs, r.Scraper(*day))
 	}
 	return
 }
@@ -78,34 +75,32 @@ func (s *station) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (e
 // http://www.deutschlandfunk.de/programmvorschau.281.de.html?drbm:date=19.11.2015
 
 func (s *station) dayURLForDate(day time.Time) (ret *dayUrl, err error) {
-	ret = &dayUrl{
-		TimeURL: r.TimeURL{
+	r := dayUrl(
+		r.TimeURL{
 			Time:    time.Date(day.Year(), day.Month(), day.Day(), 0, 0, 0, 0, s.TimeZone),
 			Source:  *r.MustParseURL(s.ProgramURL.String() + day.Format("?drbm:date=02.01.2006")),
-			Station: s.Station,
-		},
-	}
+			Station: r.Station(*s),
+		})
+	ret = &r
 	// err = errors.New("Not ümplemented yet.")
 	return
 }
 
 /////////////////////////////////////////////////////////////////////////////
 /// Just wrap TimeURL into a distinct, local type - a Scraper, naturally
-type dayUrl struct {
-	r.TimeURL
-}
+type dayUrl r.TimeURL
 
 /// r.Scraper
-func (day dayUrl) Matches(now *time.Time) (ok bool) {
+func (day dayUrl) Matches(nows []time.Time) (ok bool) {
 	return true
 }
 
 // Scrape broadcasts from a day page.
-func (day dayUrl) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (err error) {
+func (day dayUrl) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error) {
 	bcs, err := day.parseBroadcastsFromURL()
 	if nil == err {
 		for _, bc := range bcs {
-			results <- bc
+			results = append(results, bc)
 		}
 	}
 	return
@@ -125,9 +120,10 @@ func (day *dayUrl) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast,
 		// prepare response
 		bc := r.Broadcast{
 			BroadcastURL: r.BroadcastURL{
-				TimeURL: day.TimeURL,
+				TimeURL: r.TimeURL(*day),
 			},
 		}
+
 		// some defaults
 		bc.Language = &lang_de
 		bc.Publisher = &publisher
@@ -198,7 +194,7 @@ func (day *dayUrl) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast,
 func (day *dayUrl) parseBroadcastsFromReader(read io.Reader) (ret []*r.Broadcast, err error) {
 	cr := r.NewCountingReader(read)
 	root, err := html.Parse(cr)
-	fmt.Fprintf(os.Stderr, "parsed %d bytes\n", cr.TotalBytes)
+	fmt.Fprintf(os.Stderr, "parsed %d bytes 🐦 %s\n", cr.TotalBytes, day.Source.String())
 	if nil != err {
 		return
 	}
