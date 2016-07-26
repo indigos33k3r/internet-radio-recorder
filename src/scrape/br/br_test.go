@@ -92,7 +92,10 @@ func TestParseCalendarForDayURLs(t *testing.T) {
 	b2 := Station("b2")
 	tus, err := b2.parseDayURLsReader(f)
 	assert.Equal(t, 37, len(tus), "ouch")
-	assert.Equal(t, "b2", tus[0].TimeURL.Station.Identifier, "ouch: ")
+	assert.Equal(t, "b2", tus[0].Station.Identifier, "ouch: ")
+	assert.Equal(t, "2015-08-23 05:00:00 +0200 CEST", tus[0].Time.String(), "ouch: ")
+	assert.Equal(t, "2015-08-26 05:00:00 +0200 CEST", tus[1].Time.String(), "ouch: ")
+	assert.Equal(t, "2015-12-09 05:00:00 +0100 CET", tus[36].Time.String(), "ouch: ")
 }
 
 func TestParseScheduleForBroadcasts(t *testing.T) {
@@ -102,11 +105,9 @@ func TestParseScheduleForBroadcasts(t *testing.T) {
 
 	s := Station("b2")
 	u := dayUrl{
-		r.TimeURL{
-			Time:    time.Date(2015, time.October, 21, 5, 0, 0, 0, localLoc),
-			Source:  *r.MustParseURL("http://www.br.de/radio/bayern2/programmkalender/programmfahne102~_date-2015-10-21_-5ddeec3fc12bdd255a6c45c650f068b54f7b010b.html"),
-			Station: s.Station,
-		},
+		Time:    time.Date(2015, time.October, 21, 5, 0, 0, 0, localLoc),
+		Source:  *r.MustParseURL("http://www.br.de/radio/bayern2/programmkalender/programmfahne102~_date-2015-10-21_-5ddeec3fc12bdd255a6c45c650f068b54f7b010b.html"),
+		Station: r.Station(*s),
 	}
 
 	a, err := u.parseBroadcastURLsReader(f)
@@ -127,14 +128,12 @@ func TestParseBroadcast_0(t *testing.T) {
 
 	s := Station("b2")
 	t0 := broadcastURL{
-		r.BroadcastURL{
-			TimeURL: r.TimeURL{
-				Time:    time.Date(2015, time.October, 21, 0, 12, 0, 0, localLoc),
-				Source:  *r.MustParseURL("http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-472548.html"),
-				Station: s.Station,
-			},
-			Title: "Concerto bavarese",
+		TimeURL: r.TimeURL{
+			Time:    time.Date(2015, time.October, 21, 0, 12, 0, 0, localLoc),
+			Source:  *r.MustParseURL("http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-472548.html"),
+			Station: r.Station(*s),
 		},
+		Title: "Concerto bavarese",
 	}
 	// http://rec.mro.name/stations/b2/2015/10/21/0012%20Concerto%20bavarese
 	bc, err := t0.parseBroadcastReader(f)
@@ -165,14 +164,13 @@ func TestParseBroadcast_1(t *testing.T) {
 
 	s := Station("b2")
 	t0 := broadcastURL{
-		r.BroadcastURL{
-			TimeURL: r.TimeURL{
-				Time:    time.Date(2015, time.October, 21, 10, 5, 0, 0, localLoc),
-				Source:  *r.MustParseURL("http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-472576.html"),
-				Station: s.Station,
-			},
-			Title: "Notizbuch",
-		}}
+		TimeURL: r.TimeURL{
+			Time:    time.Date(2015, time.October, 21, 10, 5, 0, 0, localLoc),
+			Source:  *r.MustParseURL("http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-472576.html"),
+			Station: r.Station(*s),
+		},
+		Title: "Notizbuch",
+	}
 
 	// http://rec.mro.name/stations/b2/2015/10/21/1005%20Notizbuch
 	bc, err := t0.parseBroadcastReader(f)
@@ -203,14 +201,13 @@ func TestParseBroadcastUntilMidnight(t *testing.T) {
 
 	s := Station("b2")
 	t0 := broadcastURL{
-		r.BroadcastURL{
-			TimeURL: r.TimeURL{
-				Time:    time.Date(2015, time.October, 21, 23, 5, 0, 0, localLoc),
-				Source:  *r.MustParseURL("http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-472628.html"),
-				Station: s.Station,
-			},
-			Title: "Nachtmix",
-		}}
+		TimeURL: r.TimeURL{
+			Time:    time.Date(2015, time.October, 21, 23, 5, 0, 0, localLoc),
+			Source:  *r.MustParseURL("http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-472628.html"),
+			Station: r.Station(*s),
+		},
+		Title: "Nachtmix",
+	}
 
 	// http://rec.mro.name/stations/b2/2015/10/21/2305%20Nachtmix
 	bc, err := t0.parseBroadcastReader(f)
@@ -241,14 +238,13 @@ func TestParseBroadcastWithImage1(t *testing.T) {
 
 	s := Station("b2")
 	t0 := broadcastURL{
-		r.BroadcastURL{
-			TimeURL: r.TimeURL{
-				Time:    time.Date(2015, time.November, 16, 16, 5, 0, 0, localLoc),
-				Source:  *r.MustParseURL("http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-498522.html"),
-				Station: s.Station,
-			},
-			Title: "Nachrichten, Wetter",
-		}}
+		TimeURL: r.TimeURL{
+			Time:    time.Date(2015, time.November, 16, 16, 5, 0, 0, localLoc),
+			Source:  *r.MustParseURL("http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-498522.html"),
+			Station: r.Station(*s),
+		},
+		Title: "Nachrichten, Wetter",
+	}
 
 	// http://rec.mro.name/stations/b2/2015/11/16/1605%20Eins%20zu%20Eins.%20Der%20Talk
 	bc, err := t0.parseBroadcastReader(f)
@@ -267,14 +263,13 @@ func TestParseBroadcast23h55min(t *testing.T) {
 
 	s := Station("b+")
 	t0 := broadcastURL{
-		r.BroadcastURL{
-			TimeURL: r.TimeURL{
-				Time:    time.Date(2015, time.November, 11, 15, 5, 0, 0, localLoc),
-				Source:  *r.MustParseURL("http://www.br.de/radio/bayern-plus/programmkalender/ausstrahlung-497666.html"),
-				Station: s.Station,
-			},
-			Title: "Bayern plus - Meine Schlager hören",
-		}}
+		TimeURL: r.TimeURL{
+			Time:    time.Date(2015, time.November, 11, 15, 5, 0, 0, localLoc),
+			Source:  *r.MustParseURL("http://www.br.de/radio/bayern-plus/programmkalender/ausstrahlung-497666.html"),
+			Station: r.Station(*s),
+		},
+		Title: "Bayern plus - Meine Schlager hören",
+	}
 
 	// http://rec.mro.name/stations/b%2b/2015/11/15/0005%20Bayern%20plus%20-%20Meine%20Schlager%20h%C3%B6ren
 	bc, err := t0.parseBroadcastReader(f)
@@ -308,14 +303,13 @@ func TestParseBroadcastDescriptionWhitespace(t *testing.T) {
 
 	s := Station("b2")
 	t0 := broadcastURL{
-		r.BroadcastURL{
-			TimeURL: r.TimeURL{
-				Time:    time.Date(2015, time.November, 11, 15, 9, 0, 0, localLoc),
-				Source:  *r.MustParseURL("http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-497000.html"),
-				Station: s.Station,
-			},
-			Title: "Nachrichten, Wetter",
-		}}
+		TimeURL: r.TimeURL{
+			Time:    time.Date(2015, time.November, 11, 15, 9, 0, 0, localLoc),
+			Source:  *r.MustParseURL("http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-497000.html"),
+			Station: r.Station(*s),
+		},
+		Title: "Nachrichten, Wetter",
+	}
 
 	// http://rec.mro.name/stations/b2/2015/11/15/0900%20Nachrichten%2c%20Wetter.xml
 	bc, err := t0.parseBroadcastReader(f)
@@ -333,7 +327,7 @@ func TestParsePulseProgram(t *testing.T) {
 
 	a, err := s.parseDayURLsReader(f)
 	assert.Equal(t, 25, len(a), "ouch: len")
-	assert.Equal(t, "puls", a[0].TimeURL.Station.Identifier, "ouch: ")
+	assert.Equal(t, "puls", a[0].Station.Identifier, "ouch: ")
 	assert.Equal(t, "2015-09-27T07:00:00+02:00", a[0].Time.Format(time.RFC3339), "ouch: ")
 	assert.Equal(t, "2015-11-17T07:00:00+01:00", a[17].Time.Format(time.RFC3339), "ouch: ")
 }

@@ -26,79 +26,88 @@ import (
 	"time"
 
 	"purl.mro.name/recorder/radio/scrape"
-	"purl.mro.name/recorder/radio/scrape/b3"
-	"purl.mro.name/recorder/radio/scrape/b4"
 	"purl.mro.name/recorder/radio/scrape/br"
-	"purl.mro.name/recorder/radio/scrape/dlf"
-	"purl.mro.name/recorder/radio/scrape/m945"
-	"purl.mro.name/recorder/radio/scrape/radiofabrik"
-	"purl.mro.name/recorder/radio/scrape/wdr"
-)
+	/*	"purl.mro.name/recorder/radio/scrape/b3"
+		"purl.mro.name/recorder/radio/scrape/b4"
+		"purl.mro.name/recorder/radio/scrape/dlf"
+		"purl.mro.name/recorder/radio/scrape/m945"
+		"purl.mro.name/recorder/radio/scrape/radiofabrik"
+		"purl.mro.name/recorder/radio/scrape/wdr"
+	*/)
 
 func main() {
 	results := make(chan scrape.Broadcaster)
-	jobs := make(chan scrape.Scraper, 1)
+	jobs := make(chan scrape.Scraper, 15)
 
-	var wg_scrapers sync.WaitGroup
-
-	wg_scrapers.Add(1)
-	go func() {
-		defer wg_scrapers.Done()
-		jobs <- wdr.Station("wdr5") // json data!
-		jobs <- b3.Station("b3")    // json data!
+	var wg_jobs sync.WaitGroup
+	/*
+		wg_jobs.Add(1)
+		jobs <- wdr.Station("wdr5")
+		wg_jobs.Add(1)
+		jobs <- b3.Station("b3")
+		wg_jobs.Add(1)
 		jobs <- radiofabrik.Station("radiofabrik")
+		wg_jobs.Add(1)
 		jobs <- m945.Station("m945")
+		wg_jobs.Add(1)
 		jobs <- dlf.Station("dlf")
-		jobs <- br.Station("b1")
-		jobs <- br.Station("b2")
+		wg_jobs.Add(1)
 		jobs <- b4.Station("b4")
-		jobs <- br.Station("b5")
-		jobs <- br.Station("b+")
-		jobs <- br.Station("brheimat")
-		jobs <- br.Station("puls")
-	}()
+		wg_jobs.Add(1)
+	*/
+	wg_jobs.Add(1)
+	jobs <- br.Station("b1")
+	wg_jobs.Add(1)
+	jobs <- br.Station("b2")
+	wg_jobs.Add(1)
+	jobs <- br.Station("b5")
+	wg_jobs.Add(1)
+	jobs <- br.Station("b+")
+	wg_jobs.Add(1)
+	jobs <- br.Station("brheimat")
+	wg_jobs.Add(1)
+	jobs <- br.Station("puls")
 
 	now := time.Now()
+	var wg_write sync.WaitGroup
 
-	incremental_nows := scrape.IncrementalNows(&now)
+	nows := scrape.IncrementalNows(now)
 
-	// Scraper loop
-	go func() {
+	// scrape and write in parallel
+	go func() { // Scraper loop
 		for job := range jobs {
-			for _, n := range incremental_nows {
-				if job.Matches(&n) {
-					goto DoScrape
-				}
-			}
-			continue
-		DoScrape:
-			wg_scrapers.Add(1)
 			go func() {
-				defer wg_scrapers.Done()
-				err := job.Scrape(jobs, results)
+				fmt.Fprintf(os.Stderr, "jobs process %p %s\n", job, job)
+				defer wg_jobs.Done()
+				scrapers, bcs, err := job.Scrape()
 				if nil != err {
 					fmt.Fprintf(os.Stderr, "error %s %s\n", job, err)
+				}
+				for _, s := range scrapers {
+					if s.Matches(nows) {
+						wg_jobs.Add(1)
+						fmt.Fprintf(os.Stderr, "jobs queue   %p %s\n", s, s)
+						jobs <- s
+					}
+				}
+				for _, b := range bcs {
+					wg_write.Add(1)
+					results <- b
 				}
 			}()
 		}
 	}()
 
-	var wg_write sync.WaitGroup
-	// Broadcaster loop
+	// write loop
 	go func() {
-		wg_write.Add(1)
-		defer wg_write.Done()
 		for bc := range results {
 			// bcc := bc.Broadcast()
 			// fmt.Fprintf(os.Stderr, "done     %s - %s '%s' %s\n", bcc.Time, bcc.DtEnd, bcc.Title, bcc.Source.String())
 			bc.WriteAsLuaTable(os.Stdout)
+			wg_write.Done()
 		}
 	}()
 
-	time.Sleep(1 * time.Second)
-	wg_scrapers.Wait()
-	close(jobs)
-	close(results)
+	wg_jobs.Wait()
 	wg_write.Wait()
-	time.Sleep(25 * time.Second)
 }

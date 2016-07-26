@@ -42,11 +42,10 @@ import (
 
 // Something that can be scraped.
 type Scraper interface {
-	// scrape and fill intermediate results into 'jobs', final ones into 'results'
-	Scrape(jobs chan<- Scraper, results chan<- Broadcaster) (err error)
+	Scrape() (jobs []Scraper, results []Broadcaster, err error)
 
 	// is (re-)scraping due for this entity?
-	Matches(now *time.Time) (ok bool)
+	Matches(nows []time.Time) (ok bool)
 }
 
 // Something that can write broadcast(s) dataset to a writer.
@@ -135,7 +134,7 @@ func (cr *CountingReader) Read(p []byte) (n int, err error) {
 //////////////////////////////////////////////////////////////////////////////////////////
 
 // Instances of time.Time when incremental scrapes are due.
-func IncrementalNows(now *time.Time) (ret []time.Time) {
+func IncrementalNows(now time.Time) (ret []time.Time) {
 	src := []time.Duration{0, 12, 3 * 24, 7 * 24, 7 * 7 * 24}
 	ret = make([]time.Time, len(src))
 	for i, h := range src {
@@ -165,7 +164,7 @@ type TimeURL struct {
 }
 
 func (d *TimeURL) String() string {
-	return fmt.Sprintf("%s %s", d.Time.Format("2006-01-02 15:04 MST"), d.Source.String())
+	return fmt.Sprintf("%s %p %s", d.Time.Format("2006-01-02 15:04 MST"), d, d.Source.String())
 }
 
 // Basic data about a url connected with a boadcast.
