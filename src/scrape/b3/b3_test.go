@@ -55,7 +55,7 @@ func TestUnmarshalBroadcasts(t *testing.T) {
 	assert.Nil(t, err, "ouch")
 	assert.Equal(t, "b3", bc.Station.Identifier, "ouch: Station.Identifier")
 	assert.Equal(t, "Die Frühaufdreher", bc.Title, "ouch: Title")
-	assert.Equal(t, "https://www.br.de/mediathek/audio/bayern3-audio-livestream-100~radioplayer.json", bc.Source.String(), "ouch: Source")
+	assert.Equal(t, "http://www.br.de/mediathek/audio/bayern3-audio-livestream-100~radioplayer.json", bc.Source.String(), "ouch: Source")
 	assert.NotNil(t, bc.Language, "ouch: Language")
 	assert.Equal(t, "de", *bc.Language, "ouch: Language")
 	assert.Nil(t, bc.TitleSeries, "ouch: TitleSeries")

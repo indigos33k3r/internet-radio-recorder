@@ -27,12 +27,12 @@ import (
 
 	"purl.mro.name/recorder/radio/scrape"
 	"purl.mro.name/recorder/radio/scrape/b3"
+	"purl.mro.name/recorder/radio/scrape/b4"
 	"purl.mro.name/recorder/radio/scrape/br"
-	/*	"purl.mro.name/recorder/radio/scrape/b4"
-		"purl.mro.name/recorder/radio/scrape/dlf"
-		"purl.mro.name/recorder/radio/scrape/m945"
-		"purl.mro.name/recorder/radio/scrape/radiofabrik"
-		"purl.mro.name/recorder/radio/scrape/wdr"
+	/*		"purl.mro.name/recorder/radio/scrape/dlf"
+			"purl.mro.name/recorder/radio/scrape/m945"
+			"purl.mro.name/recorder/radio/scrape/radiofabrik"
+			"purl.mro.name/recorder/radio/scrape/wdr"
 	*/)
 
 func main() {
@@ -55,6 +55,8 @@ func main() {
 	*/
 	wg_jobs.Add(1)
 	jobs <- b3.Station("b3")
+	wg_jobs.Add(1)
+	jobs <- b4.Station("b4")
 	wg_jobs.Add(1)
 	jobs <- br.Station("b1")
 	/*	wg_jobs.Add(1)

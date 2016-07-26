@@ -45,9 +45,7 @@ import (
 
 /////////////////////////////////////////////////////////////////////////////
 /// Just wrap Station into a distinct, local type.
-type station struct {
-	r.Station
-}
+type station r.Station
 
 // Station Factory
 //
@@ -56,25 +54,26 @@ func Station(identifier string) *station {
 	switch identifier {
 	case
 		"b4":
-		return &station{Station: r.Station{Name: "Bayern 4", CloseDown: "06:00", ProgramURL: r.MustParseURL("https://www.br-klassik.de/programm/radio/index.html"), Identifier: identifier, TimeZone: localLoc}}
+		s := station(r.Station{Name: "Bayern 4", CloseDown: "06:00", ProgramURL: r.MustParseURL("https://www.br-klassik.de/programm/radio/index.html"), Identifier: identifier, TimeZone: localLoc})
+		return &s
 	}
 	return nil
 }
 
 func (s *station) String() string {
-	return fmt.Sprintf("Station '%s'", s.Station.Name)
+	return fmt.Sprintf("Station '%s'", s.Name)
 }
 
-func (s *station) Matches(now *time.Time) (ok bool) {
+func (s *station) Matches(nows []time.Time) (ok bool) {
 	return true
 }
 
 // Synthesise calItemRangeURLs for incremental scraping and queue them up
-func (s *station) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (err error) {
+func (s *station) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error) {
 	now := time.Now()
-	for _, t0 := range r.IncrementalNows(&now) {
+	for _, t0 := range r.IncrementalNows(now) {
 		u, _ := s.calendarItemRangeURLForTime(t0)
-		jobs <- u
+		jobs = append(jobs, r.Scraper(u))
 	}
 	return
 }
@@ -88,29 +87,22 @@ func (s *station) calendarItemRangeURLForTime(t time.Time) (ret *calItemRangeURL
 	}
 	t0 := t.Add(time.Minute)
 	t1 := t0.Add(time.Hour)
-	ret = &calItemRangeURL{
-		TimeURL: r.TimeURL{
-			Time:    t0,
-			Source:  *r.MustParseURL("https://www.br-klassik.de/programm/radio/radiosendungen-100~calendarItems.jsp?rows=800" + t0.Format("&from=2006-01-02T15:04:05") + t1.Format("&to=2006-01-02T15:04:05")),
-			Station: s.Station,
-		},
-	}
+	r := calItemRangeURL(r.TimeURL{
+		Time:    t0,
+		Source:  *r.MustParseURL("https://www.br-klassik.de/programm/radio/radiosendungen-100~calendarItems.jsp?rows=800" + t0.Format("&from=2006-01-02T15:04:05") + t1.Format("&to=2006-01-02T15:04:05")),
+		Station: r.Station(*s),
+	})
+	ret = &r
 	// err = errors.New("Not ümplemented yet.")
 	return
 }
 
 /////////////////////////////////////////////////////////////////////////////
 /// Just wrap TimeURL into a distinct, local type - a Scraper, naturally
-type calItemRangeURL struct {
-	r.TimeURL
-}
-
-func (day *calItemRangeURL) Matches(now *time.Time) (ok bool) {
-	return true
-}
+type calItemRangeURL r.TimeURL
 
 // Fetch calendarItems in given interval (via json)
-func (day *calItemRangeURL) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (err error) {
+func (day *calItemRangeURL) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error) {
 	calendarItems, err := day.parseCalendarItems()
 	if nil != err {
 		return
@@ -118,10 +110,14 @@ func (day *calItemRangeURL) Scrape(jobs chan<- r.Scraper, results chan<- r.Broad
 	for _, cis := range calendarItems {
 		bc, err := cis.parseBroadcastSeedString(&cis.Html)
 		if nil == err {
-			jobs <- bc
+			jobs = append(jobs, bc)
 		}
 	}
 	return
+}
+
+func (day *calItemRangeURL) Matches(nows []time.Time) (ok bool) {
+	return true
 }
 
 func (rangeURL *calItemRangeURL) parseCalendarItems() (cis []calendarItem, err error) {
@@ -138,7 +134,7 @@ func (rangeURL *calItemRangeURL) parseCalendarItemsReader(read io.Reader) (cis [
 	cr := r.NewCountingReader(io.LimitReader(read, 1048576))
 	cis = make([]calendarItem, 0)
 	err = json.NewDecoder(cr).Decode(&cis)
-	fmt.Fprintf(os.Stderr, "parsed %d bytes\n", cr.TotalBytes)
+	fmt.Fprintf(os.Stderr, "parsed %d bytes 🐦 %s\n", cr.TotalBytes, rangeURL.Source.String())
 	if nil != err {
 		panic(err)
 		return
@@ -152,14 +148,12 @@ func (rangeURL *calItemRangeURL) parseCalendarItemsReader(read io.Reader) (cis [
 /////////////////////////////////////////////////////////////////////////////
 /// datetime from JSON response
 /// https://www.br-klassik.de/programm/radio/radiosendungen-100~calendarItems.jsp?rows=800&from=2015-11-30T04:59:59&to=2015-11-30T06:00:00
-type Time struct {
-	time.Time
-}
+type Time time.Time
 
 // http://stackoverflow.com/a/25088079
 func (t *Time) UnmarshalJSON(b []byte) error {
 	tmp, err := time.ParseInLocation(jsonTimeFmt, string(b[:]), localLoc)
-	*t = Time{tmp}
+	*t = Time(tmp)
 	return err
 }
 
@@ -197,7 +191,7 @@ func (item *calendarItem) parseBroadcastSeedString(htm *string) (bc *broadcastUR
 func (item *calendarItem) parseBroadcastSeedNode(root *html.Node) (bc *broadcastURL, err error) {
 	bc = &broadcastURL{}
 	bc.Station = *item.Station
-	bc.Time = item.DateTime.Time
+	bc.Time = time.Time(item.DateTime)
 	for _, a := range scrape.FindAll(root, func(n *html.Node) bool {
 		if atom.A != n.DataAtom {
 			return false
@@ -222,14 +216,14 @@ type broadcastURL struct {
 	Image *url.URL
 }
 
-func (b *broadcastURL) Matches(now *time.Time) (ok bool) {
+func (b *broadcastURL) Matches(nows []time.Time) (ok bool) {
 	return true
 }
 
-func (b *broadcastURL) Scrape(jobs chan<- r.Scraper, results chan<- r.Broadcaster) (err error) {
+func (b *broadcastURL) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error) {
 	bc, err := b.parseBroadcast()
 	if nil == err {
-		results <- bc
+		results = append(results, bc)
 	}
 	return
 }
@@ -356,7 +350,7 @@ func (bcu *broadcastURL) parseBroadcastNode(root *html.Node) (bc r.Broadcast, er
 func (bcu *broadcastURL) parseBroadcastReader(read io.Reader) (bc r.Broadcast, err error) {
 	cr := r.NewCountingReader(read)
 	root, err := html.Parse(cr)
-	fmt.Fprintf(os.Stderr, "parsed %d bytes\n", cr.TotalBytes)
+	fmt.Fprintf(os.Stderr, "parsed %d bytes 🐠 %s\n", cr.TotalBytes, bcu.Source.String())
 	if nil != err {
 		return
 	}
