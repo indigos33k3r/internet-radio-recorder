@@ -106,6 +106,28 @@
     </xsl:choose>
   </xsl:template>
 
+  <xsl:template name="station_logo">
+    <xsl:param name="id" select="."/>
+    <xsl:choose>
+    	<!-- could be pulled from the about.rdf -->
+    <!--
+      <xsl:when test="$id = 'b1'">https://upload.wikimedia.org/wikipedia/de/e/e3/Bayern_plus.svg</xsl:when>
+      <xsl:when test="$id = 'b2'">https://upload.wikimedia.org/wikipedia/de/2/27/Bayern_2_%282007%29.svg</xsl:when>
+      <xsl:when test="$id = 'b3'">https://upload.wikimedia.org/wikipedia/commons/d/de/Bayern3_logo_2015.svg</xsl:when>
+      <xsl:when test="$id = 'b4'">https://upload.wikimedia.org/wikipedia/de/c/ca/BR-Klassik.svg</xsl:when>
+      <xsl:when test="$id = 'b5'">https://upload.wikimedia.org/wikipedia/de/9/9f/B5_aktuell_%282007%29.svg</xsl:when>
+      <xsl:when test="$id = 'b+'">https://upload.wikimedia.org/wikipedia/de/e/e3/Bayern_plus.svg</xsl:when>
+      <xsl:when test="$id = 'brheimat'">https://upload.wikimedia.org/wikipedia/commons/d/d0/BR_Heimat_Logo.svg</xsl:when>
+      <xsl:when test="$id = 'puls'">https://upload.wikimedia.org/wikipedia/commons/e/e7/BR_puls_Logo.svg</xsl:when>
+      <xsl:when test="$id = 'm945'">http://www.m945.de/images/logo_footer.png</xsl:when>
+      <xsl:when test="$id = 'dlf'">https://upload.wikimedia.org/wikipedia/commons/f/fd/Deutschlandfunk.svg</xsl:when>
+      <xsl:when test="$id = 'wdr5'">http://www1.wdr.de/resources/img/wdr/logo/epgmodule/wdr5_logo.svg</xsl:when>
+      <xsl:when test="$id = 'radiofabrik'">https://upload.wikimedia.org/wikipedia/commons/3/31/Rf_logo2008badge.svg</xsl:when>
+    -->
+      <xsl:otherwise>../../../../<xsl:value-of select="$id"/>/app/logo.svg</xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
   <xsl:template match="/rec:broadcast">
     <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{rec:meta[@name='DC.language']/@content}">
       <head>
@@ -136,22 +158,27 @@
         <ul id="whatsonnow" class="buttongroup">
           <xsl:for-each select="$now_fellows_xml/*/rec:broadcast">
             <xsl:variable name="fellow_station_name" select="substring-before(rec:meta[@name='DC.identifier']/@content, '/')"/> 
-            <li><a href="../../../../{rec:meta[@name='DC.identifier']/@content}">
+            <li id="station_{$fellow_station_name}"><a href="../../../../{rec:meta[@name='DC.identifier']/@content}">
               <span class="station"><xsl:value-of select="$fellow_station_name"/></span><xsl:text> </xsl:text>
-              <img style="display:none;max-height:1.7ex;max-width:15ex" alt="" src="{rec:meta[@name='DC.image']/@content}"/>
+              <!-- safari doesn't like that:
+              <xsl:variable name="station_logo">
+                <xsl:call-template name="station_logo"><xsl:with-param name="id" select="$fellow_station_name"/></xsl:call-template>
+              </xsl:variable>
+              <img style="max-height:1.7ex;max-width:15ex" alt="" src="{$station_logo}"/>
+              -->
               <br class='br'/>
               <span class="broadcast"><xsl:value-of select="rec:meta[@name='DC.title']/@content"/></span>
             </a></li>
           </xsl:for-each>
         </ul>
         <ul id="navigation" class="buttongroup" title="Navigation">
-          <li><a id="prev_week" href="../../../../../app/now.lua?t=P-7D" title="Woche vorher">&lt;&lt;&lt;<br class="br"/>P-1W</a></li>
-          <li><a id="yesterday" href="../../../../../app/now.lua?t=P-1D" title="Tag vorher">&lt;&lt;<br class="br"/>P-1D</a></li>
+          <li><a id="prev_week" href="../../../../../app/now.lua?t=P-7D" title="Woche vorher">&lt;&lt;&lt;<br class="br"/><span>-1W</span></a></li>
+          <li><a id="yesterday" href="../../../../../app/now.lua?t=P-1D" title="Tag vorher">&lt;&lt;<br class="br"/><span>-1D</span></a></li>
           <li><a href="../../../../../app/prev.lua" rel="prev" title="Sendung vorher">&lt;</a></li>
           <li class="now"><a href="../../../now">aktuell</a></li>
           <li><a href="../../../../../app/next.lua" rel="next" title="Sendung nachher">&gt;</a></li>
-          <li><a id="tomorrow" href="../../../../../app/now.lua?t=P1D" title="Tag nachher">&gt;&gt;<br class="br"/>P+1D</a></li>
-          <li><a id="next_week" href="../../../../../app/now.lua?t=P7D" title="Woche nachher">&gt;&gt;&gt;<br class="br"/>P+1W</a></li>
+          <li><a id="tomorrow" href="../../../../../app/now.lua?t=P1D" title="Tag nachher">&gt;&gt;<br class="br"/><span>+1D</span></a></li>
+          <li><a id="next_week" href="../../../../../app/now.lua?t=P7D" title="Woche nachher">&gt;&gt;&gt;<br class="br"/><span>+1W</span></a></li>
         </ul>
         <div class="summary">
           <h2 id="series">

@@ -71,11 +71,15 @@ $.ajax({ url: podasts_json_url, cache: true, dataType: 'json' }).success( functi
 $( '#dtstart' ).html( moment(dtstart).format('ddd D[.] MMM YYYY HH:mm') );
 $( '#dtend' ).html( moment(dtend).format('HH:mm') );
 
-// add today/tomorrow links
+// rewrite today/tomorrow links
 $( '#prev_week' ).attr('href', '../../../' + moment(dtstart).subtract('days', 7).format() );
 $( '#yesterday' ).attr('href', '../../../' + moment(dtstart).subtract('days', 1).format() );
 $( '#tomorrow'  ).attr('href', '../../../' + moment(dtstart).add('days', 1).format() );
 $( '#next_week' ).attr('href', '../../../' + moment(dtstart).add('days', 7).format() );
+
+// todo: mark current station
+// step 1: what is the current station?
+// step 2: iterate all ul#whatsonnow li and mark the according on with class is_current
 
 function finishAlldayCurrentEntry(a) {
   a.removeClass('is_past').addClass('is_current').append( jQuery('<span/>').text('jetzt') );
