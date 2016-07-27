@@ -109,6 +109,7 @@ func init() {
 type B3Programm struct {
 	Broadcasts []struct {
 		Headline            string
+		SubTitle            string
 		StartTime           string
 		EndTime             string
 		HomepageURL         string
@@ -151,7 +152,7 @@ func (bcu *calItemRangeURL) parseBroadcastsFromData(programm B3Programm) (bcs []
 		}
 		b.Title = *stripPrefix(b3.Headline)
 		b.TitleSeries = stripPrefix(b3.BroadcastSeriesName)
-
+		b.TitleEpisode = stripPrefix(b3.SubTitle)
 		{ // Time (start)
 			start, err0 := time.Parse(time.RFC3339, b3.StartTime)
 			err = err0
