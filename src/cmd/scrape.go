@@ -36,34 +36,13 @@ import (
 )
 
 func main() {
-	results := make(chan scrape.Broadcaster) // sequential
 	jobs := make(chan scrape.Scraper, 15)    // concurrent
-	defer close(results)
+	results := make(chan scrape.Broadcaster) // sequential
 	defer close(jobs)
+	defer close(results)
 
 	var wg_jobs sync.WaitGroup
 	var wg_results sync.WaitGroup
-
-	{
-		// seed all the radio stations to scrape
-		for _, s := range []string{"b1", "b2", "b5", "b+", "brheimat", "puls"} {
-			wg_jobs.Add(1)
-			jobs <- br.Station(s)
-		}
-		wg_jobs.Add(1)
-		jobs <- b3.Station("b3")
-		wg_jobs.Add(1)
-		jobs <- b4.Station("b4")
-
-		wg_jobs.Add(1)
-		jobs <- radiofabrik.Station("radiofabrik")
-		wg_jobs.Add(1)
-		jobs <- m945.Station("m945")
-		wg_jobs.Add(1)
-		jobs <- dlf.Station("dlf")
-		wg_jobs.Add(1)
-		jobs <- wdr.Station("wdr5")
-	}
 
 	nows := scrape.IncrementalNows(time.Now())
 
@@ -104,6 +83,27 @@ func main() {
 			}()
 		}
 	}()
+
+	{
+		// seed all the radio stations to scrape
+		for _, s := range []string{"b1", "b2", "b5", "b+", "brheimat", "puls"} {
+			wg_jobs.Add(1)
+			jobs <- br.Station(s)
+		}
+		wg_jobs.Add(1)
+		jobs <- b3.Station("b3")
+		wg_jobs.Add(1)
+		jobs <- b4.Station("b4")
+
+		wg_jobs.Add(1)
+		jobs <- radiofabrik.Station("radiofabrik")
+		wg_jobs.Add(1)
+		jobs <- m945.Station("m945")
+		wg_jobs.Add(1)
+		jobs <- dlf.Station("dlf")
+		wg_jobs.Add(1)
+		jobs <- wdr.Station("wdr5")
+	}
 
 	wg_jobs.Wait()
 	wg_results.Wait()
