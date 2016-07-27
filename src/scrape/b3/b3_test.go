@@ -36,7 +36,7 @@ func TestTimeZone(t *testing.T) {
 	assert.Equal(t, "Europe/Berlin", b3.TimeZone.String(), "foo")
 }
 
-func TestUnmarshalBroadcasts(t *testing.T) {
+func TestUnmarshalBroadcasts0(t *testing.T) {
 	f, err := os.Open("testdata/2016-07-25T0945-program.json")
 	assert.NotNil(t, f, "ouch")
 	assert.Nil(t, err, "ouch")
@@ -50,8 +50,8 @@ func TestUnmarshalBroadcasts(t *testing.T) {
 
 	res, err := u.parseBroadcastsReader(f)
 	assert.Equal(t, 3, len(res), "53")
-	bc := res[0]
 
+	bc := res[0]
 	assert.Nil(t, err, "ouch")
 	assert.Equal(t, "b3", bc.Station.Identifier, "ouch: Station.Identifier")
 	assert.Equal(t, "Die Frühaufdreher", bc.Title, "ouch: Title")
@@ -62,6 +62,56 @@ func TestUnmarshalBroadcasts(t *testing.T) {
 	assert.Nil(t, bc.TitleEpisode, "ouch: TitleEpisode")
 	assert.Equal(t, "2016-07-25T05:00:00+02:00", bc.Time.Format(time.RFC3339), "ouch: Time")
 	assert.Equal(t, "2016-07-25T09:00:00+02:00", bc.DtEnd.Format(time.RFC3339), "ouch: DtEnd")
+	assert.Nil(t, bc.Subject, "ouch: Subject")
+	assert.Nil(t, bc.Modified, "ouch: Modified")
+	assert.Equal(t, "Bayerischer Rundfunk", *bc.Author, "ouch: Author")
+	assert.Equal(t, "", *bc.Description, "ouch: Description")
+	assert.Nil(t, bc.Image, "ouch: Image")
+}
+
+func TestUnmarshalBroadcasts1(t *testing.T) {
+	f, err := os.Open("testdata/2016-07-27T1620-program.json")
+	assert.NotNil(t, f, "ouch")
+	assert.Nil(t, err, "ouch")
+
+	s := Station("b3")
+	u := calItemRangeURL(r.TimeURL{
+		Time:    time.Now(),
+		Source:  *s.ProgramURL,
+		Station: r.Station(*s),
+	})
+
+	res, err := u.parseBroadcastsReader(f)
+	assert.Equal(t, 3, len(res), "53")
+
+	bc := res[1]
+	assert.Nil(t, err, "ouch")
+	assert.Equal(t, "b3", bc.Station.Identifier, "ouch: Station.Identifier")
+	assert.Equal(t, "Ab in den Feierabend", bc.Title, "ouch: Title")
+	assert.Equal(t, "http://www.br.de/mediathek/audio/bayern3-audio-livestream-100~radioplayer.json", bc.Source.String(), "ouch: Source")
+	assert.NotNil(t, bc.Language, "ouch: Language")
+	assert.Equal(t, "de", *bc.Language, "ouch: Language")
+	assert.Equal(t, "Ab in den Feierabend", *bc.TitleSeries, "ouch: TitleSeries")
+	assert.Nil(t, bc.TitleEpisode, "ouch: TitleEpisode")
+	assert.Equal(t, "2016-07-27T16:00:00+02:00", bc.Time.Format(time.RFC3339), "ouch: Time")
+	assert.Equal(t, "2016-07-27T19:00:00+02:00", bc.DtEnd.Format(time.RFC3339), "ouch: DtEnd")
+	assert.Nil(t, bc.Subject, "ouch: Subject")
+	assert.Nil(t, bc.Modified, "ouch: Modified")
+	assert.Equal(t, "Bayerischer Rundfunk", *bc.Author, "ouch: Author")
+	assert.Equal(t, "", *bc.Description, "ouch: Description")
+	assert.Nil(t, bc.Image, "ouch: Image")
+
+	bc = res[2]
+	assert.Nil(t, err, "ouch")
+	assert.Equal(t, "b3", bc.Station.Identifier, "ouch: Station.Identifier")
+	assert.Equal(t, "Mensch, Otto!", bc.Title, "ouch: Title")
+	assert.Equal(t, "http://www.br.de/mediathek/audio/bayern3-audio-livestream-100~radioplayer.json", bc.Source.String(), "ouch: Source")
+	assert.NotNil(t, bc.Language, "ouch: Language")
+	assert.Equal(t, "de", *bc.Language, "ouch: Language")
+	assert.Equal(t, "Mensch, Otto!", *bc.TitleSeries, "ouch: TitleSeries")
+	assert.Nil(t, bc.TitleEpisode, "ouch: TitleEpisode")
+	assert.Equal(t, "2016-07-27T19:00:00+02:00", bc.Time.Format(time.RFC3339), "ouch: Time")
+	assert.Equal(t, "2016-07-27T20:00:00+02:00", bc.DtEnd.Format(time.RFC3339), "ouch: DtEnd")
 	assert.Nil(t, bc.Subject, "ouch: Subject")
 	assert.Nil(t, bc.Modified, "ouch: Modified")
 	assert.Equal(t, "Bayerischer Rundfunk", *bc.Author, "ouch: Author")

@@ -108,9 +108,14 @@ func init() {
 
 type B3Programm struct {
 	Broadcasts []struct {
-		Headline  string
-		StartTime string
-		EndTime   string
+		Headline            string
+		StartTime           string
+		EndTime             string
+		HomepageURL         string
+		BroadcastSeriesName string
+		AdditionalLinkURL   string
+		AdditionalLinkText  string
+		DetailURL           string
 	}
 }
 
@@ -132,23 +137,28 @@ func (bcu *calItemRangeURL) parseBroadcastsFromData(programm B3Programm) (bcs []
 			// Copyright: &bcu.Station.Name,
 			Description: &empty,
 		}
-		{ // Title
-			title := b3.Headline
-			if strings.HasPrefix(title, "BAYERN 3 - ") {
-				title = title[len("BAYERN 3 - "):len(title)]
+		stripPrefix := func(s string) *string {
+			if "" == s {
+				return nil
 			}
-			if strings.HasPrefix(title, "BAYERN 3 ") {
-				title = title[len("BAYERN 3 "):len(title)]
+			if strings.HasPrefix(s, "BAYERN 3 - ") {
+				s = s[len("BAYERN 3 - "):len(s)]
 			}
-			b.BroadcastURL.Title = title
+			if strings.HasPrefix(s, "BAYERN 3 ") {
+				s = s[len("BAYERN 3 "):len(s)]
+			}
+			return &s
 		}
+		b.Title = *stripPrefix(b3.Headline)
+		b.TitleSeries = stripPrefix(b3.BroadcastSeriesName)
+
 		{ // Time (start)
 			start, err0 := time.Parse(time.RFC3339, b3.StartTime)
 			err = err0
 			if nil != err {
 				continue
 			}
-			b.BroadcastURL.TimeURL.Time = start
+			b.Time = start
 		}
 		{ // DtEnd
 			end, err1 := time.Parse(time.RFC3339, b3.EndTime)

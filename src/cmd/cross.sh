@@ -21,7 +21,7 @@ cd ..
 for dir in cmd scrape scrape/br scrape/b3 scrape/b4 scrape/dlf scrape/m945 scrape/radiofabrik scrape/wdr
 do
   cd "$CWD/../$dir"
-  go fmt && go test && \
+  go fmt && go test ; \
   {
     echo "<html><head>"
     echo "<meta http-equiv='Content-type' content='text/html; charset=utf-8' />"
