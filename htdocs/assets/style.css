@@ -71,6 +71,19 @@ ul#whatsonnow li, ul#navigation li {
   border: 1px solid rgba(0,0,0,0.1);
   border-radius: 15px;
 }
+ul#whatsonnow li a, ul#navigation li a {
+	text-decoration: none;
+	color: rgb(0,0,238);
+}
+ul#whatsonnow span.station {
+	text-transform:capitalize;
+	font-variant: small-caps;
+}
+ul#navigation a span {
+	font-family: sans-serif;
+	font-size: 10pt;
+}
+
 #image {
   float:right;
   margin: 0 -0.5ex 0 0;
@@ -150,6 +163,9 @@ input[type="submit"] {
   padding: 4px;
   margin: 0 0 0 1ex;
   text-decoration: blink;
+}
+#allday a {
+	text-decoration: none;
 }
 *.is_current *.now {
   background: none repeat scroll 0 0 orange;
