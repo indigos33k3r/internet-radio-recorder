@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2016 Marcus Rohrmoser, http://purl.mro.name/recorder
+// Copyright (c) 2016-2016 Marcus Rohrmoser, http://purl.mro.name/recorder
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -17,32 +17,60 @@
 //
 // MIT License http://opensource.org/licenses/MIT
 
-// Generic stuff useful for scraping radio broadcast station program
-// websites.
-//
-// Most important are the two interfaces 'Scraper' and 'Broadcaster'.
+// HTML helpers.
 //
 // import "purl.mro.name/recorder/radio/scrape"
 //
 package scrape
 
 import (
-	"io"
-	"net/http"
-	"net/url"
+	"strings"
+	"unicode"
+
+	"github.com/yhat/scrape"
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 )
 
-/// One to fetch them all (except dlf with it's POST requests).
-func CreateHttpGet(url url.URL) (*http.Response, error) {
-	return http.Get(url.String())
+func TextChildrenNoClimb(node *html.Node) string {
+	ret := []string{}
+	for n := node.FirstChild; nil != n; n = n.NextSibling {
+		if html.TextNode != n.Type {
+			continue
+		}
+		ret = append(ret, strings.TrimSpace(n.Data))
+	}
+	return strings.Join(ret, "")
 }
 
-/// Sadly doesn't make things really simpler
-func GenericParseBroadcastFromURL(url url.URL, callback func(r io.Reader) ([]Broadcast, error)) (bc []Broadcast, err error) {
-	resp, err := CreateHttpGet(url)
-	defer resp.Body.Close()
-	if nil != err {
-		return
+func TextWithBr(node *html.Node) string {
+	nodes := scrape.FindAll(node, func(n *html.Node) bool { return n.Type == html.TextNode || atom.Br == n.DataAtom })
+	parts := make([]string, len(nodes))
+	for i, n := range nodes {
+		if atom.Br == n.DataAtom {
+			parts[i] = "\n"
+		} else {
+			parts[i] = NormaliseWhiteSpace(n.Data)
+		}
 	}
-	return callback(resp.Body)
+	return strings.Join(parts, "")
+}
+
+func TextsWithBr(nodes []*html.Node) (ret []string) {
+	ret = make([]string, len(nodes))
+	for i, p := range nodes {
+		// BUG(mro): so where goes this?
+		ret[i] = TextWithBr(p)
+	}
+	return
+}
+
+func NormaliseWhiteSpace(s string) string {
+	return strings.Map(func(r rune) rune {
+		if unicode.IsSpace(r) {
+			return rune(32)
+		} else {
+			return r
+		}
+	}, s)
 }

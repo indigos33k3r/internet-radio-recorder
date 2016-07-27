@@ -33,11 +33,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"unicode"
-
-	"github.com/yhat/scrape"
-	"golang.org/x/net/html"
-	"golang.org/x/net/html/atom"
 )
 
 // Something that can be scraped.
@@ -218,49 +213,6 @@ func MustParseInt64(s string) int64 {
 		panic(err)
 	}
 	return ret
-}
-
-func TextChildrenNoClimb(node *html.Node) string {
-	ret := []string{}
-	for n := node.FirstChild; nil != n; n = n.NextSibling {
-		if html.TextNode != n.Type {
-			continue
-		}
-		ret = append(ret, strings.TrimSpace(n.Data))
-	}
-	return strings.Join(ret, "")
-}
-
-func TextWithBr(node *html.Node) string {
-	nodes := scrape.FindAll(node, func(n *html.Node) bool { return n.Type == html.TextNode || atom.Br == n.DataAtom })
-	parts := make([]string, len(nodes))
-	for i, n := range nodes {
-		if atom.Br == n.DataAtom {
-			parts[i] = "\n"
-		} else {
-			parts[i] = NormaliseWhiteSpace(n.Data)
-		}
-	}
-	return strings.Join(parts, "")
-}
-
-func TextsWithBr(nodes []*html.Node) (ret []string) {
-	ret = make([]string, len(nodes))
-	for i, p := range nodes {
-		// BUG(mro): so where goes this?
-		ret[i] = TextWithBr(p)
-	}
-	return
-}
-
-func NormaliseWhiteSpace(s string) string {
-	return strings.Map(func(r rune) rune {
-		if unicode.IsSpace(r) {
-			return rune(32)
-		} else {
-			return r
-		}
-	}, s)
 }
 
 func EscapeForLua(s string) string {
