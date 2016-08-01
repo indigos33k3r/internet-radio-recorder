@@ -32,55 +32,57 @@ xmllint --version 2>/dev/null || { echo "Please install xmllint" && exit 1; }
 
 cwd="$(pwd)"
 
-cd "$(dirname "$0")" && script_dir="$(pwd)"
-script_path="$script_dir/$(basename "$0")"
+cd "$(dirname "${0}")" && script_dir="$(pwd)"
+script_path="${script_dir}/$(basename "${0}")"
 
-cd "$cwd" && cd "$(dirname "$0")/../htdocs/stations" || { echo "foo" 1>&2 && exit 1; }
+cd "${cwd}" && cd "$(dirname "${0}")/../htdocs/stations" || { echo "foo" 1>&2 && exit 1; }
 base_dir="$(pwd)"
 
 recursion_blocker="recursion_blocker"
 
-if [ "$1" = "" ] ; then
-  find . -mindepth 4 -type d | grep -v .git | sort | xargs -P 1 "$script_path" "$recursion_blocker"
+if [ "" = "${1}" ] ; then
+  ls -fds */????/??/?? | sort | xargs -P 1 "${script_path}" "${recursion_blocker}"
 else
-  if [ "$1" = "$recursion_blocker" ] ; then shift ; fi
-  while [ "$1" != "" ]
+  if [ "${recursion_blocker}" = "${1}" ] ; then shift ; fi
+  while [ "" != "${1}" ]
   do
-    cd "$cwd" && cd "$1"
-    prefix="$(pwd | egrep -hoe '[^/]+/[0-9]{4}/[0-9]{2}/[0-9]{2}')"
-    date="$(pwd | egrep -hoe '[0-9]{4}/[0-9]{2}/[0-9]{2}' | tr '/' '-')"
+    cd "${cwd}/${1}"
+    if [ 0 -eq $? ] ; then
+      prefix="$(pwd | egrep -hoe '[^/]+/[0-9]{4}/[0-9]{2}/[0-9]{2}$')"
+      date="$(pwd | egrep -hoe '[0-9]{4}/[0-9]{2}/[0-9]{2}$' | tr '/' '-')"
 
-    dst="index.xml"
-    # http://stackoverflow.com/a/7046926
-    cat > "$dst"~ <<END_OF_XML_PREAMBLE
+      dst="index.xml"
+      # http://stackoverflow.com/a/7046926
+      cat > "${dst}"~ <<END_OF_XML_PREAMBLE
 <?xml-stylesheet type='text/xsl' href='../../../app/broadcasts2html.xslt'?>
 <!-- unorthodox relative namespace to enable http://www.w3.org/TR/grddl-tests/#sq2 without a central server -->
-<broadcasts date='$date' xmlns='../../../../../assets/2013/radio-pi.rdf'>
+<broadcasts date='${date}' xmlns='../../../../../assets/2013/radio-pi.rdf'>
 END_OF_XML_PREAMBLE
-    for xml in ????\ *.xml
-    do
-      xmllint --nowarning --noout "$xml" || { echo "not well-formed: $xml" 1>&2 && continue ; }
-      # timezone fix each xml in place?
-      grep -hoe "^\s*<broadcast\s[^>]*" "$xml" >> "$dst"~               # start tag without closing >
-      echo " modified='$(date --reference="$xml" +\%F'T'\%T\%:z)'>" >> "$dst"~  # additional attribute: file modification time
-      grep 'DC.identifier' "$xml" 1>/dev/null 2>/dev/null || {          # amend identifier if missing.
-        echo "  <meta content='$prefix/$(basename "$xml" .xml | sed -e "s/&/\&amp;/g" -e "s/'/\&apos;/g")' name='DC.identifier'/>" >> "$dst"~
-      }
-      grep -v '^<!-- ' "$xml" | grep -v "<meta content='' " | tail -n +4 >> "$dst"~ # rest of the broadcast xml file
-    done
-    echo "</broadcasts>" >> "$dst"~
+      for xml in ????\ *.xml
+      do
+        xmllint --nowarning --noout "${xml}" || { echo "not well-formed: ${xml}" 1>&2 && continue ; }
+        # timezone fix each xml in place?
+        grep -hoe "^\s*<broadcast\s[^>]*" "${xml}" >> "${dst}"~               # start tag without closing >
+        echo " modified='$(date --reference="${xml}" +\%F'T'\%T\%:z)'>" >> "${dst}"~  # additional attribute: file modification time
+        grep 'DC.identifier' "${xml}" 1>/dev/null 2>/dev/null || {          # amend identifier if missing.
+          echo "  <meta content='${prefix}/$(basename "${xml}" .xml | sed -e "s/&/\&amp;/g" -e "s/'/\&apos;/g")' name='DC.identifier'/>" >> "${dst}"~
+        }
+        grep -v '^<!-- ' "${xml}" | grep -v "<meta content='' " | tail -n +4 >> "${dst}"~ # rest of the broadcast xml file
+      done
+      echo "</broadcasts>" >> "${dst}"~
 
-    # timezone fix resulting xml - add colon in case
-    sed --in-place --posix --regexp-extended --expression 's/([0-9]{4}-[0-9]{2}-[0-9]{2})[T ]([0-9]{2}:[0-9]{2}:[0-9]{2}[+-][0-9]{2})00/\1T\2:00/g' "$dst"~
+      # timezone fix resulting xml - add colon in case
+      sed --in-place --posix --regexp-extended --expression 's/([0-9]{4}-[0-9]{2}-[0-9]{2})[T ]([0-9]{2}:[0-9]{2}:[0-9]{2}[+-][0-9]{2})00/\1T\2:00/g' "${dst}"~
 
-    printf "%s/" "$1" 1>&2
-    xmllint --nowarning --nsclean --format --encode UTF-8 --relaxng ../../../../../app/pbmi2003-recmod2012/broadcast.rng --output "$dst" "$dst"~ && rm "$dst"~
-    if [ $? -eq 0 ] ; then
-      echo "$1/$dst"
-    else
-      rm "$dst"
+      printf "%s/" "${1}" 1>&2
+      xmllint --nowarning --nsclean --format --encode "UTF-8" --relaxng "../../../../../app/pbmi2003-recmod2012/broadcast.rng" --output "${dst}" "${dst}"~ && rm "${dst}"~
+      if [ 0 -eq $? ] ; then
+        gzip --best "${dst}"
+        echo "${1}/${dst}.gz"
+      else
+        rm "${dst}"
+      fi
     fi
-
     shift
   done
 fi
