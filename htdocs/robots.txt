@@ -1,2 +1,7 @@
 User-agent: *
-Disallow: /
+Disallow: /app/
+Disallow: /assets/
+Disallow: /enclosures/
+Disallow: /log/
+Disallow: /podcasts/
+Disallow: /rdf/
