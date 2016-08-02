@@ -28,8 +28,9 @@
  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
  MIT License http://opensource.org/licenses/MIT
- 
- 
+
+ CSS classes use https://en.wikipedia.org/wiki/HCalendar#Example
+
  http://www.w3.org/TR/xslt/
 -->
 <xsl:stylesheet
@@ -70,11 +71,11 @@
   <xsl:variable name="now_fellows_xml" select="document('../../../../app/now.lua')"/>
 
   <xsl:template name="broadcast_station_source">
-    <a id="via" class="via" href="{rec:meta[@name='DC.source']/@content}" rel="via">Sendung</a>
+    <a class="via" href="{rec:meta[@name='DC.source']/@content}" rel="via">Sendung</a>
     <xsl:text> </xsl:text>
   </xsl:template>
 
-  <xsl:template name="station_rdf_name">
+  <xsl:template name="station_rdf_logo">
     <xsl:variable name="station_rdf0" select="$station_about_rdf/rdf:RDF/foaf:Document[ '' = @rdf:about ]"/>
     <xsl:variable name="station_rdf1" select="$station_about_rdf/rdf:RDF/*[ $station_rdf0/foaf:primaryTopic/@rdf:resource = @rdf:about ]"/>
     <xsl:variable name="station_rdf" select="$station_about_rdf/rdf:RDF/rdf:Description">
@@ -109,7 +110,7 @@
   <xsl:template name="station_logo">
     <xsl:param name="id" select="."/>
     <xsl:choose>
-    	<!-- could be pulled from the about.rdf -->
+      <!-- could be pulled from the about.rdf -->
     <!--
       <xsl:when test="$id = 'b1'">https://upload.wikimedia.org/wikipedia/de/e/e3/Bayern_plus.svg</xsl:when>
       <xsl:when test="$id = 'b2'">https://upload.wikimedia.org/wikipedia/de/2/27/Bayern_2_%282007%29.svg</xsl:when>
@@ -152,12 +153,17 @@
         <xsl:for-each select="rec:meta">
           <meta content="{@content}" name="{@name}"/>
         </xsl:for-each>
+        <style type="text/css">
+#allday {
+  font-size: 9pt;
+}
+        </style>
       </head>
       <body id="broadcast" class="vevent">
         <noscript><p>JavaScript ist aus, es geht zwar (fast) alles auch ohne, aber mit ist's <b>schöner</b>. (Datumsformatierung, Aufnahmen wieder stornieren, Tagesübersicht, RDF Urls in der Fußzeile)</p></noscript>
         <ul id="whatsonnow" class="buttongroup">
           <xsl:for-each select="$now_fellows_xml/*/rec:broadcast">
-            <xsl:variable name="fellow_station_name" select="substring-before(rec:meta[@name='DC.identifier']/@content, '/')"/> 
+            <xsl:variable name="fellow_station_name" select="substring-before(rec:meta[@name='DC.identifier']/@content, '/')"/>
             <li id="station_{$fellow_station_name}"><a href="../../../../{rec:meta[@name='DC.identifier']/@content}">
               <span class="station"><xsl:value-of select="$fellow_station_name"/></span><xsl:text> </xsl:text>
               <!-- safari doesn't like that:
@@ -193,13 +199,13 @@
           </h2>
         <p>
           <xsl:call-template name="broadcast_station_source"/>
-          <xsl:call-template name="station_rdf_name"/>
+          <xsl:call-template name="station_rdf_logo"/>
           <xsl:call-template name="station_rdf_stream"/>
         </p>
         <h3 id="date">
-          <span id="dtstart" class="dtstart" title="{rec:meta[@name='DC.format.timestart']/@content}"><xsl:value-of select="translate(rec:meta[@name='DC.format.timestart']/@content, 'T', ' ')"/></span>
+          <span id="dtstart" class="dtstart moment_date_time" title="{rec:meta[@name='DC.format.timestart']/@content}"><xsl:value-of select="translate(rec:meta[@name='DC.format.timestart']/@content, 'T', ' ')"/></span>
           bis
-          <span id="dtend" class="dtend" title="{rec:meta[@name='DC.format.timeend']/@content}"><xsl:value-of select="substring-after(rec:meta[@name='DC.format.timeend']/@content, 'T')"/></span>
+          <span id="dtend" class="dtend moment_time" title="{rec:meta[@name='DC.format.timeend']/@content}"><xsl:value-of select="substring-after(rec:meta[@name='DC.format.timeend']/@content, 'T')"/></span>
         </h3>
         <p class="image">
           <img alt="Bild zur Sendung" id="image" class="border animated fadeInRotate" src="{rec:meta[@name='DC.image']/@content}"/>
@@ -221,7 +227,8 @@
         </form>
         <p id="enclosure">
           <!-- audio controls="controls" style="display:none">Doesn't play well with auth...<source type="audio/mpeg" /></audio -->
-          <a id="enclosure_link">✇ mp3</a></p>
+          <a id="enclosure_link">✇ mp3</a>
+        </p>
         <hr/>
         <ul id="allday" class="nobullet" style="display:none"><li>Dummy</li></ul>
         <p><a href=".">Verzeichnis Index</a></p>
@@ -241,8 +248,8 @@
           <tt>$ <a href="http://librdf.org/raptor/rapper.html">rapper</a> -i grddl -o rdfxml-abbrev '<span class="canonical-url">&lt;url from address bar&gt;</span>'</tt><br class="br"/>
           <tt>$ <a href="http://xmlsoft.org/XSLT/xsltproc.html">xsltproc</a> --stringparam canonical_url '<span class="canonical-url">&lt;url from address bar&gt;</span>' '<span class="base-url">&lt;url from address bar&gt;/../../../../../..</span>/assets/2013/broadcast2rdf.xslt' '<span class="canonical-url">&lt;url from address bar&gt;</span>.xml'</tt>
         </p>
-        <script type="text/javascript" src="../../../../../assets/jquery-2.0.0.min.js"/>
-        <script type="text/javascript" src="../../../../../assets/moment.min.js"/><!-- http://momentjs.com/ -->
+        <script type="text/javascript" src="../../../../../assets/jquery-3.1.0.min.js"/>
+        <script type="text/javascript" src="../../../../../assets/moment-2.14.1.min.js"/><!-- http://momentjs.com/ -->
         <script type="text/javascript" src="../../../../../assets/lang/de.js"/><!-- https://github.com/timrwood/moment/blob/develop/min/lang/de.js -->
         <script type="text/javascript" src="../../../../../assets/broadcast2html.js" />
       </body>
@@ -261,31 +268,126 @@
         <!-- meta name="viewport" content="width=400"/ -->
         <link href="../../../../../assets/favicon-32x32.png" rel="shortcut icon" type="image/png" />
         <link href="../../../../../assets/favicon-512x512.png" rel="apple-touch-icon" type="image/png" />
-        <link href="../../../app/style.css" rel="stylesheet" type="text/css"/>
         <link rel="profile" href="http://microformats.org/profile/hcalendar"/>
+        <link href="../../../app/style.css" rel="stylesheet" type="text/css"/>
+        <style type="text/css">
+/*<![CDATA[*/
+ol {
+  list-style-type: none;
+  padding: 0 0.25ex;
+  margin: 1ex 0;
+}
+ol li {
+  padding: 0;
+  margin: 0;
+}
+ol li img {
+  max-height: 100px;
+}
+.vevent div.collapsed {
+  font-size: 9pt;
+}
+
+ol li h4.dtstart.dtend {
+  float:right;
+  margin: 0 1px;
+  padding: 0 1px;
+}
+ol li p.description {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+a {
+  text-decoration: none;
+}
+
+/* mutual expanded/collapsed: */
+div.expanded            { display:none;  }
+div.collapsed           { display:block; }
+.expanded div.expanded  { display:block; }
+.expanded div.collapsed { display:none;  }
+/*]]>*/
+        </style>
+        <title><xsl:value-of select="@date"/> foobar</title>
       </head>
       <body>
         <noscript><p>JavaScript ist aus, es geht zwar (fast) alles auch ohne, aber mit ist's <b>schöner</b>. (Zeitgleiche Sendungen anderer Sender, Datumsformatierung, Aufnahmen wieder stornieren, Tagesübersicht, RDF Url)</p></noscript>
-        <h1 title="{@date}"><xsl:value-of select="@date"/></h1>
-        <ol style='list-style-type: none;'>
+
+        <h1 title="{@date}">
+          <span id="date" class="moment_date" title="{@date}"><xsl:value-of select="@date"/></span><xsl:text> </xsl:text>
+          <span id="station_logo"><xsl:call-template name="station_rdf_logo"/></span><xsl:text> </xsl:text>
+          <span id="station_stream"><xsl:call-template name="station_rdf_stream"/></span>
+        </h1>
+
+        <ul class="buttongroup" title="Navigation">
+          <li><a id="prev_week" href="../../../../../app/now.lua?t=P-7D" title="Woche vorher">↑↑↑ <span>-1W</span></a></li>
+          <li><a id="yesterday" href="../../../../../app/now.lua?t=P-1D" title="Tag vorher">↑↑ <span>-1D</span></a></li>
+        </ul>
+        <p style="clear:left"/>
+
+        <ol id="broadcasts">
           <xsl:for-each select="rec:broadcast">
             <xsl:variable name="rowid" select="translate(substring(rec:meta[@name='DC.format.timestart']/@content, 11, 6), ':', '')"/>
             <xsl:variable name="duration_minutes" select="number(rec:meta[@name='DC.format.duration']/@content) div 60"/>
-            <li class="broadcast vevent" id="{$rowid}">
-              <a class="dtstart" href="#{$rowid}" title="{rec:meta[@name='DC.format.timestart']/@content}"><xsl:value-of select="substring(rec:meta[@name='DC.format.timestart']/@content, 12, 5)"/></a>
-              <span class="dtend" title="{rec:meta[@name='DC.format.timeend']/@content}"/>
-              <xsl:text> </xsl:text>
-              <a class="url" href="../../../../{rec:meta[@name='DC.identifier']/@content}">.</a>
-              <xsl:text> </xsl:text>
-              <span class="duration" title="PT{$duration_minutes}M"><xsl:value-of select="$duration_minutes"/>"</span>
-              <xsl:text> </xsl:text>
-              <span class="title summary" title="{rec:meta[@name='DC.description']/@content}"><xsl:value-of select="rec:meta[@name='DC.title']/@content"/></span>
-              <span class="description" style="display:none"><xsl:value-of select="rec:meta[@name='DC.description']/@content"/></span>
+            <li class="broadcast vevent is_past expanded" id="{$rowid}">
+              <div class="collapsed">
+                <a href="index#{$rowid}">
+                  <span class="dtstart moment_time" title="{rec:meta[@name='DC.format.timestart']/@content}"><xsl:value-of select="substring(rec:meta[@name='DC.format.timestart']/@content, 12, 5)"/></span>
+                  <xsl:text> </xsl:text>
+                  <span class="summary"><xsl:value-of select="rec:meta[@name='DC.title']/@content"/></span>
+                </a>
+              </div>
+              <div class="expanded">
+                <h4 class="dtstart dtend">
+                  <xsl:for-each select="preceding-sibling::rec:broadcast[1]">
+                    <xsl:variable name="prev_rowid" select="translate(substring(rec:meta[@name='DC.format.timestart']/@content, 11, 6), ':', '')"/>
+                    <a href="index#{$prev_rowid}">↑<xsl:text> </xsl:text></a>
+                  </xsl:for-each>
+                  <a class="dtstart moment_time" href="index#{$rowid}" title="{rec:meta[@name='DC.format.timestart']/@content}"><xsl:value-of select="substring(rec:meta[@name='DC.format.timestart']/@content, 12, 5)"/></a>
+                  bis
+                  <a class="dtend moment_time" title="{rec:meta[@name='DC.format.timeend']/@content}"><xsl:value-of select="substring(rec:meta[@name='DC.format.timeend']/@content, 12, 5)"/></a>
+                  <xsl:for-each select="following-sibling::rec:broadcast[1]">
+                    <xsl:variable name="next_rowid" select="translate(substring(rec:meta[@name='DC.format.timestart']/@content, 11, 6), ':', '')"/>
+                    <a href="index#{$next_rowid}"><xsl:text> </xsl:text>↓</a>
+                  </xsl:for-each>
+                </h4>
+                <xsl:if test="rec:meta[@name='DC.title.series']/@content">
+                  <h3 class="series"><xsl:value-of select="rec:meta[@name='DC.title.series']/@content"/></h3>
+                </xsl:if>
+                <h2 class="summary"><xsl:value-of select="rec:meta[@name='DC.title']/@content"/></h2>
+                <xsl:if test="rec:meta[@name='DC.title.episode']/@content">
+                  <h3 class="episode"><xsl:value-of select="rec:meta[@name='DC.title.episode']/@content"/></h3>
+                </xsl:if>
+                <p>
+                  <xsl:call-template name="broadcast_station_source"/>
+                </p>
+                <p class="image">
+                  <img alt="Bild zur Sendung" id="image" class="border animated fadeInRotate" src="{rec:meta[@name='DC.image']/@content}"/>
+                </p>
+                <p class="description border">
+                  <xsl:call-template name="linefeed2br">
+                    <xsl:with-param name="string" select="rec:meta[@name='DC.description']/@content"/>
+                  </xsl:call-template>
+                </p>
+
+                <h3>Aufnahme</h3>
+                <p style="display:none" class="podcasts">keiner</p>
+                <p class="enclosure">
+                  <!-- audio controls="controls" style="display:none">Doesn't play well with auth...<source type="audio/mpeg" /></audio -->
+                  <a class="enclosure_link" href="../../../../../enclosures/{rec:meta[@name='DC.identifier']/@content}.mp3">✇ mp3</a>
+                </p>
+                <hr/>
+              </div>
             </li>
           </xsl:for-each>
         </ol>
+
+        <ul class="buttongroup" title="Navigation">
+          <li><a id="tomorrow" href="../../../../../app/now.lua?t=P1D" title="Tag nachher">↓↓ <span>+1D</span></a></li>
+          <li><a id="next_week" href="../../../../../app/now.lua?t=P7D" title="Woche nachher">↓↓↓ <span>+1W</span></a></li>
+        </ul>
+        <p style="clear:left"/>
+
         <p><a href=".">Verzeichnis Index</a></p>
-        <hr/>
         <p id="footer">
           <!--
           <a style="display:none" href="http://validator.w3.org/check?uri=referer">
@@ -301,11 +403,16 @@
           <tt>$ <a href="http://librdf.org/raptor/rapper.html">rapper</a> -i grddl -o rdfxml-abbrev '<span class="canonical-url">&lt;url from address bar&gt;</span>'</tt><br class="br"/>
           <tt>$ <a href="http://xmlsoft.org/XSLT/xsltproc.html">xsltproc</a> --stringparam canonical_url '<span class="canonical-url">&lt;url from address bar&gt;</span>' '<span class="base-url">&lt;url from address bar&gt;/../../../../../..</span>/assets/2013/broadcast2rdf.xslt' '<span class="canonical-url">&lt;url from address bar&gt;</span>.xml'</tt>
         </p>
-        <script type="text/javascript" src="../../../../../assets/jquery-2.0.0.min.js"/>
+        <script type="text/javascript" src="../../../../../assets/jquery-3.1.0.min.js"/>
         <script type="text/javascript" src="../../../../../assets/broadcast2html.early.js" />
-        <script type="text/javascript" src="../../../../../assets/moment.min.js"/><!-- http://momentjs.com/ -->
+        <script type="text/javascript" src="../../../../../assets/moment-2.14.1.min.js"/><!-- http://momentjs.com/ -->
         <script type="text/javascript" src="../../../../../assets/lang/de.js"/><!-- https://github.com/timrwood/moment/blob/develop/min/lang/de.js -->
         <script type="text/javascript" src="../../../../../assets/broadcast2html.js" />
+        <script type="text/javascript">
+// <![CDATA[
+
+//]]>
+</script>
       </body>
     </html>
   </xsl:template>
