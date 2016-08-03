@@ -24,7 +24,6 @@ import (
 	"fmt"
 	"io"
 	"net/url"
-	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -189,10 +188,10 @@ func (day *timeURL) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast
 	return
 }
 
-func (day *timeURL) parseBroadcastsFromReader(read io.Reader) (ret []*r.Broadcast, err error) {
+func (day *timeURL) parseBroadcastsFromReader(read io.Reader, cr0 *r.CountingReader) (ret []*r.Broadcast, err error) {
 	cr := r.NewCountingReader(read)
 	root, err := html.Parse(cr)
-	fmt.Fprintf(os.Stderr, "parsed %d B 🐦 %s\n", cr.TotalBytes, day.Source.String())
+	r.ReportLoad("🐦", cr0, cr, day.Source)
 	if nil != err {
 		return
 	}
@@ -200,10 +199,9 @@ func (day *timeURL) parseBroadcastsFromReader(read io.Reader) (ret []*r.Broadcas
 }
 
 func (day *timeURL) parseBroadcastsFromURL() (ret []*r.Broadcast, err error) {
-	bo, err := r.HttpGetBody(day.Source)
+	bo, cr, err := r.HttpGetBody(day.Source)
 	if nil == bo {
 		return nil, err
 	}
-	defer bo.Close()
-	return day.parseBroadcastsFromReader(bo)
+	return day.parseBroadcastsFromReader(bo, cr)
 }

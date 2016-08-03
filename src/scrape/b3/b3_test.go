@@ -48,7 +48,7 @@ func TestUnmarshalBroadcasts0(t *testing.T) {
 		Station: r.Station(*s),
 	})
 
-	res, err := u.parseBroadcastsReader(f)
+	res, err := u.parseBroadcastsReader(f, nil)
 	assert.Equal(t, 3, len(res), "53")
 
 	bc := res[0]
@@ -81,7 +81,7 @@ func TestUnmarshalBroadcasts1(t *testing.T) {
 		Station: r.Station(*s),
 	})
 
-	res, err := u.parseBroadcastsReader(f)
+	res, err := u.parseBroadcastsReader(f, nil)
 	assert.Equal(t, 3, len(res), "53")
 
 	bc := res[1]
@@ -131,7 +131,7 @@ func TestUnmarshalBroadcasts2(t *testing.T) {
 		Station: r.Station(*s),
 	})
 
-	res, err := u.parseBroadcastsReader(f)
+	res, err := u.parseBroadcastsReader(f, nil)
 	assert.Equal(t, 3, len(res), "53")
 
 	bc := res[1]

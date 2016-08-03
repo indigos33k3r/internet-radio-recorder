@@ -26,7 +26,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"os"
 	"strings"
 	"time"
 
@@ -174,11 +173,11 @@ func (bcu *calItemRangeURL) parseBroadcastsFromData(programm B3Programm) (bcs []
 	return
 }
 
-func (url *calItemRangeURL) parseBroadcastsReader(read io.Reader) (bcs []r.Broadcast, err error) {
+func (url *calItemRangeURL) parseBroadcastsReader(read io.Reader, cr0 *r.CountingReader) (bcs []r.Broadcast, err error) {
 	cr := r.NewCountingReader(read)
 	var f B3Programm
 	err = json.NewDecoder(cr).Decode(&f)
-	fmt.Fprintf(os.Stderr, "parsed %d B 🐦 %s\n", cr.TotalBytes, url.Source.String())
+	r.ReportLoad("🐦", cr0, cr, url.Source)
 	if nil != err {
 		return
 	}
@@ -186,5 +185,7 @@ func (url *calItemRangeURL) parseBroadcastsReader(read io.Reader) (bcs []r.Broad
 }
 
 func (url *calItemRangeURL) parseBroadcasts() (bc []r.Broadcast, err error) {
-	return r.GenericParseBroadcastFromURL(url.Source, func(r io.Reader) ([]r.Broadcast, error) { return url.parseBroadcastsReader(r) })
+	return r.GenericParseBroadcastFromURL(url.Source, func(r io.Reader, cr *r.CountingReader) ([]r.Broadcast, error) {
+		return url.parseBroadcastsReader(r, cr)
+	})
 }

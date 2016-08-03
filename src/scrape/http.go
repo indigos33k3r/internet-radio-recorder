@@ -45,34 +45,34 @@ func contains(haystack []string, needle string) bool {
 }
 
 /// One to fetch them all (except dlf with it's POST requests).
-func HttpGetBody(url url.URL) (io.ReadCloser, error) {
+func HttpGetBody(url url.URL) (io.Reader, *CountingReader, error) {
 	client := &http.Client{}
 	req, _ := http.NewRequest("GET", url.String(), nil)
 	req.Header.Set("Accept-Encoding", "gzip, deflate")
 	resp, err := client.Do(req)
 	if nil == resp {
-		return nil, err
-	}
-	for _, cl := range resp.Header["Content-Length"] {
-		fmt.Fprintf(os.Stderr, "loaded %s B\n", cl)
+		return nil, nil, err
 	}
 	encs := resp.Header["Content-Encoding"]
 	switch {
 	case contains(encs, "gzip"), contains(encs, "deflate"):
-		ret, err := gzip.NewReader(resp.Body)
-		return ret, err
+		cr := NewCountingReader(resp.Body)
+		ret, err := gzip.NewReader(cr)
+		return ret, cr, err
+	case 0 == len(encs):
+		// NOP
 	default:
 		fmt.Fprintf(os.Stderr, "Strange compression: %s\n", encs)
 	}
-	return resp.Body, err
+	cr := NewCountingReader(resp.Body)
+	return cr, cr, err
 }
 
 /// Sadly doesn't make things really simpler
-func GenericParseBroadcastFromURL(url url.URL, callback func(r io.Reader) ([]Broadcast, error)) (bc []Broadcast, err error) {
-	bo, err := HttpGetBody(url)
+func GenericParseBroadcastFromURL(url url.URL, callback func(io.Reader, *CountingReader) ([]Broadcast, error)) (bc []Broadcast, err error) {
+	bo, cr, err := HttpGetBody(url)
 	if nil == bo {
 		return nil, err
 	}
-	defer bo.Close()
-	return callback(bo)
+	return callback(bo, cr)
 }

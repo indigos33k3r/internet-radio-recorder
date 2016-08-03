@@ -94,7 +94,7 @@ func TestParseCalendarItems(t *testing.T) {
 	assert.NotNil(t, f, "ouch")
 	assert.Nil(t, err, "ouch")
 
-	cis, err := u.parseCalendarItemsReader(f)
+	cis, err := u.parseCalendarItemsReader(f, nil)
 	assert.Equal(t, 2, len(cis), "Nov")
 	{
 		item := cis[0]
@@ -138,7 +138,7 @@ func TestParseBroadcast_0(t *testing.T) {
 		Image: r.MustParseURL("https://www.br-klassik.de/programm/radio/concerto-bavarese112~_h-558_v-img__16__9__xl_w-994_-e1d284d92729d9396a907e303225e0f2d9fa53b4.jpg?version=40aa3"),
 	}
 	// http://rec.mro.name/stations/b2/2015/10/21/0012%20Concerto%20bavarese
-	bc, err := t0.parseBroadcastReader(f)
+	bc, err := t0.parseBroadcastReader(f, nil)
 	assert.Nil(t, err, "ouch")
 	assert.Equal(t, "b4", bc.Station.Identifier, "ouch: Station.Identifier")
 	assert.Equal(t, "Concerto bavarese", bc.Title, "ouch: Title")
@@ -182,7 +182,7 @@ func TestParseBroadcast_1(t *testing.T) {
 		Image: r.MustParseURL("https://www.br-klassik.de/programm/radio/dirigentenhaende102~_h-558_v-img__16__9__xl_w-994_-e1d284d92729d9396a907e303225e0f2d9fa53b4.jpg?version=f1b6f"),
 	}
 	// http://rec.mro.name/stations/b2/2015/10/21/0012%20Concerto%20bavarese
-	bc, err := t0.parseBroadcastReader(f)
+	bc, err := t0.parseBroadcastReader(f, nil)
 	assert.Nil(t, err, "ouch")
 	assert.Equal(t, "b4", bc.Station.Identifier, "ouch: Station.Identifier")
 	assert.Equal(t, "Das ARD-Nachtkonzert (IV)", bc.Title, "ouch: Title")

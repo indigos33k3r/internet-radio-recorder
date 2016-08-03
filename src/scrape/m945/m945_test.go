@@ -133,7 +133,7 @@ func TestParseBroadcasts_1(t *testing.T) {
 		Station: r.Station(*s),
 	})
 
-	bcs, err := u.parseBroadcastsFromReader(f)
+	bcs, err := u.parseBroadcastsFromReader(f, nil)
 	assert.NotNil(t, bcs, "ouch")
 	assert.Nil(t, err, "ouch")
 	assert.Equal(t, 10, len(bcs), "ouch")

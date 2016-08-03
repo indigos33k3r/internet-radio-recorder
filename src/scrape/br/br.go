@@ -27,7 +27,6 @@ import (
 	"fmt"
 	"io"
 	"net/url"
-	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -88,10 +87,10 @@ func (s *station) parseDayURLsNode(root *html.Node) (ret []timeURL, err error) {
 	return
 }
 
-func (s *station) parseDayURLsReader(read io.Reader) (ret []timeURL, err error) {
+func (s *station) parseDayURLsReader(read io.Reader, cr0 *r.CountingReader) (ret []timeURL, err error) {
 	cr := r.NewCountingReader(read)
 	root, err := html.Parse(cr)
-	fmt.Fprintf(os.Stderr, "parsed %d B 🐦 %s\n", cr.TotalBytes, s.ProgramURL.String())
+	r.ReportLoad("🐦", cr0, cr, *s.ProgramURL)
 	if nil != err {
 		return
 	}
@@ -100,12 +99,11 @@ func (s *station) parseDayURLsReader(read io.Reader) (ret []timeURL, err error) 
 }
 
 func (s *station) parseDayURLs() (ret []timeURL, err error) {
-	bo, err := r.HttpGetBody(*s.ProgramURL)
+	bo, cr, err := r.HttpGetBody(*s.ProgramURL)
 	if nil == bo {
 		return nil, err
 	}
-	defer bo.Close()
-	return s.parseDayURLsReader(bo)
+	return s.parseDayURLsReader(bo, cr)
 }
 
 // Scrape slice of timeURL - all calendar (day) entries of the station program url
@@ -215,10 +213,10 @@ func (day *timeURL) parseBroadcastURLsNode(root *html.Node) (ret []*broadcastURL
 	return
 }
 
-func (day *timeURL) parseBroadcastURLsReader(read io.Reader) (ret []*broadcastURL, err error) {
+func (day *timeURL) parseBroadcastURLsReader(read io.Reader, cr0 *r.CountingReader) (ret []*broadcastURL, err error) {
 	cr := r.NewCountingReader(read)
 	root, err := html.Parse(cr)
-	fmt.Fprintf(os.Stderr, "parsed %d B 🐠 %s\n", cr.TotalBytes, day.Source.String())
+	r.ReportLoad("🐠", cr0, cr, day.Source)
 	if nil != err {
 		return
 	}
@@ -226,12 +224,11 @@ func (day *timeURL) parseBroadcastURLsReader(read io.Reader) (ret []*broadcastUR
 }
 
 func (day *timeURL) parseBroadcastURLs() (ret []*broadcastURL, err error) {
-	bo, err := r.HttpGetBody(day.Source)
+	bo, cr, err := r.HttpGetBody(day.Source)
 	if nil == bo {
 		return nil, err
 	}
-	defer bo.Close()
-	return day.parseBroadcastURLsReader(bo)
+	return day.parseBroadcastURLsReader(bo, cr)
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -463,10 +460,10 @@ func (bcu *broadcastURL) parseBroadcastNode(root *html.Node) (bcs []r.Broadcast,
 	return
 }
 
-func (bcu *broadcastURL) parseBroadcastReader(read io.Reader) (bc []r.Broadcast, err error) {
+func (bcu *broadcastURL) parseBroadcastReader(read io.Reader, cr0 *r.CountingReader) (bc []r.Broadcast, err error) {
 	cr := r.NewCountingReader(read)
 	root, err := html.Parse(cr)
-	fmt.Fprintf(os.Stderr, "parsed %d B ⚓️ %s\n", cr.TotalBytes, bcu.Source.String())
+	r.ReportLoad("⚓️", cr0, cr, bcu.Source)
 	if nil != err {
 		return
 	}
@@ -474,7 +471,7 @@ func (bcu *broadcastURL) parseBroadcastReader(read io.Reader) (bc []r.Broadcast,
 }
 
 func (bcu *broadcastURL) parseBroadcastsFromURL() (bc []r.Broadcast, err error) {
-	return r.GenericParseBroadcastFromURL(bcu.Source, func(r io.Reader) ([]r.Broadcast, error) {
-		return bcu.parseBroadcastReader(r)
+	return r.GenericParseBroadcastFromURL(bcu.Source, func(r io.Reader, cr *r.CountingReader) ([]r.Broadcast, error) {
+		return bcu.parseBroadcastReader(r, cr)
 	})
 }

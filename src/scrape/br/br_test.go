@@ -90,7 +90,7 @@ func TestParseCalendarForDayURLs(t *testing.T) {
 	assert.Nil(t, err, "ouch")
 
 	b2 := Station("b2")
-	tus, err := b2.parseDayURLsReader(f)
+	tus, err := b2.parseDayURLsReader(f, nil)
 	assert.Equal(t, 37, len(tus), "ouch")
 	assert.Equal(t, "b2", tus[0].Station.Identifier, "ouch: ")
 	assert.Equal(t, "2015-08-23 05:00:00 +0200 CEST", tus[0].Time.String(), "ouch: ")
@@ -110,7 +110,7 @@ func TestParseScheduleForBroadcasts(t *testing.T) {
 		Station: r.Station(*s),
 	}
 
-	a, err := u.parseBroadcastURLsReader(f)
+	a, err := u.parseBroadcastURLsReader(f, nil)
 	assert.Equal(t, 129, len(a), "ouch: len")
 	assert.Equal(t, "b2", a[0].TimeURL.Station.Identifier, "ouch: ")
 	assert.Equal(t, "2015-10-20T05:00:00+02:00", a[0].Time.Format(time.RFC3339), "ouch: ")
@@ -136,7 +136,7 @@ func TestParseBroadcast_0(t *testing.T) {
 		Title: "Concerto bavarese",
 	}
 	// http://rec.mro.name/stations/b2/2015/10/21/0012%20Concerto%20bavarese
-	bcs, err := t0.parseBroadcastReader(f)
+	bcs, err := t0.parseBroadcastReader(f, nil)
 	assert.Nil(t, err, "ouch")
 	assert.Equal(t, 1, len(bcs), "ouch")
 	bc := bcs[0]
@@ -175,7 +175,7 @@ func TestParseBroadcast_1(t *testing.T) {
 	}
 
 	// http://rec.mro.name/stations/b2/2015/10/21/1005%20Notizbuch
-	bcs, err := t0.parseBroadcastReader(f)
+	bcs, err := t0.parseBroadcastReader(f, nil)
 	assert.Nil(t, err, "ouch")
 	assert.Equal(t, 1, len(bcs), "ouch")
 	bc := bcs[0]
@@ -214,7 +214,7 @@ func TestParseBroadcastUntilMidnight(t *testing.T) {
 	}
 
 	// http://rec.mro.name/stations/b2/2015/10/21/2305%20Nachtmix
-	bcs, err := t0.parseBroadcastReader(f)
+	bcs, err := t0.parseBroadcastReader(f, nil)
 	assert.Nil(t, err, "ouch")
 	assert.Equal(t, 1, len(bcs), "ouch")
 	bc := bcs[0]
@@ -253,7 +253,7 @@ func TestParseBroadcastWithImage1(t *testing.T) {
 	}
 
 	// http://rec.mro.name/stations/b2/2015/11/16/1605%20Eins%20zu%20Eins.%20Der%20Talk
-	bcs, err := t0.parseBroadcastReader(f)
+	bcs, err := t0.parseBroadcastReader(f, nil)
 	assert.Nil(t, err, "ouch")
 	assert.Equal(t, 1, len(bcs), "ouch")
 	bc := bcs[0]
@@ -280,7 +280,7 @@ func TestParseBroadcast23h55min(t *testing.T) {
 	}
 
 	// http://rec.mro.name/stations/b%2b/2015/11/15/0005%20Bayern%20plus%20-%20Meine%20Schlager%20h%C3%B6ren
-	bcs, err := t0.parseBroadcastReader(f)
+	bcs, err := t0.parseBroadcastReader(f, nil)
 	assert.Nil(t, err, "ouch")
 	assert.Equal(t, 1, len(bcs), "ouch")
 	bc := bcs[0]
@@ -322,7 +322,7 @@ func TestParseBroadcastDescriptionWhitespace(t *testing.T) {
 	}
 
 	// http://rec.mro.name/stations/b2/2015/11/15/0900%20Nachrichten%2c%20Wetter.xml
-	bcs, err := t0.parseBroadcastReader(f)
+	bcs, err := t0.parseBroadcastReader(f, nil)
 	assert.Nil(t, err, "ouch")
 	assert.Equal(t, 1, len(bcs), "ouch")
 	bc := bcs[0]
@@ -337,7 +337,7 @@ func TestParsePulseProgram(t *testing.T) {
 
 	s := Station("puls")
 
-	a, err := s.parseDayURLsReader(f)
+	a, err := s.parseDayURLsReader(f, nil)
 	assert.Equal(t, 25, len(a), "ouch: len")
 	assert.Equal(t, "puls", a[0].Station.Identifier, "ouch: ")
 	assert.Equal(t, "2015-09-27T07:00:00+02:00", a[0].Time.Format(time.RFC3339), "ouch: ")

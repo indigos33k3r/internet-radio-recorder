@@ -30,6 +30,7 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -122,6 +123,14 @@ func (cr *CountingReader) Read(p []byte) (n int, err error) {
 	n, err = cr.reader.Read(p)
 	cr.TotalBytes += int64(n)
 	return
+}
+
+func ReportLoad(marker string, cr0 *CountingReader, cr *CountingReader, url url.URL) {
+	loaded := int64(0)
+	if nil != cr0 {
+		loaded = cr0.TotalBytes
+	}
+	fmt.Fprintf(os.Stderr, "loaded %d B parsed %d B %s %s\n", loaded, cr.TotalBytes, marker, url.String())
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

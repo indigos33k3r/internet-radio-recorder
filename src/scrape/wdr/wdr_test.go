@@ -48,7 +48,7 @@ func TestUnmarshalBroadcasts(t *testing.T) {
 		Station: r.Station(*s),
 	})
 
-	res, err := u.parseBroadcastsFromReader(f)
+	res, err := u.parseBroadcastsFromReader(f, nil)
 	assert.Equal(t, 86, len(res), "53")
 	bc := res[0]
 

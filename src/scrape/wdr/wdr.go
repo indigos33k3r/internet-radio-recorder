@@ -26,7 +26,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"os"
 	"time"
 
 	r "purl.mro.name/recorder/radio/scrape"
@@ -154,11 +153,11 @@ func (day *timeURL) parseBroadcastsFromData(programm WdrProgramm) (ret []*r.Broa
 	return
 }
 
-func (day *timeURL) parseBroadcastsFromReader(read io.Reader) (ret []*r.Broadcast, err error) {
+func (day *timeURL) parseBroadcastsFromReader(read io.Reader, cr0 *r.CountingReader) (ret []*r.Broadcast, err error) {
 	cr := r.NewCountingReader(read)
 	var f WdrProgramm
 	err = json.NewDecoder(cr).Decode(&f)
-	fmt.Fprintf(os.Stderr, "parsed %d B 🐦 %s\n", cr.TotalBytes, day.Source.String())
+	r.ReportLoad("🐦", cr0, cr, day.Source)
 	if nil != err {
 		return
 	}
@@ -166,10 +165,9 @@ func (day *timeURL) parseBroadcastsFromReader(read io.Reader) (ret []*r.Broadcas
 }
 
 func (day *timeURL) parseBroadcastsFromURL() (ret []*r.Broadcast, err error) {
-	bo, err := r.HttpGetBody(day.Source)
+	bo, cr, err := r.HttpGetBody(day.Source)
 	if nil == bo {
 		return nil, err
 	}
-	defer bo.Close()
-	return day.parseBroadcastsFromReader(bo)
+	return day.parseBroadcastsFromReader(bo, cr)
 }

@@ -28,7 +28,6 @@ import (
 	"fmt"
 	"io"
 	"net/url"
-	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -121,19 +120,18 @@ func (day *calItemRangeURL) Matches(nows []time.Time) (ok bool) {
 
 func (rangeURL *calItemRangeURL) parseCalendarItems() (cis []calendarItem, err error) {
 	// fmt.Fprintf(os.Stderr, "GET %s\n", rangeURL.Source.String())
-	bo, err := r.HttpGetBody(rangeURL.Source)
+	bo, cr, err := r.HttpGetBody(rangeURL.Source)
 	if nil == bo {
 		return nil, err
 	}
-	defer bo.Close()
-	return rangeURL.parseCalendarItemsReader(bo)
+	return rangeURL.parseCalendarItemsReader(bo, cr)
 }
 
-func (rangeURL *calItemRangeURL) parseCalendarItemsReader(read io.Reader) (cis []calendarItem, err error) {
+func (rangeURL *calItemRangeURL) parseCalendarItemsReader(read io.Reader, cr0 *r.CountingReader) (cis []calendarItem, err error) {
 	cr := r.NewCountingReader(io.LimitReader(read, 1048576))
 	cis = make([]calendarItem, 0)
 	err = json.NewDecoder(cr).Decode(&cis)
-	fmt.Fprintf(os.Stderr, "parsed %d B 🐦 %s\n", cr.TotalBytes, rangeURL.Source.String())
+	r.ReportLoad("🐦", cr0, cr, rangeURL.Source)
 	if nil != err {
 		return
 	}
@@ -345,10 +343,10 @@ func (bcu *broadcastURL) parseBroadcastNode(root *html.Node) (bc r.Broadcast, er
 	return
 }
 
-func (bcu *broadcastURL) parseBroadcastReader(read io.Reader) (bc r.Broadcast, err error) {
+func (bcu *broadcastURL) parseBroadcastReader(read io.Reader, cr0 *r.CountingReader) (bc r.Broadcast, err error) {
 	cr := r.NewCountingReader(read)
 	root, err := html.Parse(cr)
-	fmt.Fprintf(os.Stderr, "parsed %d B 🐠 %s\n", cr.TotalBytes, bcu.Source.String())
+	r.ReportLoad("🐠", cr0, cr, bcu.Source)
 	if nil != err {
 		return
 	}
@@ -356,10 +354,9 @@ func (bcu *broadcastURL) parseBroadcastReader(read io.Reader) (bc r.Broadcast, e
 }
 
 func (bcu *broadcastURL) parseBroadcast() (bc r.Broadcast, err error) {
-	bo, err := r.HttpGetBody(bcu.Source)
+	bo, cr, err := r.HttpGetBody(bcu.Source)
 	if nil == bo {
 		return bc, err
 	}
-	defer bo.Close()
-	return bcu.parseBroadcastReader(bo)
+	return bcu.parseBroadcastReader(bo, cr)
 }
