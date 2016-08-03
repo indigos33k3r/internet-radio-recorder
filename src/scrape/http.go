@@ -27,18 +27,41 @@
 package scrape
 
 import (
+	"compress/gzip"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 )
+
+func contains(haystack []string, needle string) bool {
+	for _, s := range haystack {
+		if needle == s {
+			return true
+		}
+	}
+	return false
+}
 
 /// One to fetch them all (except dlf with it's POST requests).
 func HttpGetBody(url url.URL) (io.ReadCloser, error) {
-	bo, err := http.Get(url.String())
-	if nil == bo {
+	client := &http.Client{}
+	req, _ := http.NewRequest("GET", url.String(), nil)
+	req.Header.Set("Accept-Encoding", "gzip, deflate")
+	resp, err := client.Do(req)
+	if nil == resp {
 		return nil, err
 	}
-	return bo.Body, err
+	encs := resp.Header["Content-Encoding"]
+	switch {
+	case contains(encs, "gzip"), contains(encs, "deflate"):
+		ret, err := gzip.NewReader(resp.Body)
+		return ret, err
+	default:
+		fmt.Fprintf(os.Stderr, "Strange compression: %s\n", encs)
+	}
+	return resp.Body, err
 }
 
 /// Sadly doesn't make things really simpler
