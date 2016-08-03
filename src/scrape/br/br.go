@@ -100,13 +100,12 @@ func (s *station) parseDayURLsReader(read io.Reader) (ret []timeURL, err error) 
 }
 
 func (s *station) parseDayURLs() (ret []timeURL, err error) {
-	resp, err := r.CreateHttpGet(*s.ProgramURL)
-	if nil != err {
-		return
+	bo, err := r.HttpGetBody(*s.ProgramURL)
+	if nil == bo {
+		return nil, err
 	}
-	defer resp.Body.Close()
-	ret, err = s.parseDayURLsReader(resp.Body)
-	return
+	defer bo.Close()
+	return s.parseDayURLsReader(bo)
 }
 
 // Scrape slice of timeURL - all calendar (day) entries of the station program url
@@ -227,12 +226,12 @@ func (day *timeURL) parseBroadcastURLsReader(read io.Reader) (ret []*broadcastUR
 }
 
 func (day *timeURL) parseBroadcastURLs() (ret []*broadcastURL, err error) {
-	resp, err := r.CreateHttpGet(day.Source)
-	if nil != err {
-		return
+	bo, err := r.HttpGetBody(day.Source)
+	if nil == bo {
+		return nil, err
 	}
-	defer resp.Body.Close()
-	return day.parseBroadcastURLsReader(resp.Body)
+	defer bo.Close()
+	return day.parseBroadcastURLsReader(bo)
 }
 
 /////////////////////////////////////////////////////////////////////////////

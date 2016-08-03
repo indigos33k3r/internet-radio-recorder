@@ -166,10 +166,10 @@ func (day *timeURL) parseBroadcastsFromReader(read io.Reader) (ret []*r.Broadcas
 }
 
 func (day *timeURL) parseBroadcastsFromURL() (ret []*r.Broadcast, err error) {
-	resp, err := r.CreateHttpGet(day.Source)
-	if nil != err {
-		return
+	bo, err := r.HttpGetBody(day.Source)
+	if nil == bo {
+		return nil, err
 	}
-	defer resp.Body.Close()
-	return day.parseBroadcastsFromReader(resp.Body)
+	defer bo.Close()
+	return day.parseBroadcastsFromReader(bo)
 }

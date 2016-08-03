@@ -33,16 +33,20 @@ import (
 )
 
 /// One to fetch them all (except dlf with it's POST requests).
-func CreateHttpGet(url url.URL) (*http.Response, error) {
-	return http.Get(url.String())
+func HttpGetBody(url url.URL) (io.ReadCloser, error) {
+	bo, err := http.Get(url.String())
+	if nil == bo {
+		return nil, err
+	}
+	return bo.Body, err
 }
 
 /// Sadly doesn't make things really simpler
 func GenericParseBroadcastFromURL(url url.URL, callback func(r io.Reader) ([]Broadcast, error)) (bc []Broadcast, err error) {
-	resp, err := CreateHttpGet(url)
-	defer resp.Body.Close()
-	if nil != err {
-		return
+	bo, err := HttpGetBody(url)
+	if nil == bo {
+		return nil, err
 	}
-	return callback(resp.Body)
+	defer bo.Close()
+	return callback(bo)
 }

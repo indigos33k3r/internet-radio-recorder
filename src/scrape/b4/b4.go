@@ -121,12 +121,12 @@ func (day *calItemRangeURL) Matches(nows []time.Time) (ok bool) {
 
 func (rangeURL *calItemRangeURL) parseCalendarItems() (cis []calendarItem, err error) {
 	// fmt.Fprintf(os.Stderr, "GET %s\n", rangeURL.Source.String())
-	resp, err := r.CreateHttpGet(rangeURL.Source)
-	if nil != err {
-		return
+	bo, err := r.HttpGetBody(rangeURL.Source)
+	if nil == bo {
+		return nil, err
 	}
-	defer resp.Body.Close()
-	return rangeURL.parseCalendarItemsReader(resp.Body)
+	defer bo.Close()
+	return rangeURL.parseCalendarItemsReader(bo)
 }
 
 func (rangeURL *calItemRangeURL) parseCalendarItemsReader(read io.Reader) (cis []calendarItem, err error) {
@@ -356,10 +356,10 @@ func (bcu *broadcastURL) parseBroadcastReader(read io.Reader) (bc r.Broadcast, e
 }
 
 func (bcu *broadcastURL) parseBroadcast() (bc r.Broadcast, err error) {
-	resp, err := r.CreateHttpGet(bcu.Source)
-	if nil != err {
-		return
+	bo, err := r.HttpGetBody(bcu.Source)
+	if nil == bo {
+		return bc, err
 	}
-	defer resp.Body.Close()
-	return bcu.parseBroadcastReader(resp.Body)
+	defer bo.Close()
+	return bcu.parseBroadcastReader(bo)
 }
