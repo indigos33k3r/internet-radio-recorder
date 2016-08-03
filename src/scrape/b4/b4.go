@@ -133,7 +133,7 @@ func (rangeURL *calItemRangeURL) parseCalendarItemsReader(read io.Reader) (cis [
 	cr := r.NewCountingReader(io.LimitReader(read, 1048576))
 	cis = make([]calendarItem, 0)
 	err = json.NewDecoder(cr).Decode(&cis)
-	fmt.Fprintf(os.Stderr, "parsed %d bytes 🐦 %s\n", cr.TotalBytes, rangeURL.Source.String())
+	fmt.Fprintf(os.Stderr, "parsed %d B 🐦 %s\n", cr.TotalBytes, rangeURL.Source.String())
 	if nil != err {
 		return
 	}
@@ -348,7 +348,7 @@ func (bcu *broadcastURL) parseBroadcastNode(root *html.Node) (bc r.Broadcast, er
 func (bcu *broadcastURL) parseBroadcastReader(read io.Reader) (bc r.Broadcast, err error) {
 	cr := r.NewCountingReader(read)
 	root, err := html.Parse(cr)
-	fmt.Fprintf(os.Stderr, "parsed %d bytes 🐠 %s\n", cr.TotalBytes, bcu.Source.String())
+	fmt.Fprintf(os.Stderr, "parsed %d B 🐠 %s\n", cr.TotalBytes, bcu.Source.String())
 	if nil != err {
 		return
 	}

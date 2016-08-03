@@ -53,6 +53,9 @@ func HttpGetBody(url url.URL) (io.ReadCloser, error) {
 	if nil == resp {
 		return nil, err
 	}
+	for _, cl := range resp.Header["Content-Length"] {
+		fmt.Fprintf(os.Stderr, "loaded %s B\n", cl)
+	}
 	encs := resp.Header["Content-Encoding"]
 	switch {
 	case contains(encs, "gzip"), contains(encs, "deflate"):

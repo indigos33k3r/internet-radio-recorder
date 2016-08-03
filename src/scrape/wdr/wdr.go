@@ -158,7 +158,7 @@ func (day *timeURL) parseBroadcastsFromReader(read io.Reader) (ret []*r.Broadcas
 	cr := r.NewCountingReader(read)
 	var f WdrProgramm
 	err = json.NewDecoder(cr).Decode(&f)
-	fmt.Fprintf(os.Stderr, "parsed %d bytes 🐦 %s\n", cr.TotalBytes, day.Source.String())
+	fmt.Fprintf(os.Stderr, "parsed %d B 🐦 %s\n", cr.TotalBytes, day.Source.String())
 	if nil != err {
 		return
 	}

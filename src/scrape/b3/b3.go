@@ -178,7 +178,7 @@ func (url *calItemRangeURL) parseBroadcastsReader(read io.Reader) (bcs []r.Broad
 	cr := r.NewCountingReader(read)
 	var f B3Programm
 	err = json.NewDecoder(cr).Decode(&f)
-	fmt.Fprintf(os.Stderr, "parsed %d bytes 🐦 %s\n", cr.TotalBytes, url.Source.String())
+	fmt.Fprintf(os.Stderr, "parsed %d B 🐦 %s\n", cr.TotalBytes, url.Source.String())
 	if nil != err {
 		return
 	}

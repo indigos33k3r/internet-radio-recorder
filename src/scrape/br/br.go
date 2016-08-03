@@ -91,7 +91,7 @@ func (s *station) parseDayURLsNode(root *html.Node) (ret []timeURL, err error) {
 func (s *station) parseDayURLsReader(read io.Reader) (ret []timeURL, err error) {
 	cr := r.NewCountingReader(read)
 	root, err := html.Parse(cr)
-	fmt.Fprintf(os.Stderr, "parsed %d bytes 🐦 %s\n", cr.TotalBytes, s.ProgramURL.String())
+	fmt.Fprintf(os.Stderr, "parsed %d B 🐦 %s\n", cr.TotalBytes, s.ProgramURL.String())
 	if nil != err {
 		return
 	}
@@ -218,7 +218,7 @@ func (day *timeURL) parseBroadcastURLsNode(root *html.Node) (ret []*broadcastURL
 func (day *timeURL) parseBroadcastURLsReader(read io.Reader) (ret []*broadcastURL, err error) {
 	cr := r.NewCountingReader(read)
 	root, err := html.Parse(cr)
-	fmt.Fprintf(os.Stderr, "parsed %d bytes 🐠 %s\n", cr.TotalBytes, day.Source.String())
+	fmt.Fprintf(os.Stderr, "parsed %d B 🐠 %s\n", cr.TotalBytes, day.Source.String())
 	if nil != err {
 		return
 	}
@@ -466,7 +466,7 @@ func (bcu *broadcastURL) parseBroadcastNode(root *html.Node) (bcs []r.Broadcast,
 func (bcu *broadcastURL) parseBroadcastReader(read io.Reader) (bc []r.Broadcast, err error) {
 	cr := r.NewCountingReader(read)
 	root, err := html.Parse(cr)
-	fmt.Fprintf(os.Stderr, "parsed %d bytes ⚓️ %s\n", cr.TotalBytes, bcu.Source.String())
+	fmt.Fprintf(os.Stderr, "parsed %d B ⚓️ %s\n", cr.TotalBytes, bcu.Source.String())
 	if nil != err {
 		return
 	}
