@@ -43,12 +43,14 @@ jQuery.get({ url: podasts_json_url, cache: true,
     var enclosure_mp3_url = canonical_path.replace(/\/stations\//,'/enclosures/') + '.mp3';
     var enclosure_dir_url = enclosure_mp3_url.replace(/[^\/]+$/,'');
     $( 'a#enclosure_link' ).attr('href', enclosure_dir_url);
-    $.ajax({ url: enclosure_mp3_url, type: 'HEAD', cache: true, }).success( function() {
-      $( 'html' ).addClass('has_enclosure_mp3');
-      $( 'a#enclosure_link' ).attr('href', enclosure_mp3_url);
-      $( 'a#enclosure_link' ).attr('title', "Download: Rechte Maustaste + 'Speichern unter...'");
-      $( '#enclosure audio source' ).attr('src', enclosure_mp3_url);
-      $( '#enclosure' ).attr('style', 'display:block');
+    jQuery.ajax({ url: enclosure_mp3_url, cache: true, type: 'HEAD',
+      success: function() {
+        $( 'html' ).addClass('has_enclosure_mp3');
+        $( 'a#enclosure_link' ).attr('href', enclosure_mp3_url);
+        $( 'a#enclosure_link' ).attr('title', "Download: Rechte Maustaste + 'Speichern unter...'");
+        $( '#enclosure audio source' ).attr('src', enclosure_mp3_url);
+        $( '#enclosure' ).attr('style', 'display:block');
+      },
     });
     var has_ad_hoc = false;
     var names = data.podcasts.map( function(pc) {
