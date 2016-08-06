@@ -158,3 +158,44 @@ func TestParseBroadcasts_1(t *testing.T) {
 	assert.Nil(t, bc.Creator, "Creator")
 	assert.Nil(t, bc.Copyright, "Copyright")
 }
+
+func TestParseBroadcasts_2(t *testing.T) {
+	f, err := os.Open("testdata/2016-08-06-drk-programm.html")
+	assert.NotNil(t, f, "ouch")
+	assert.Nil(t, err, "ouch")
+
+	s := Station("drk")
+	u := timeURL(r.TimeURL{
+		Time:    time.Date(2016, time.August, 6, 0, 0, 0, 0, s.TimeZone),
+		Source:  *r.MustParseURL("http://www.deutschlandradiokultur.de/programmvorschau.282.de.html?cal:month=8&drbm:date=06.08.2016"),
+		Station: r.Station(*s),
+	})
+
+	bcs, err := u.parseBroadcastsFromReader(f, nil)
+	assert.NotNil(t, bcs, "ouch")
+	assert.Nil(t, err, "ouch")
+	assert.Equal(t, 32, len(bcs), "ouch")
+	bc := bcs[1]
+	assert.Nil(t, err, "ouch")
+	assert.Equal(t, "drk", bc.Station.Identifier, "ouch: Station.Identifier")
+	assert.Equal(t, "Lange Nacht", bc.Title, "ouch: Title")
+	assert.Equal(t, "http://www.deutschlandradiokultur.de/programmvorschau.282.de.html?cal:month=8&drbm:date=06.08.2016#0005", bc.Source.String(), "ouch: Source")
+	assert.NotNil(t, bc.Language, "ouch: Language")
+	assert.Equal(t, "de", *bc.Language, "ouch: Language")
+	assert.Equal(t, bc.Title, bc.Title, "ouch: Title")
+	assert.Nil(t, bc.TitleSeries, "ouch: TitleSeries")
+	assert.Nil(t, bc.TitleEpisode, "ouch: TitleEpisode")
+	assert.Equal(t, "2016-08-06T00:05:00+02:00", bc.Time.Format(time.RFC3339), "ouch: Time")
+	assert.Equal(t, "2016-08-06T03:00:00+02:00", bc.DtEnd.Format(time.RFC3339), "ouch: DtEnd")
+	assert.Equal(t, 10500*time.Second, bc.DtEnd.Sub(bc.Time), "ouch: Duration")
+	assert.NotNil(t, bc.Subject, "ouch: Subject")
+	assert.Equal(t, "http://www.deutschlandradiokultur.de/lange-nacht.1023.de.html", bc.Subject.String(), "ouch: Subject")
+	assert.Nil(t, bc.Modified, "ouch: Modified")
+	assert.Nil(t, bc.Author, "ouch: Author")
+	assert.NotNil(t, bc.Description, "ouch: Description")
+	assert.Equal(t, "Freiheit - ein Drahtseilakt\nEine Lange Nacht über Frauen in der Manege\nVon Anne Ipsen und Daniela Kletzke\nRegie: Daniela Kletzke\n\nSchon die frühesten Zeugnisse aus der Geschichte der Artistik zeigen Frauen, die über Schwerter springen und auf Händen gehen. Turmseil-Läuferinnen und kettensprengende Kraftartistinnen traten seit jeher auf Jahrmärkten auf, und als der Kampf um das Frauenwahlrecht begann, gaben die Frauen der Manege ein Beispiel für Wagemut, Kraft und Geschicklichkeit. Mit Tattersälen, Menagerien, festen Zirkuspalästen und reisenden Zeltzirkussen begann die moderne Massenunterhaltung, und viele dieser großen Unternehmen wurden von Prinzipalinnen oder Direktorinnen geführt. Bis in die Gegenwart hinein verfolgt diese 'Lange Nacht', wie Frauen im Zirkus hart arbeiten, viel riskieren und manchmal die Freiheit für ungewöhnliche Lebensentwürfe finden. Frauen aus der Generation der Kriegskinder erzählen, wie sie nach dem Zweiten Weltkrieg im Zirkus einen Neuanfang wagten. Und junge Artistinnen berichten von ihrer Suche nach einem neuen Zirkus, der tanzend von großen Gefühlen erzählt und dabei immer noch nach Sägemehl riecht.\n\n01:00 Nachrichten\n\n02:00 Nachrichten", *bc.Description, "ouch: Description")
+	assert.Nil(t, bc.Image, "ouch: Image")
+	assert.Equal(t, "http://www.deutschlandradiokultur.de/", *bc.Publisher, "Publisher")
+	assert.Nil(t, bc.Creator, "Creator")
+	assert.Nil(t, bc.Copyright, "Copyright")
+}

@@ -8,7 +8,7 @@ cd "$(dirname "$0")"
 # Linux x86_64
 # Linux armv6l
 
-VERSION=0.2.4
+VERSION=0.2.5
 
 rm "scrape"-*-"$VERSION" 2>/dev/null
 

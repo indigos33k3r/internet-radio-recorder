@@ -99,8 +99,10 @@ func main() {
 		jobs <- radiofabrik.Station("radiofabrik")
 		wg_jobs.Add(1)
 		jobs <- m945.Station("m945")
-		wg_jobs.Add(1)
-		jobs <- dlf.Station("dlf")
+		for _, s := range []string{"dlf", "drk"} {
+			wg_jobs.Add(1)
+			jobs <- dlf.Station(s)
+		}
 		wg_jobs.Add(1)
 		jobs <- wdr.Station("wdr5")
 	}

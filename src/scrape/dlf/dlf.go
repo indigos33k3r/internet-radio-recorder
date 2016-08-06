@@ -46,6 +46,10 @@ func Station(identifier string) *station {
 		"dlf":
 		s := station(r.Station{Name: "Deutschlandfunk", CloseDown: "00:00", ProgramURL: r.MustParseURL("http://www.deutschlandfunk.de/programmvorschau.281.de.html"), Identifier: identifier, TimeZone: tz})
 		return &s
+	case
+		"drk":
+		s := station(r.Station{Name: "Deutschlandradio Kultur", CloseDown: "00:00", ProgramURL: r.MustParseURL("http://www.deutschlandradiokultur.de/programmvorschau.282.de.html"), Identifier: identifier, TimeZone: tz})
+		return &s
 	}
 	return nil
 }
@@ -104,15 +108,17 @@ func (day timeURL) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err erro
 }
 
 var (
-	lang_de   string = "de"
-	publisher string = "http://www.deutschlandfunk.de/"
+	lang_de string = "de"
 )
 
 func (day *timeURL) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast, err error) {
 	// fmt.Fprintf(os.Stderr, "%s\n", day.Source.String())
 	index := 0
 	for _, at := range scrape.FindAll(root, func(n *html.Node) bool {
-		return atom.A == n.DataAtom && atom.Td == n.Parent.DataAtom && atom.Tr == n.Parent.Parent.DataAtom && "time" == scrape.Attr(n.Parent, "class")
+		return atom.A == n.DataAtom &&
+			atom.Td == n.Parent.DataAtom &&
+			atom.Tr == n.Parent.Parent.DataAtom &&
+			"time" == scrape.Attr(n.Parent, "class")
 	}) {
 		// prepare response
 		bc := r.Broadcast{
@@ -123,14 +129,19 @@ func (day *timeURL) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast
 
 		// some defaults
 		bc.Language = &lang_de
-		bc.Publisher = &publisher
+		{
+			publisher := "http://www.deutschlandfunk.de/"
+			if "drk" == day.Station.Identifier {
+				publisher = "http://www.deutschlandradiokultur.de/"
+			}
+			bc.Publisher = &publisher
+		}
 		// set start time
 		{
-			a_id := scrape.Attr(at, "id")
+			a_id := scrape.Attr(at, "name")
 			if "" == a_id {
 				continue
 			}
-			// fmt.Fprintf(os.Stderr, "  a_id=%s\n", a_id)
 			bc.Source.Fragment = a_id
 			hour := r.MustParseInt(a_id[0:2])
 			minute := r.MustParseInt(a_id[2:4])
@@ -144,14 +155,26 @@ func (day *timeURL) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast
 		}
 		// Title
 		for idx, h3 := range scrape.FindAll(at.Parent.Parent, func(n *html.Node) bool {
-			return atom.H3 == n.DataAtom && atom.Td == n.Parent.DataAtom && atom.Tr == n.Parent.Parent.DataAtom && "description" == scrape.Attr(n.Parent, "class")
+			return atom.H3 == n.DataAtom &&
+				atom.Td == n.Parent.DataAtom &&
+				atom.Tr == n.Parent.Parent.DataAtom &&
+				"description" == scrape.Attr(n.Parent, "class")
 		}) {
 			if idx != 0 {
 				err = errors.New("There was more than 1 <tr><td class='description'><h3>")
 				return
 			}
+			// purge 'aufnehmen' link:
+			for _, chi := range scrape.FindAll(h3, func(n *html.Node) bool {
+				return atom.A == n.DataAtom &&
+					"psradio" == scrape.Attr(n, "class")
+			}) {
+				h3.RemoveChild(chi)
+			}
+			// fmt.Fprintf(os.Stderr, " '%s'\n", scrape.Text(h3))
+
 			for idx, h3_a := range scrape.FindAll(h3, func(n *html.Node) bool {
-				return atom.A == n.DataAtom && "" == scrape.Attr(n, "class")
+				return atom.A == n.DataAtom
 			}) {
 				if idx != 0 {
 					err = errors.New("There was more than 1 <tr><td class='description'><h3><a>")
