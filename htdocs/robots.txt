@@ -1,4 +1,5 @@
 User-agent: *
+Allow: /stations/
 Disallow: /app/
 Disallow: /assets/
 Disallow: /enclosures/
