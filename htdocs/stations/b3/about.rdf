@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:dctype="http://purl.org/dc/dcmitype/"
+   xmlns:dct="http://purl.org/dc/terms/"
+   xmlns:foaf="http://xmlns.com/foaf/0.1/"
+   xmlns:iso639-1="http://www.lexvo.org/page/iso639-1/"
+   xmlns:mime="http://purl.org/NET/mediatypes/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+   xmlns:rec="http://purl.mro.name/recorder/2014/"
+   xmlns:tz="http://www.w3.org/2002/12/cal/tzd/"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema#">
+  <foaf:Document rdf:about="">
+  	<foaf:primaryTopic rdf:resource="."/>
+  </foaf:Document>
+  <rdf:Description rdf:about=".">
+    <dct:hasFormat rdf:resource="http://streams.br-online.de/bayern3_2.m3u"/>
+    <dct:hasFormat rdf:resource="http://www.br.de/radio/bayern3/programmkalender/br-drei100.html"/>
+    <dct:isPartOf rdf:resource="http://br.de/"/>
+    <foaf:homepage rdf:resource="http://bayern3.de/"/>
+    <foaf:logo rdf:resource="https://upload.wikimedia.org/wikipedia/commons/d/de/Bayern3_logo_2015.svg"/>
+    <foaf:name>Bayern 3</foaf:name>
+  </rdf:Description>
+  <foaf:Organization rdf:about="http://br.de/">
+    <dct:hasPart rdf:resource=""/>
+    <foaf:homepage rdf:resource="http://br.de/"/>
+    <foaf:logo rdf:resource="https://upload.wikimedia.org/wikipedia/commons/9/98/BR_Dachmarke.svg"/>
+    <foaf:name>Bayerischer Rundfunk</foaf:name>
+  </foaf:Organization>
+  <dctype:Sound rdf:about="http://streams.br-online.de/bayern3_2.m3u">
+    <rec:streamripperRelayPort rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8003</rec:streamripperRelayPort>
+    <dct:description xml:lang="de">Live Stream</dct:description>
+    <dct:format rdf:resource="http://purl.org/NET/mediatypes/audio/x-mpegurl"/>
+    <dct:isFormatOf rdf:resource=""/>
+    <dct:language rdf:resource="http://www.lexvo.org/page/iso639-1/de"/>
+  </dctype:Sound>
+  <dctype:Text rdf:about="http://www.br.de/radio/bayern3/programmkalender/br-drei100.html">
+    <rec:curfew rdf:datatype="http://www.w3.org/2001/XMLSchema#time">05:00:00</rec:curfew>
+    <rec:timezone rdf:resource="http://www.w3.org/2002/12/cal/tzd/Europe/Berlin"/>
+    <dct:description xml:lang="de">Programm Website</dct:description>
+    <dct:format rdf:resource="http://purl.org/NET/mediatypes/text/html"/>
+    <dct:isFormatOf rdf:resource=""/>
+    <dct:language rdf:resource="http://www.lexvo.org/page/iso639-1/de"/>
+  </dctype:Text>
+</rdf:RDF>
