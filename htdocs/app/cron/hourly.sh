@@ -30,7 +30,7 @@ cmd=../bin/scrape-$(uname -s)-$(uname -m)-0.2.5
 
 ${cmd} 2>> log/"${me}".stderr.log \
 | tee log/"${me}".stdout.dat \
-| app/broadcast-render.lua --stdin 2>> log/"${me}".stderr.log \
+| app/broadcast-render.lua --luatables 2>> log/"${me}".stderr.log \
 1>> log/"${me}".stdout.log
 
 nice app/calendar.lua stations/* podcasts/* 1>> log/"${me}".stdout.log 2>> log/"${me}".stderr.log

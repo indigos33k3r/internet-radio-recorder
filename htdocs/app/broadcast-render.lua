@@ -37,10 +37,10 @@ Usage:
   $ broadcast-render.lua --help
 
   update/create future broadcasts from meta data
-  $ broadcast-render.lua --stdin
+  $ broadcast-render.lua --luatables
 
   update/create all broadcasts from meta data
-  $ broadcast-render.lua --stdin --update-past
+  $ broadcast-render.lua --luatables --update-past
 ]])
   os.exit(0)
 end
@@ -53,7 +53,7 @@ Recorder.chdir2app_root( arg[0] )
 -- prof.start()
 
 -- multiple xml files to create/update
-if arg[1] == '--stdin' then
+if arg[1] == '--luatables' then
   local metas,err = loadstring(table.concat{'return {', io.read('*a'), '}'})
   if metas == nil then
     io.write('error: ', err, "\n")
