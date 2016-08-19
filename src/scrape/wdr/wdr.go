@@ -183,8 +183,20 @@ func (day *timeURL) parseBroadcastsFromJsonURL() (ret []*broadcast, err error) {
 /// Just wrap Broadcast into a distinct, local type - a Scraper, naturally
 type broadcast r.Broadcast
 
-func (bc broadcast) Matches(nows []time.Time) (ok bool) {
-	return true
+// 1h future interval
+func (bc *broadcast) Matches(nows []time.Time) (ok bool) {
+	start := &bc.Time
+	if nil == nows || nil == start {
+		return false
+	}
+	for _, now := range nows {
+		dt := start.Sub(now)
+		// fmt.Fprintf(os.Stderr, "*broadcastURL.Matches: %d %d = %s - %s\n", ok, dt, start.Format(time.RFC3339), now.Format(time.RFC3339))
+		if 0 <= dt && dt <= 60*time.Minute {
+			return true
+		}
+	}
+	return false
 }
 
 func (bc broadcast) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error) {
