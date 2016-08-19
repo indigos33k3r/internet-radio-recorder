@@ -24,10 +24,16 @@ package wdr
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
+	"regexp"
+	"strings"
 	"time"
 
+	"github.com/yhat/scrape"
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 	r "purl.mro.name/recorder/radio/scrape"
 )
 
@@ -91,10 +97,11 @@ func (day timeURL) Matches(nows []time.Time) (ok bool) {
 }
 
 func (day timeURL) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error) {
-	bcs, err := day.parseBroadcastsFromURL()
+	bcs, err := day.parseBroadcastsFromJsonURL()
 	if nil == err {
 		for _, bc := range bcs {
-			results = append(results, bc)
+			// queue to amend details
+			jobs = append(jobs, bc)
 		}
 	}
 	return
@@ -125,12 +132,12 @@ type WdrProgramm struct {
 	}
 }
 
-func (day *timeURL) parseBroadcastsFromData(programm WdrProgramm) (ret []*r.Broadcast, err error) {
+func (day *timeURL) parseBroadcastsFromJsonData(programm WdrProgramm) (ret []*broadcast, err error) {
 	lang_de := "de"
 	publisher := "Westdeutscher Rundfunk"
 	empty := ""
 	for _, b := range programm.Sendungen {
-		bc := r.Broadcast{
+		bc := broadcast{
 			BroadcastURL: r.BroadcastURL{
 				TimeURL: r.TimeURL{
 					Source:  *day.Source.ResolveReference(r.MustParseURL(b.EpgLink)),
@@ -153,7 +160,7 @@ func (day *timeURL) parseBroadcastsFromData(programm WdrProgramm) (ret []*r.Broa
 	return
 }
 
-func (day *timeURL) parseBroadcastsFromReader(read io.Reader, cr0 *r.CountingReader) (ret []*r.Broadcast, err error) {
+func (day *timeURL) parseBroadcastsFromJsonReader(read io.Reader, cr0 *r.CountingReader) (ret []*broadcast, err error) {
 	cr := r.NewCountingReader(read)
 	var f WdrProgramm
 	err = json.NewDecoder(cr).Decode(&f)
@@ -161,13 +168,98 @@ func (day *timeURL) parseBroadcastsFromReader(read io.Reader, cr0 *r.CountingRea
 	if nil != err {
 		return
 	}
-	return day.parseBroadcastsFromData(f)
+	return day.parseBroadcastsFromJsonData(f)
 }
 
-func (day *timeURL) parseBroadcastsFromURL() (ret []*r.Broadcast, err error) {
+func (day *timeURL) parseBroadcastsFromJsonURL() (ret []*broadcast, err error) {
 	bo, cr, err := r.HttpGetBody(day.Source)
 	if nil == bo {
 		return nil, err
 	}
-	return day.parseBroadcastsFromReader(bo, cr)
+	return day.parseBroadcastsFromJsonReader(bo, cr)
+}
+
+/////////////////////////////////////////////////////////////////////////////
+/// Just wrap Broadcast into a distinct, local type - a Scraper, naturally
+type broadcast r.Broadcast
+
+func (bc broadcast) Matches(nows []time.Time) (ok bool) {
+	return true
+}
+
+func (bc broadcast) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error) {
+	bcs, err := bc.parseBroadcastFromHtmlURL()
+	if nil == err {
+		for _, bc := range bcs {
+			results = append(results, bc)
+		}
+	}
+	return
+}
+
+/////////////////////////////////////////////////////////////////////////////
+/// Parse single broadcast from HTML
+/////////////////////////////////////////////////////////////////////////////
+
+func (bc *broadcast) parseBroadcastFromHtmlNode(root *html.Node) (ret []*r.Broadcast, err error) {
+	for idx, epg := range scrape.FindAll(root, func(n *html.Node) bool {
+		return atom.Div == n.DataAtom && "epg-content-right" == scrape.Attr(n, "class")
+	}) {
+		if idx != 0 {
+			err = errors.New("There was more than 1 <div class='epg-content-right'/>")
+			return
+		}
+		{
+			// TitleEpisode
+			txt, _ := scrape.Find(epg, func(n *html.Node) bool {
+				return html.TextNode == n.Type && atom.H3 == n.Parent.DataAtom && atom.Br == n.NextSibling.DataAtom
+			})
+			if nil != txt {
+				t := strings.TrimSpace(r.NormaliseWhiteSpace(txt.Data))
+				bc.TitleEpisode = &t
+				txt.Parent.RemoveChild(txt.NextSibling)
+				txt.Parent.RemoveChild(txt)
+			}
+		}
+		// purge some cruft
+		for _, nn := range scrape.FindAll(root, func(n *html.Node) bool {
+			return atom.H2 == n.DataAtom ||
+				"mod modSharing" == scrape.Attr(n, "class") ||
+				"modGalery" == scrape.Attr(n, "class") ||
+				"sendungsLink" == scrape.Attr(n, "class") ||
+				"tabs-container" == scrape.Attr(n, "class")
+		}) {
+			nn.Parent.RemoveChild(nn)
+		}
+		{
+			// Description
+			var desc []string = r.TextsWithBr(scrape.FindAll(epg, func(n *html.Node) bool { return epg == n.Parent }))
+			re := regexp.MustCompile("[ ]*(\\s)[ ]*") // collapse whitespace, keep \n
+			t := strings.Join(desc, "\n\n")           // mark paragraphs with a double \n
+			t = re.ReplaceAllString(t, "$1")          // collapse whitespace (not the \n\n however)
+			t = strings.TrimSpace(t)
+			bc.Description = &t
+		}
+	}
+	bc_ := r.Broadcast(*bc)
+	ret = append(ret, &bc_)
+	return
+}
+
+func (bc *broadcast) parseBroadcastFromHtmlReader(read io.Reader, cr0 *r.CountingReader) (ret []*r.Broadcast, err error) {
+	cr := r.NewCountingReader(read)
+	root, err := html.Parse(cr)
+	r.ReportLoad("🐠", cr0, cr, bc.Source)
+	if nil != err {
+		return
+	}
+	return bc.parseBroadcastFromHtmlNode(root)
+}
+
+func (bc *broadcast) parseBroadcastFromHtmlURL() (ret []*r.Broadcast, err error) {
+	bo, cr, err := r.HttpGetBody(bc.Source)
+	if nil == bo {
+		return nil, err
+	}
+	return bc.parseBroadcastFromHtmlReader(bo, cr)
 }
