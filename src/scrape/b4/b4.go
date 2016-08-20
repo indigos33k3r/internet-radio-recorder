@@ -273,15 +273,8 @@ func (bcu *broadcastURL) parseBroadcastNode(root *html.Node) (bc r.Broadcast, er
 	for _, div := range scrape.FindAll(root, func(n *html.Node) bool {
 		return atom.Div == n.DataAtom && "br-box br-left" == scrape.Attr(n, "class") && atom.Div == n.Parent.DataAtom && "br-inner" == scrape.Attr(n.Parent, "class")
 	}) {
-		{
-			// Description
-			var desc []string = r.TextsWithBr(scrape.FindAll(div, func(n *html.Node) bool { return atom.P == n.DataAtom || atom.Div == n.DataAtom }))
-			re := regexp.MustCompile("[ ]*(\\s)[ ]*") // collapse whitespace, keep \n
-			t := strings.Join(desc, "\n\n")           // mark paragraphs with a double \n
-			t = re.ReplaceAllString(t, "$1")          // collapse whitespace (not the \n\n however)
-			t = strings.TrimSpace(t)
-			bc.Description = &t
-		}
+		description := r.TextWithBrFromNodeSet(scrape.FindAll(div, func(n *html.Node) bool { return atom.P == n.DataAtom || atom.Div == n.DataAtom }))
+		bc.Description = &description
 	}
 
 	// DtEnd

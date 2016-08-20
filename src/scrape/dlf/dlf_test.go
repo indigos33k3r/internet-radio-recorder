@@ -111,7 +111,7 @@ func TestParseBroadcasts(t *testing.T) {
 	assert.Nil(t, bc.Modified, "ouch: Modified")
 	assert.Nil(t, bc.Author, "ouch: Author")
 	assert.NotNil(t, bc.Description, "ouch: Description")
-	assert.Equal(t, "02:05 Sternzeit\n\n02:07 Konzertmomente\n\nLudwig van Beethoven\nKonzert für Klavier und Orchester Nr. 5 Es-Dur, op. 73\nAcademy of St. Martin-in-the-Fields\nLeitung: Murray Perahia\n\n\n\n03:00 Nachrichten\n\n03:05 Schlüsselwerke\n\nDmitri Schostakowitsch\nStreichquartett Nr. 14, Fis-Dur, op. 142\nBorodin-Quartett\n\n\n\n03:55 Kalenderblatt\n\n04:00 Nachrichten\n\n04:05 Die neue Platte XL\n\nAlte Musik\n\n\n\n05:00 Nachrichten\n\n05:05 Auftakt", *bc.Description, "ouch: Description")
+	assert.Equal(t, "02:05 Sternzeit\n\n02:07 Konzertmomente\n\nLudwig van Beethoven\nKonzert für Klavier und Orchester Nr. 5 Es-Dur, op. 73\nAcademy of St. Martin-in-the-Fields\nLeitung: Murray Perahia\n\n03:00 Nachrichten\n\n03:05 Schlüsselwerke\n\nDmitri Schostakowitsch\nStreichquartett Nr. 14, Fis-Dur, op. 142\nBorodin-Quartett\n\n03:55 Kalenderblatt\n\n04:00 Nachrichten\n\n04:05 Die neue Platte XL\n\nAlte Musik\n\n05:00 Nachrichten\n\n05:05 Auftakt", *bc.Description, "ouch: Description")
 	assert.Nil(t, bc.Image, "ouch: Image")
 	assert.Equal(t, "http://www.deutschlandfunk.de/", *bc.Publisher, "Publisher")
 	assert.Nil(t, bc.Creator, "Creator")

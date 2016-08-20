@@ -24,6 +24,7 @@
 package scrape
 
 import (
+	"regexp"
 	"strings"
 	"unicode"
 
@@ -43,7 +44,7 @@ func TextChildrenNoClimb(node *html.Node) string {
 	return strings.Join(ret, "")
 }
 
-func TextWithBr(node *html.Node) string {
+func TextWithBrFromNode(node *html.Node) string {
 	nodes := scrape.FindAll(node, func(n *html.Node) bool { return n.Type == html.TextNode || atom.Br == n.DataAtom })
 	parts := make([]string, len(nodes))
 	for i, n := range nodes {
@@ -53,14 +54,24 @@ func TextWithBr(node *html.Node) string {
 			parts[i] = NormaliseWhiteSpace(n.Data)
 		}
 	}
-	return strings.Join(parts, "")
+	return strings.TrimSpace(strings.Join(parts, ""))
 }
 
-func TextsWithBr(nodes []*html.Node) (ret []string) {
+func TextWithBrFromNodeSet(nodes []*html.Node) string {
+	var tmp []string = TextsWithBrFromNodeSet(nodes)
+	re := regexp.MustCompile("[ ]*(\\s)[ ]*") // collapse whitespace, keep \n
+	t := strings.Join(tmp, "\n\n")            // mark paragraphs with a double \n
+	t = re.ReplaceAllString(t, "$1")          // collapse whitespace (not the \n\n however)
+	re1 := regexp.MustCompile("\\n\\s*\\n")   // collapse linefeeds
+	t = re1.ReplaceAllString(t, "\n\n")
+	return strings.TrimSpace(t)
+}
+
+func TextsWithBrFromNodeSet(nodes []*html.Node) (ret []string) {
 	ret = make([]string, len(nodes))
 	for i, p := range nodes {
 		// BUG(mro): so where goes this?
-		ret[i] = TextWithBr(p)
+		ret[i] = TextWithBrFromNode(p)
 	}
 	return
 }

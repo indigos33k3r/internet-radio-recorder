@@ -27,7 +27,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"regexp"
 	"strings"
 	"time"
 
@@ -245,15 +244,8 @@ func (bc *broadcast) parseBroadcastFromHtmlNode(root *html.Node) (ret []*r.Broad
 			nn.Parent.RemoveChild(nn)
 		}
 		{
-			// Description
-			var desc []string = r.TextsWithBr(scrape.FindAll(epg, func(n *html.Node) bool { return epg == n.Parent }))
-			re := regexp.MustCompile("[ ]*(\\s)[ ]*") // collapse whitespace, keep \n
-			t := strings.Join(desc, "\n\n")           // mark paragraphs with a double \n
-			t = re.ReplaceAllString(t, "$1")          // collapse whitespace (not the \n\n however)
-			re1 := regexp.MustCompile("\\n\\s*\\n")   // collapse linefeeds
-			t = re1.ReplaceAllString(t, "\n\n")
-			t = strings.TrimSpace(t)
-			bc.Description = &t
+			description := r.TextWithBrFromNodeSet(scrape.FindAll(epg, func(n *html.Node) bool { return epg == n.Parent }))
+			bc.Description = &description
 		}
 	}
 	bc_ := r.Broadcast(*bc)
