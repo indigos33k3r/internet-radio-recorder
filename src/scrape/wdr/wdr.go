@@ -235,11 +235,12 @@ func (bc *broadcast) parseBroadcastFromHtmlNode(root *html.Node) (ret []*r.Broad
 		}
 		// purge some cruft
 		for _, nn := range scrape.FindAll(root, func(n *html.Node) bool {
+			clz := scrape.Attr(n, "class")
 			return atom.H2 == n.DataAtom ||
-				"mod modSharing" == scrape.Attr(n, "class") ||
-				"modGalery" == scrape.Attr(n, "class") ||
-				"sendungsLink" == scrape.Attr(n, "class") ||
-				"tabs-container" == scrape.Attr(n, "class")
+				"mod modSharing" == clz ||
+				"modGalery" == clz ||
+				"sendungsLink" == clz ||
+				"tabs-container" == clz
 		}) {
 			nn.Parent.RemoveChild(nn)
 		}
@@ -249,6 +250,8 @@ func (bc *broadcast) parseBroadcastFromHtmlNode(root *html.Node) (ret []*r.Broad
 			re := regexp.MustCompile("[ ]*(\\s)[ ]*") // collapse whitespace, keep \n
 			t := strings.Join(desc, "\n\n")           // mark paragraphs with a double \n
 			t = re.ReplaceAllString(t, "$1")          // collapse whitespace (not the \n\n however)
+			re1 := regexp.MustCompile("\\n\\s*\\n")   // collapse linefeeds
+			t = re1.ReplaceAllString(t, "\n\n")
 			t = strings.TrimSpace(t)
 			bc.Description = &t
 		}
