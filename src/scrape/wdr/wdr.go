@@ -27,6 +27,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/url"
 	"strings"
 	"time"
 
@@ -213,6 +214,16 @@ func (bc broadcast) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err err
 /////////////////////////////////////////////////////////////////////////////
 
 func (bc *broadcast) parseBroadcastFromHtmlNode(root *html.Node) (ret []*r.Broadcast, err error) {
+	{
+		// Author
+		meta, _ := scrape.Find(root, func(n *html.Node) bool {
+			return atom.Meta == n.DataAtom && "Author" == scrape.Attr(n, "name")
+		})
+		if nil != meta {
+			content := scrape.Attr(meta, "content")
+			bc.Author = &content
+		}
+	}
 	for idx, epg := range scrape.FindAll(root, func(n *html.Node) bool {
 		return atom.Div == n.DataAtom && "epg-content-right" == scrape.Attr(n, "class")
 	}) {
@@ -232,8 +243,18 @@ func (bc *broadcast) parseBroadcastFromHtmlNode(root *html.Node) (ret []*r.Broad
 				txt.Parent.RemoveChild(txt)
 			}
 		}
+		{
+			// Subject
+			a, _ := scrape.Find(epg, func(n *html.Node) bool {
+				return atom.Div == n.Parent.DataAtom && "sendungsLink" == scrape.Attr(n.Parent, "class") && atom.A == n.DataAtom
+			})
+			if nil != a {
+				u, _ := url.Parse(scrape.Attr(a, "href"))
+				bc.Subject = bc.Source.ResolveReference(u)
+			}
+		}
 		// purge some cruft
-		for _, nn := range scrape.FindAll(root, func(n *html.Node) bool {
+		for _, nn := range scrape.FindAll(epg, func(n *html.Node) bool {
 			clz := scrape.Attr(n, "class")
 			return atom.H2 == n.DataAtom ||
 				"mod modSharing" == clz ||
