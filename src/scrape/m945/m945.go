@@ -142,7 +142,7 @@ func (day *timeURL) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast
 
 			desc_node := tit.Parent
 			desc_node.RemoveChild(tit)
-			description := r.TextWithBrFromNode(desc_node)
+			description := r.TextWithBrFromNodeSet([]*html.Node{desc_node})
 			bc.Description = &description
 			// fmt.Fprintf(os.Stderr, "\n")
 		}

@@ -33,6 +33,41 @@ import (
 	"golang.org/x/net/html/atom"
 )
 
+const lineFeedMarker = "55855D6B-4E49-4B83-BE50-082ECB380AB1"
+
+func TextWithBrFromNodeSet(nodes []*html.Node) string {
+	parts := make([]string, len(nodes))
+	for i, node := range nodes {
+		for _, tag := range []atom.Atom{atom.Br, atom.Tr} {
+			for _, n := range scrape.FindAll(node, func(n *html.Node) bool { return tag == n.DataAtom }) {
+				lfn := html.Node{Type: html.TextNode, Data: lineFeedMarker}
+				n.Parent.InsertBefore(&lfn, n.NextSibling)
+			}
+		}
+		for _, tag := range []atom.Atom{atom.P, atom.Div} {
+			for _, n := range scrape.FindAll(node, func(n *html.Node) bool { return tag == n.DataAtom }) {
+				lfn := html.Node{Type: html.TextNode, Data: lineFeedMarker + lineFeedMarker}
+				n.Parent.InsertBefore(&lfn, n.NextSibling)
+			}
+		}
+		tmp := []string{}
+		for _, n := range scrape.FindAll(node, func(n *html.Node) bool { return html.TextNode == n.Type }) {
+			tmp = append(tmp, n.Data)
+		}
+		parts[i] = strings.Join(tmp, "")
+	}
+	ret := strings.Join(parts, lineFeedMarker+lineFeedMarker)
+	ret = NormaliseWhiteSpace(ret)
+	ret = strings.Replace(ret, lineFeedMarker, "\n", -1)
+	re := regexp.MustCompile("[ ]*(\\s)[ ]*") // collapse whitespace, keep \n
+	ret = re.ReplaceAllString(ret, "$1")      // collapse whitespace (not the \n\n however)
+	{
+		re := regexp.MustCompile("\\s*\\n\\s*\\n\\s*") // collapse linefeeds
+		ret = re.ReplaceAllString(ret, "\n\n")
+	}
+	return strings.TrimSpace(ret)
+}
+
 func TextChildrenNoClimb(node *html.Node) string {
 	ret := []string{}
 	for n := node.FirstChild; nil != n; n = n.NextSibling {
@@ -42,38 +77,6 @@ func TextChildrenNoClimb(node *html.Node) string {
 		ret = append(ret, strings.TrimSpace(n.Data))
 	}
 	return strings.Join(ret, "")
-}
-
-func TextWithBrFromNode(node *html.Node) string {
-	nodes := scrape.FindAll(node, func(n *html.Node) bool { return n.Type == html.TextNode || atom.Br == n.DataAtom })
-	parts := make([]string, len(nodes))
-	for i, n := range nodes {
-		if atom.Br == n.DataAtom {
-			parts[i] = "\n"
-		} else {
-			parts[i] = NormaliseWhiteSpace(n.Data)
-		}
-	}
-	return strings.TrimSpace(strings.Join(parts, ""))
-}
-
-func TextWithBrFromNodeSet(nodes []*html.Node) string {
-	var tmp []string = TextsWithBrFromNodeSet(nodes)
-	re := regexp.MustCompile("[ ]*(\\s)[ ]*") // collapse whitespace, keep \n
-	t := strings.Join(tmp, "\n\n")            // mark paragraphs with a double \n
-	t = re.ReplaceAllString(t, "$1")          // collapse whitespace (not the \n\n however)
-	re1 := regexp.MustCompile("\\n\\s*\\n")   // collapse linefeeds
-	t = re1.ReplaceAllString(t, "\n\n")
-	return strings.TrimSpace(t)
-}
-
-func TextsWithBrFromNodeSet(nodes []*html.Node) (ret []string) {
-	ret = make([]string, len(nodes))
-	for i, p := range nodes {
-		// BUG(mro): so where goes this?
-		ret[i] = TextWithBrFromNode(p)
-	}
-	return
 }
 
 func NormaliseWhiteSpace(s string) string {
