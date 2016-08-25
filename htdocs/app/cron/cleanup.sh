@@ -22,9 +22,14 @@
 cd "$(dirname "$0")"/../..
 me="$(basename "$0")"
 
+stdout_log="log/${me}.stdout.log"
+stderr_log="log/${me}.stderr.log"
+
 # delete all streamripper logs older than 10 days
-/usr/bin/find enclosures -type f -mtime +10 -name "std*.log" -exec rm {} \; 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log
+/usr/bin/find enclosures -type f -mtime +10 -name "std*.log" -exec rm {} \; 1>> "${stdout_log}" 2>> "${stderr_log}"
+
 # remove all empty dirs
-# /usr/bin/find . -depth -type d -empty -exec rmdir {} \; 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log
+# /usr/bin/find . -depth -type d -empty -exec rmdir {} \; 1>> "${stdout_log}" 2>> "${stderr_log}"
+
 # fix access permissions
-/usr/bin/find . -type d -exec chmod u+rwx,g+rx-w,o-rwx {} \; 1>> log/"$me".stdout.log 2>> log/"$me".stderr.log
+/usr/bin/find . -type d -exec chmod u+rwx,g+rx-w,o-rwx {} \; 1>> "${stdout_log}" 2>> "${stderr_log}"

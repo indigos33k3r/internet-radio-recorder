@@ -19,20 +19,26 @@
 #
 # MIT License http://opensource.org/licenses/MIT
 
-cd "$(dirname "$0")"/../..
-me="$(basename "$0")"
+cd "$(dirname "${0}")"/../..
+me="$(basename "${0}")"
 
-echo "Start  $(/bin/date +'%FT%T')" 2>> log/"${me}".stderr.log | tee -a log/"${me}".stdout.log
+stdout_log="log/${me}.stdout.log"
+stderr_log="log/${me}.stderr.log"
 
-cmd=../bin/scrape-$(uname -s)-$(uname -m)-0.2.5
+start_time="$(/bin/date +'%s')"
+echo "Start  $(/bin/date +'%FT%T')" | tee -a "${stderr_log}" 1>> "${stdout_log}"
+
+version="0.2.5"
+cmd="../bin/scrape-$(uname -s)-$(uname -m)-${version}"
 
 [ -x "${cmd}" ] || { echo "Executable ${cmd} not found." 1>&2 && exit 1 ; }
 
-${cmd} 2>> log/"${me}".stderr.log \
-| tee log/"${me}".stdout.dat \
-| app/broadcast-render.lua --luatables 2>> log/"${me}".stderr.log \
-1>> log/"${me}".stdout.log
+${cmd} 2>> "${stderr_log}" \
+| tee "log/${me}.stdout.dat" \
+| app/broadcast-render.lua --luatables 2>> "${stderr_log}" \
+1>> "${stdout_log}"
 
-nice app/calendar.lua stations/* podcasts/* 1>> log/"${me}".stdout.log 2>> log/"${me}".stderr.log
+nice app/calendar.lua stations/* podcasts/* 1>> "${stdout_log}" 2>> "${stderr_log}"
 
-echo "Finish $(/bin/date +'%FT%T')" 2>> log/"${me}".stderr.log | tee -a log/"${me}".stdout.log
+finish_time="$(/bin/date +'%s')"
+echo "Finish $(/bin/date +'%FT%T') dt=$((finish_time - start_time))s" | tee -a "${stderr_log}" 1>> "${stdout_log}"
