@@ -19,7 +19,7 @@
 PRODID;X-RICAL-TZSOURCE=TZINFO:-//mro//internet-radio-recorder//DE
 CALSCALE:GREGORIAN
 VERSION:2.0
-#{= ical('X-WR-CALNAME', self.title) }
+#{= ical('X-WR-CALNAME', '📻  ' .. self.title) }
 BEGIN:VTIMEZONE
 TZID;X-RICAL-TZSOURCE=TZINFO:Europe/Berlin
 BEGIN:STANDARD
