@@ -35,6 +35,7 @@ cd "$CWD"
 # http://dave.cheney.net/2015/08/22/cross-compilation-with-go-1-5
 env GOOS=linux GOARCH=arm GOARM=6 go build -o scrape-linux-arm-$VERSION
 env GOOS=linux GOARCH=amd64 go build -o scrape-linux-amd64-$VERSION
+env GOOS=linux GOARCH=386 GO386=387 go build -o scrape-linux-386-$VERSION # https://github.com/golang/go/issues/11631
 env GOOS=darwin GOARCH=amd64 go build -o scrape-darwin-amd64-$VERSION
 
 # ls -l "scrape"-*-"$VERSION" 2>/dev/null

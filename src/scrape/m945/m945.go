@@ -22,7 +22,6 @@ package m945 // import "purl.mro.name/recorder/radio/scrape/m945"
 import (
 	"io"
 	"net/url"
-	"regexp"
 	"strings"
 	"time"
 
@@ -143,15 +142,8 @@ func (day *timeURL) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast
 
 			desc_node := tit.Parent
 			desc_node.RemoveChild(tit)
-			{
-				// Description
-				var desc string = r.TextWithBr(desc_node)
-				re := regexp.MustCompile("[ ]*(\\s)[ ]*") // collapse whitespace, keep \n
-				t := desc                                 // mark paragraphs with a double \n
-				t = re.ReplaceAllString(t, "$1")          // collapse whitespace (not the \n\n however)
-				t = strings.TrimSpace(t)
-				bc.Description = &t
-			}
+			description := r.TextWithBrFromNodeSet([]*html.Node{desc_node})
+			bc.Description = &description
 			// fmt.Fprintf(os.Stderr, "\n")
 		}
 		ret[index] = &bc

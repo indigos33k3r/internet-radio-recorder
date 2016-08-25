@@ -350,13 +350,8 @@ func (bcu *broadcastURL) parseBroadcastNode(root *html.Node) (bcs []r.Broadcast,
 			bc.Title = r.TextChildrenNoClimb(h1)
 		}
 		{
-			// Description
-			var desc []string = r.TextsWithBr(scrape.FindAll(h1.Parent, func(n *html.Node) bool { return atom.P == n.DataAtom && "copytext" == scrape.Attr(n, "class") }))
-			re := regexp.MustCompile("[ ]*(\\s)[ ]*") // collapse whitespace, keep \n
-			t := strings.Join(desc, "\n\n")           // mark paragraphs with a double \n
-			t = re.ReplaceAllString(t, "$1")          // collapse whitespace (not the \n\n however)
-			t = strings.TrimSpace(t)
-			bc.Description = &t
+			description := r.TextWithBrFromNodeSet(scrape.FindAll(h1.Parent, func(n *html.Node) bool { return atom.P == n.DataAtom && "copytext" == scrape.Attr(n, "class") }))
+			bc.Description = &description
 		}
 		if nil == bc.Image {
 		FoundImage0:
