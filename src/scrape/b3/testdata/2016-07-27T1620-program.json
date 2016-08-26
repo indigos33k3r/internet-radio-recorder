@@ -1,0 +1,73 @@
+{
+"channelId": "channel_28402",
+"channelName": "BAYERN 3",
+"channelHomepageUrl": "http://www.br.de/radio/bayern3/index.html",
+"tracks": [
+{
+"interpret": "Carly Rae Jepsen",
+"title": "Call me maybe",
+"startTime": "2016-07-27T16:14:46+02:00",
+"endTime": "2016-07-27T16:17:50+02:00"
+},
+{
+"interpret": "Bastille",
+"title": "Good Grief",
+"startTime": "2016-07-27T16:18:12+02:00",
+"endTime": "2016-07-27T16:21:36+02:00"
+}
+],
+"playlistUrl": "",
+"playerXml": "/mediathek/audio/bayern3-audio-livestream-100~meta_xsl-avtransform100_-daa09e70fbea65acdb1929dadbd4fc6cdb955b63.xml",
+"images": [
+{
+"url": "http://b7cams.br.de/webcams/b7/bayern3_cam1_16_9.jpg",
+"reloadable": "true"
+},
+{
+"url": "http://b7cams.br.de/webcams/b7/bayern3_cam2_16_9.jpg",
+"reloadable": "true"
+},
+{
+"url": "http://b7cams.br.de/webcams/b7/bayern3_cam3_16_9.jpg",
+"reloadable": "true"
+}
+],
+"broadcasts": [
+{
+"headline": "BAYERN 3 Hitmix-Nachmittag",
+"startTime": "2016-07-27T13:00:00+02:00",
+"endTime": "2016-07-27T16:00:00+02:00",
+"detailUrl": ""
+},
+{
+"headline": "BAYERN 3 - Ab in den Feierabend",
+"startTime": "2016-07-27T16:00:00+02:00",
+"endTime": "2016-07-27T19:00:00+02:00",
+"homepageUrl": "",
+"broadcastSeriesName": "BAYERN 3 - Ab in den Feierabend",
+"detailUrl": ""
+},
+{
+"headline": "Mensch, Otto!",
+"startTime": "2016-07-27T19:00:00+02:00",
+"endTime": "2016-07-27T20:00:00+02:00",
+"homepageUrl": "",
+"broadcastSeriesName": "Mensch, Otto!",
+"additionalLinkUrl": "http://www.br-online.de/podcast/mp3-download/bayern3/mp3-download-podcast-mensch-otto.shtml",
+"additionalLinkText": "\"Mensch, Otto!\" zum Mitnehmen",
+"detailUrl": ""
+}
+],
+"epgUrl": "",
+"channelsUrl": "/radio/wellenauswahl-json-100.json",
+"shareUrls": {
+"facebook": "http://de.facebook.com/sharer.php?u=http%3A%2F%2Fwww.br.de%2Fradio%2Fbayern3%2Findex.html",
+"twitter": "http://twitter.com/share?url=http%3A%2F%2Fwww.br.de%2Fradio%2Fbayern3%2Findex.html&amp;text=Ich+h%C3%B6re+gerade+BAYERN+3%3A+Good+Grief+-+Bastille",
+"googleplus": "https://plus.google.com/share?url=http%3A%2F%2Fwww.br.de%2Fradio%2Fbayern3%2Findex.html&amp;hl=de"
+},
+"tracking": {
+"comscore": "//de.sitestat.com/br/br/s?name=brde.mediathek.audio.staticAudio-standard.bayern3-audio-livestream-100.page&ns_type=view&category=mediathek.audio&k1=brde&k2=mediathek&k3=audio&k4=oz&k5=oz&k6=oz&k7=bayern-3-ab-in-den-feierabend&k7a=oz&k8=staticAudio-standard&k9=oz&k10=bayern3-audio-livestream-100&k15=retention1&k18=oz&k18a=WebMerlin%3A2243591%3Achannel_28402",
+"trackingStructurePath": "br_online/sophora/brde/mediathek/audio/"
+},
+"channelChooserOnly": "false"
+}

@@ -1,0 +1,68 @@
+{
+"channelId": "channel_28402",
+"channelName": "BAYERN 3",
+"channelHomepageUrl": "http://www.br.de/radio/bayern3/index.html",
+"tracks": [
+{
+"interpret": "M83",
+"title": "Midnight City",
+"startTime": "2016-07-27T22:12:06+02:00",
+"endTime": "2016-07-27T22:15:54+02:00"
+},
+{
+"interpret": "Jarryd James",
+"title": "Do You Remember",
+"startTime": "2016-07-27T22:16:17+02:00",
+"endTime": "2016-07-27T22:20:02+02:00"
+}
+],
+"playlistUrl": "",
+"playerXml": "/mediathek/audio/bayern3-audio-livestream-100~meta_xsl-avtransform100_-daa09e70fbea65acdb1929dadbd4fc6cdb955b63.xml",
+"images": [
+{
+"url": "http://b7cams.br.de/webcams/b7/bayern3_cam1_16_9.jpg",
+"reloadable": "true"
+},
+{
+"url": "http://b7cams.br.de/webcams/b7/bayern3_cam2_16_9.jpg",
+"reloadable": "true"
+},
+{
+"url": "http://b7cams.br.de/webcams/b7/bayern3_cam3_16_9.jpg",
+"reloadable": "true"
+}
+],
+"broadcasts": [
+{
+"headline": "BAYERN 3 AbendShow",
+"startTime": "2016-07-27T20:00:00+02:00",
+"endTime": "2016-07-27T22:00:00+02:00",
+"detailUrl": ""
+},
+{
+"headline": "BAYERN 3 PULS",
+"subTitle": "Neue Musik. Neue Talente. Neue Ideen",
+"startTime": "2016-07-27T22:00:00+02:00",
+"endTime": "2016-07-28T00:00:00+02:00",
+"detailUrl": ""
+},
+{
+"headline": "BAYERN 3 - Die Nacht",
+"startTime": "2016-07-28T00:00:00+02:00",
+"endTime": "2016-07-28T05:00:00+02:00",
+"detailUrl": ""
+}
+],
+"epgUrl": "",
+"channelsUrl": "/radio/wellenauswahl-json-100.json",
+"shareUrls": {
+"facebook": "http://de.facebook.com/sharer.php?u=http%3A%2F%2Fwww.br.de%2Fradio%2Fbayern3%2Findex.html",
+"twitter": "http://twitter.com/share?url=http%3A%2F%2Fwww.br.de%2Fradio%2Fbayern3%2Findex.html&amp;text=Ich+h%C3%B6re+gerade+BAYERN+3%3A",
+"googleplus": "https://plus.google.com/share?url=http%3A%2F%2Fwww.br.de%2Fradio%2Fbayern3%2Findex.html&amp;hl=de"
+},
+"tracking": {
+"comscore": "//de.sitestat.com/br/br/s?name=brde.mediathek.audio.staticAudio-standard.bayern3-audio-livestream-100.page&ns_type=view&category=mediathek.audio&k1=brde&k2=mediathek&k3=audio&k4=oz&k5=oz&k6=oz&k7=oz&k7a=Neue-Musik.-Neue-Talente.-Neue-Ideen&k8=staticAudio-standard&k9=oz&k10=bayern3-audio-livestream-100&k15=retention1&k18=oz&k18a=WebMerlin%3A2243594%3Achannel_28402",
+"trackingStructurePath": "br_online/sophora/brde/mediathek/audio/"
+},
+"channelChooserOnly": "false"
+}

@@ -141,7 +141,7 @@ func (day *timeURL) parseBroadcastsFromJsonData(programm WdrProgramm) (ret []*br
 			BroadcastURL: r.BroadcastURL{
 				TimeURL: r.TimeURL{
 					Source:  *day.Source.ResolveReference(r.MustParseURL(b.EpgLink)),
-					Time:    time.Unix(b.Start/1000, 0),
+					Time:    time.Unix(b.Start/1000, 0).In(day.Station.TimeZone),
 					Station: day.Station,
 				},
 				Title: b.HauptTitel,
@@ -151,7 +151,7 @@ func (day *timeURL) parseBroadcastsFromJsonData(programm WdrProgramm) (ret []*br
 			Description: &empty,
 		}
 		{
-			t := time.Unix(b.Ende/1000, 0)
+			t := time.Unix(b.Ende/1000, 0).In(day.Station.TimeZone)
 			bc.DtEnd = &t
 		}
 
