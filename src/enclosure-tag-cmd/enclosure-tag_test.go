@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2016 Marcus Rohrmoser, http://purl.mro.name/recorder
+// Copyright (c) 2015-2015 Marcus Rohrmoser, https://github.com/mro/radio-pi
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -20,31 +20,25 @@
 // http://golang.org/pkg/testing/
 // http://blog.stretchr.com/2014/03/05/test-driven-development-specifically-in-golang/
 // https://xivilization.net/~marek/blog/2015/05/04/go-1-dot-4-2-for-raspberry-pi/
-//
-// import "purl.mro.name/recorder/radio/scrape"
-//
-package scrape
+
+package main
 
 import (
-	"os"
 	"testing"
 
-	"golang.org/x/net/html"
-	"golang.org/x/net/html/atom"
-
 	"github.com/stretchr/testify/assert"
-	"github.com/yhat/scrape"
 )
 
-func TestTextWithBrFromNodeSet_001(t *testing.T) {
-	f, err := os.Open("testdata/TextWithBrFromNodeSet_001.html")
-	assert.NotNil(t, f, "ouch")
-	assert.Nil(t, err, "ouch")
-	root, err := html.Parse(f)
-	assert.NotNil(t, root, "ouch")
-	nodes := scrape.FindAll(root, func(n *html.Node) bool { return atom.Div == n.DataAtom })
+func TestIdentifierForMp3EnclosureFileName(t *testing.T) {
+	assert.Equal(t, "", identifierForMp3EnclosureFileName(""), "ouch2")
+	assert.Equal(t, "b2/2014/11/02/0605 radiowelt.mp3", identifierForMp3EnclosureFileName("foo/enclosures/b2/2014/11/02/0605 radiowelt.mp3"), "ouch2")
+	assert.Equal(t, "b2/2014/11/02/0605.mp3", identifierForMp3EnclosureFileName("b2/2014/11/02/0605.mp3"), "ouch2")
+}
 
-	txt := TextWithBrFromNodeSet(nodes)
-	assert.Equal(t, "foo\n\nbar\nfoo\n\nbar", txt, "ouch")
-
+func TestXmlBroadcastFileNameForMp3EnclosureFileName(t *testing.T) {
+	assert.Equal(t, "", xmlBroadcastFileNameForMp3EnclosureFileName(""), "ouch2")
+	assert.Equal(t, "", xmlBroadcastFileNameForMp3EnclosureFileName("b2/2014/11/02/0605 radioWelt.mp3"), "enclosures required")
+	assert.Equal(t, "", xmlBroadcastFileNameForMp3EnclosureFileName("enclosures/b2/2014/11/02/0605 radiowelt.mp3"), "path prefix required")
+	assert.Equal(t, "./stations/b2/2014/11/02/0605 radiowelt.xml", xmlBroadcastFileNameForMp3EnclosureFileName("./enclosures/b2/2014/11/02/0605 radiowelt.mp3"), "ouch2")
+	assert.Equal(t, "foo/stations/b2/2014/11/02/0605 radiowelt.xml", xmlBroadcastFileNameForMp3EnclosureFileName("foo/enclosures/b2/2014/11/02/0605 radiowelt.mp3"), "ouch2")
 }

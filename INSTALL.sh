@@ -90,7 +90,7 @@ else
 fi
 
 echo "$echo_prefix Prerequisites - apt packages"
-pkgs="adduser make parallel"
+pkgs="adduser make"
 
 ### job scheduler cron + at:
   pkgs="$pkgs cron at"
@@ -100,25 +100,11 @@ pkgs="adduser make parallel"
   # user/password database:
   pkgs="$pkgs apache2-utils"
 
-### ruby + nokogiri (the scraper):
-  # avoid ruby reinstall for non-debian ruby, e.g. http://www.rubyenterpriseedition.com/
-  ruby -e "require 'mkmf'" 2>&1 > /dev/null
-  if [ $? -ne 0 ] ; then
-    pkgs="$pkgs ruby-dev"
-  fi
-  pkgs="$pkgs libxml2-dev libxslt-dev"
-
-### xsltproc (simplified scraper):
-  pkgs="$pkgs xsltproc"
-
 ### lua, luarocks, lfs:
   pkgs="$pkgs luarocks lua-posix lua-filesystem"
 
 ### streamripper:
   pkgs="$pkgs streamripper"
-
-### id3tags:
-  pkgs="$pkgs g++ libtag1-dev"
 
 echo "$echo_prefix apt-get install $pkgs"
 sudo apt-get install $pkgs
@@ -145,12 +131,6 @@ www-data ALL = ($user:$group) NOPASSWD: $recorder_base/htdocs/enclosures/app/ad_
 # $ pkexec vim /etc/sudoers.d/internet-radio-recorder
 #
 END_OF_SUDOERS
-
-### ruby + bundler (gem installation helper)
-  bundle --version || sudo gem install bundler --no-ri --no-rdoc
-
-### gems
-  sudo -u "$user" bundle install --path vendor/bundle
 
 ### luarocks: lfs, posix
 #  luarocks show luafilesystem 2>/dev/null || sudo luarocks install luafilesystem

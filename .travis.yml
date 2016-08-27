@@ -15,11 +15,15 @@ before_install:
 install:
  - go get github.com/stretchr/testify
  - go get github.com/yhat/scrape
+ - go get github.com/bogem/id3v2
 script:
  - go test -v purl.mro.name/recorder/radio/scrape
  - go test -v purl.mro.name/recorder/radio/scrape/br
+ - go test -v purl.mro.name/recorder/radio/scrape/b3
  - go test -v purl.mro.name/recorder/radio/scrape/b4
  - go test -v purl.mro.name/recorder/radio/scrape/dlf
  - go test -v purl.mro.name/recorder/radio/scrape/m945
  - go test -v purl.mro.name/recorder/radio/scrape/radiofabrik
- - go test -v purl.mro.name/recorder/radio/cmd
+ - go test -v purl.mro.name/recorder/radio/scrape/wdr
+ - go test -v purl.mro.name/recorder/radio/scrape-cmd
+ - go test -v purl.mro.name/recorder/radio/enclosure-tag-cmd

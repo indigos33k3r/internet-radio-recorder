@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="../../../app/broadcast2html.xslt"?>
+<!-- unorthodox relative namespace to enable http://www.w3.org/TR/grddl-tests/#sq2 without a central server -->
+<broadcast xml:lang="de" xmlns="../../../../../assets/2013/radio-pi.rdf">
+    <meta content='b2/2016/08/25/1805 Bayern 2-radioMusik' name='DC.identifier'/>
+    <meta content='/app/pbmi2003-recmod2012/' name='DC.scheme'/>
+    <meta content='de' name='DC.language'/>
+    <meta content='Bayern 2-radioMusik' name='DC.title'/>
+    <meta content='anspruchsvoll - entspannt - weltoffen' name='DC.title.episode'/>
+    <meta content='http://www.br.de/radio/bayern2/musik/bayern2-radiomusik/index.html' name='DC.subject'/>
+    <meta content='2016-08-25T18:05:00+02:00' name='DC.format.timestart'/>
+    <meta content='2016-08-25T18:30:00+02:00' name='DC.format.timeend'/>
+    <meta content='1500' name='DC.format.duration'/>
+    <meta content='http://www.br.de/radio/bayern2/musik/bayern2-radiomusik/rebekka-bakken-102~_v-img__16__9__m_-4423061158a17f4152aef84861ed0243214ae6e7.jpg?version=64958' name='DC.image'/>
+    <meta content='anspruchsvoll - entspannt - weltoffen&#10;Mit Riegler Hias feat. D&apos;Hundskrippln, Rebekka Bakken, Randy Newman und vielen mehr&#10;Moderation: Thomas Mehringer' name='DC.description'/>
+    <meta content='Bayerischer Rundfunk' name='DC.author'/>
+    <meta content='http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-772436.html' name='DC.source'/>
+</broadcast>

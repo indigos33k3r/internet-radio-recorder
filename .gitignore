@@ -17,8 +17,10 @@ logs/
 vendor/bundle/
 .config/streamripper/streamripper.ini
 
-src/cmd/scrape-*-*-*.*.*
 src/index.html
 src/*/index.html
 src/*/*/index.html
-bin/scrape-linux-amd64-0.0.1
+
+src/*-cmd/*-*-*-*
+src/enclosure-tag-cmd/testdata/*.jpg
+src/enclosure-tag-cmd/testdata/*.mp3
