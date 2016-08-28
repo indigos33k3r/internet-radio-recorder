@@ -8,6 +8,8 @@ go: # https://github.com/atotto/travisci-golang-example
  - 1.6
  - 1.7
  - tip
+branches:
+  only: [master, develop]
 before_install:
  - mkdir -p "$GOPATH/src/purl.mro.name/recorder"
  - cd "$GOPATH/src/purl.mro.name/recorder" && ln -s "$TRAVIS_BUILD_DIR/src" radio
