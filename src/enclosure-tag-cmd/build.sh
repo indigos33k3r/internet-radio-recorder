@@ -17,8 +17,8 @@ curl --output "testdata/artwork.jpg" "http://www.br.de/radio/bayern2/wissen/radi
 curl --output "testdata/file.mp3" "https://raw.githubusercontent.com/mikkyang/id3-go/master/test.mp3"
 
 # cd ../scrape
-go get "github.com/bogem/id3v2"
-go get "github.com/stretchr/testify"
+go get -u "github.com/bogem/id3v2"
+go get -u "github.com/stretchr/testify"
 
 CWD="$(pwd)"
 cd ..
