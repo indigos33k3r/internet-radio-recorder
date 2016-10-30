@@ -47,6 +47,7 @@ func tagMp3File(mp3FilePath string, bc broadcast) error {
 	if nil != err {
 		return err
 	}
+	defer tag.Close()
 
 	tag.SetTitle(bc.title)
 	tag.SetArtist("Station " + station)
@@ -93,6 +94,5 @@ func tagMp3File(mp3FilePath string, bc broadcast) error {
 			PictureType: id3v2.PTFrontCover,
 		})
 	}
-	defer tag.Close()
 	return tag.Save()
 }
