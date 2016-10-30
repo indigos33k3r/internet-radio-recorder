@@ -93,5 +93,6 @@ func tagMp3File(mp3FilePath string, bc broadcast) error {
 			PictureType: id3v2.PTFrontCover,
 		})
 	}
+	defer tag.Close()
 	return tag.Save()
 }
