@@ -244,11 +244,32 @@ func (bcu *broadcastURL) parseBroadcastNode(root *html.Node) (bc r.Broadcast, er
 		s := "de"
 		bc.Language = &s
 	}
+
 	for i, main := range scrape.FindAll(root, func(n *html.Node) bool { return atom.Div == n.DataAtom && "br-main-text" == scrape.Attr(n, "class") }) {
 		if 1 < i {
 			err = errors.New("unexpected 2nd <div class='br-main-text'> ")
 			return
 		}
+
+		// Subject
+		for idx, h3 := range scrape.FindAll(root, func(n *html.Node) bool {
+			return atom.H3 == n.DataAtom && "Weitere Informationen" == scrape.Text(n)
+		}) {
+			// fmt.Fprintf(os.Stderr, "GET %s\n", "uhu")
+			if idx != 0 {
+				err = errors.New("There was more than 1 <h3>Weitere Informationen")
+				return
+			}
+			for _, a := range scrape.FindAll(h3.Parent, func(n *html.Node) bool {
+				return atom.A == n.DataAtom
+			}) {
+				u, _ := url.Parse(scrape.Attr(a, "href"))
+				bc.Subject = bc.Source.ResolveReference(u)
+			}
+
+			h3.Parent.Parent.RemoveChild(h3.Parent)
+		}
+
 		for i1, h2 := range scrape.FindAll(main, func(n *html.Node) bool { return atom.H2 == n.DataAtom }) {
 			if 1 < i1 {
 				err = errors.New("unexpected 2nd <h2> ")
@@ -272,16 +293,22 @@ func (bcu *broadcastURL) parseBroadcastNode(root *html.Node) (bc r.Broadcast, er
 				}
 				s := scrape.Text(h3)
 				bc.TitleEpisode = &s
+				h3.Parent.RemoveChild(h3)
 			}
-		}
-	}
 
-	// Description
-	for _, div := range scrape.FindAll(root, func(n *html.Node) bool {
-		return atom.Div == n.DataAtom && "br-box br-left" == scrape.Attr(n, "class") && atom.Div == n.Parent.DataAtom && "br-inner" == scrape.Attr(n.Parent, "class")
-	}) {
-		description := r.TextWithBrFromNodeSet(scrape.FindAll(div, func(n *html.Node) bool { return atom.P == n.DataAtom || atom.Div == n.DataAtom }))
-		bc.Description = &description
+			inner := h2.Parent.Parent.Parent
+			h2.Parent.RemoveChild(h2)
+
+			for ch := inner.FirstChild; ch != nil; ch = ch.NextSibling {
+				if atom.Div == ch.DataAtom {
+					inner.RemoveChild(ch) // once removed NextSibling returns nil
+				}
+			}
+
+			// Description
+			description := r.TextWithBrFromNodeSet(scrape.FindAll(inner, func(n *html.Node) bool { return atom.P == n.DataAtom || atom.Div == n.DataAtom }))
+			bc.Description = &description
+		}
 	}
 
 	// DtEnd
@@ -298,23 +325,6 @@ func (bcu *broadcastURL) parseBroadcastNode(root *html.Node) (bc r.Broadcast, er
 			t = t.AddDate(0, 0, 1)
 		}
 		bc.DtEnd = &t
-	}
-
-	// Subject
-	for idx, h3 := range scrape.FindAll(root, func(n *html.Node) bool {
-		return atom.H3 == n.DataAtom && "Weitere Informationen" == scrape.Text(n)
-	}) {
-		// fmt.Fprintf(os.Stderr, "GET %s\n", "uhu")
-		if idx != 0 {
-			err = errors.New("There was more than 1 <h3>Weitere Informationen")
-			return
-		}
-		for _, a := range scrape.FindAll(h3.Parent, func(n *html.Node) bool {
-			return atom.A == n.DataAtom
-		}) {
-			u, _ := url.Parse(scrape.Attr(a, "href"))
-			bc.Subject = bc.Source.ResolveReference(u)
-		}
 	}
 
 	// Modified

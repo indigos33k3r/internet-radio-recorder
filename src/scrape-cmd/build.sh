@@ -45,6 +45,8 @@ env GOOS=darwin GOARCH=amd64 go build -o "${PROG_NAME}-darwin-amd64-${VERSION}"
 # scp "scrape-linux-arm-$VERSION" raspi:~/"Downloads/scrape-linux-arm-$VERSION"
 # time ssh raspi "Downloads/scrape-linux-arm-$VERSION"
 
-ssh con rm "Downloads/${PROG_NAME}-Linux-amd64-${VERSION}"
-scp "${PROG_NAME}-linux-amd64-$VERSION" con:~/"Downloads/${PROG_NAME}-Linux-x86_64-${VERSION}"
+dst="Downloads/${PROG_NAME}-Linux-x86_64-${VERSION}"
+# dst=`ssh con echo "Downloads/${PROG_NAME}-\$(uname -s)-\$(uname -m)-${VERSION}"`
+ssh con rm "${dst}"
+scp "${PROG_NAME}-linux-amd64-$VERSION" con:~/"${dst}"
 # time ssh con "Downloads/${PROG_NAME}-linux-amd64-${VERSION}"
