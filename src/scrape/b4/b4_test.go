@@ -116,55 +116,12 @@ func TestParseCalendarItems(t *testing.T) {
 	}
 }
 
-func TestParseBroadcast_0(t *testing.T) {
+func TestParseBroadcast_914548(t *testing.T) {
 	{
-		t0, _ := time.Parse(time.RFC3339, "2015-10-22T00:06:13+02:00")
-		assert.Equal(t, "2015-10-22T00:06:13+02:00", t0.Format(time.RFC3339), "oha")
+		t0, _ := time.Parse(time.RFC3339, "2016-11-27T20:30:00+01:00")
+		assert.Equal(t, "2016-11-27T20:30:00+01:00", t0.Format(time.RFC3339), "oha")
 	}
-	f, err := os.Open("testdata/2015-10-21T0012-b2-sendung.html")
-	assert.NotNil(t, f, "ouch")
-	assert.Nil(t, err, "ouch")
-
-	s := Station("b4")
-	t0 := broadcastURL{
-		BroadcastURL: r.BroadcastURL{
-			TimeURL: r.TimeURL{
-				Time:    time.Date(2015, time.October, 21, 0, 12, 0, 0, localLoc),
-				Source:  *r.MustParseURL("https://www.br-klassik.de/programm/radio/ausstrahlung-472548.html"),
-				Station: r.Station(*s),
-			},
-			Title: "Concerto bavarese",
-		},
-		Image: r.MustParseURL("https://www.br-klassik.de/programm/radio/concerto-bavarese112~_h-558_v-img__16__9__xl_w-994_-e1d284d92729d9396a907e303225e0f2d9fa53b4.jpg?version=40aa3"),
-	}
-	// http://rec.mro.name/stations/b2/2015/10/21/0012%20Concerto%20bavarese
-	bc, err := t0.parseBroadcastReader(f, nil)
-	assert.Nil(t, err, "ouch")
-	assert.Equal(t, "b4", bc.Station.Identifier, "ouch: Station.Identifier")
-	assert.Equal(t, "Concerto bavarese", bc.Title, "ouch: Title")
-	assert.Equal(t, "https://www.br-klassik.de/programm/radio/ausstrahlung-472548.html", bc.Source.String(), "ouch: Source")
-	assert.NotNil(t, bc.Language, "ouch: Language")
-	assert.Equal(t, "de", *bc.Language, "ouch: Language")
-	assert.Equal(t, t0.Title, bc.Title, "ouch: Title")
-	assert.Equal(t, "Aus dem Studio Franken:", *bc.TitleSeries, "ouch: TitleSeries")
-	assert.Equal(t, "Fränkische Komponisten", *bc.TitleEpisode, "ouch: TitleEpisode")
-	assert.Equal(t, "2015-10-21T00:12:00+02:00", bc.Time.Format(time.RFC3339), "ouch: Time")
-	assert.Equal(t, "2015-10-21T02:00:00+02:00", bc.DtEnd.Format(time.RFC3339), "ouch: DtEnd")
-	assert.Equal(t, "https://www.br-klassik.de/radio/bayern2/musik/concerto-bavarese/index.html", bc.Subject.String(), "ouch: Subject")
-	assert.Equal(t, "2015-10-22T00:06:13+02:00", bc.Modified.Format(time.RFC3339), "ouch: Modified")
-	assert.Equal(t, "Bayerischer Rundfunk", *bc.Author, "ouch: Author")
-	assert.NotNil(t, bc.Description, "ouch: Description")
-	assert.Equal(t, "Franz Schillinger: \"Insisting Voices II\"; \"Veränderliche Langsamkeiten III\" (Wilfried Krüger, Horn; Heinrich Rauh, Violine); Stefan David Hummel: \"In one's heart of hearts\" (Stefan Teschner, Violine; Klaus Jäckle, Gitarre; Sven Forker, Schlagzeug); Matthias Schmitt: Sechs Miniaturen (Katarzyna Mycka, Marimbaphon); Stefan Hippe: \"Annacamento\" (ars nova ensemble nürnberg: Werner Heider); Ludger Hofmann-Engl: \"Abstract I\" (Wolfgang Pessler, Fagott; Sebastian Rocholl, Viola; Ralf Waldner, Cembalo); Ulrich Schultheiß: \"Bubbles\" (Stefan Barcsay, Gitarre)", *bc.Description, "ouch: Description")
-	assert.NotNil(t, bc.Image, "ouch: Image")
-	assert.Equal(t, "https://www.br-klassik.de/programm/radio/concerto-bavarese112~_h-558_v-img__16__9__xl_w-994_-e1d284d92729d9396a907e303225e0f2d9fa53b4.jpg?version=40aa3", bc.Image.String(), "ouch: Image")
-}
-
-func TestParseBroadcast_1(t *testing.T) {
-	{
-		t0, _ := time.Parse(time.RFC3339, "2015-11-30T05:03:00+01:00")
-		assert.Equal(t, "2015-11-30T05:03:00+01:00", t0.Format(time.RFC3339), "oha")
-	}
-	f, err := os.Open("testdata/2015-11-30T05-b4-ausstrahlung-512528.html")
+	f, err := os.Open("testdata/2016-11-27T2030-b4-ausstrahlung-914548.html")
 	assert.NotNil(t, f, "ouch")
 	assert.Nil(t, err, "ouch")
 
@@ -173,32 +130,74 @@ func TestParseBroadcast_1(t *testing.T) {
 	t0 := broadcastURL{
 		BroadcastURL: r.BroadcastURL{
 			TimeURL: r.TimeURL{
-				Time:    time.Date(2015, time.November, 30, 5, 3, 0, 0, localLoc),
-				Source:  *r.MustParseURL("https://www.br-klassik.de/programm/radio/ausstrahlung-512528.html"),
+				Time:    time.Date(2016, time.November, 27, 20, 30, 0, 0, localLoc),
+				Source:  *r.MustParseURL("https://www.br-klassik.de/programm/radio/ausstrahlung-914548.html"),
 				Station: r.Station(*s),
 			},
-			Title: "Das ARD-Nachtkonzert (IV)",
+			Title: "Intermezzo",
 		},
-		Image: r.MustParseURL("https://www.br-klassik.de/programm/radio/dirigentenhaende102~_h-558_v-img__16__9__xl_w-994_-e1d284d92729d9396a907e303225e0f2d9fa53b4.jpg?version=f1b6f"),
+		Image: r.MustParseURL("https://www.br-klassik.de/programm/radio/logo106~_h-558_v-img__16__9__xl_w-994_-e1d284d92729d9396a907e303225e0f2d9fa53b4.jpg?version=78f3c"),
 	}
-	// http://rec.mro.name/stations/b2/2015/10/21/0012%20Concerto%20bavarese
 	bc, err := t0.parseBroadcastReader(f, nil)
 	assert.Nil(t, err, "ouch")
 	assert.Equal(t, "b4", bc.Station.Identifier, "ouch: Station.Identifier")
-	assert.Equal(t, "Das ARD-Nachtkonzert (IV)", bc.Title, "ouch: Title")
-	assert.Equal(t, "https://www.br-klassik.de/programm/radio/ausstrahlung-512528.html", bc.Source.String(), "ouch: Source")
+	assert.Equal(t, "Intermezzo", bc.Title, "ouch: Title")
+	assert.Equal(t, "https://www.br-klassik.de/programm/radio/ausstrahlung-914548.html", bc.Source.String(), "ouch: Source")
 	assert.NotNil(t, bc.Language, "ouch: Language")
 	assert.Equal(t, "de", *bc.Language, "ouch: Language")
 	assert.Equal(t, t0.Title, bc.Title, "ouch: Title")
 	assert.Equal(t, "", *bc.TitleSeries, "ouch: TitleSeries")
-	assert.Equal(t, "", *bc.TitleEpisode, "ouch: TitleEpisode")
-	assert.Equal(t, "2015-11-30T05:03:00+01:00", bc.Time.Format(time.RFC3339), "ouch: Time")
-	assert.Equal(t, "2015-11-30T06:00:00+01:00", bc.DtEnd.Format(time.RFC3339), "ouch: DtEnd")
-	assert.Equal(t, "https://www.br-klassik.de/programm/sendungen-a-z/ard-nachtkonzert-100.html", bc.Subject.String(), "ouch: Subject")
-	assert.Equal(t, "2015-12-02T00:15:20+01:00", bc.Modified.Format(time.RFC3339), "ouch: Modified")
+	assert.Nil(t, bc.TitleEpisode, "ouch: TitleEpisode")
+	assert.Equal(t, "2016-11-27T20:30:00+01:00", bc.Time.Format(time.RFC3339), "ouch: Time")
+	assert.Equal(t, "2016-11-27T21:00:00+01:00", bc.DtEnd.Format(time.RFC3339), "ouch: DtEnd")
+	assert.Nil(t, bc.Subject, "ouch: Subject")
+	assert.Equal(t, "2016-11-25T13:15:07+01:00", bc.Modified.Format(time.RFC3339), "ouch: Modified")
 	assert.Equal(t, "Bayerischer Rundfunk", *bc.Author, "ouch: Author")
 	assert.NotNil(t, bc.Description, "ouch: Description")
-	assert.Equal(t, "Musiktitel Uhrzeit Werk/Titel Komponist/Interpret\n05:03 Nr. 1 aus: Zwei Polonaisen für Kavier, op. 40 Frédéric Chopin (1810-1849) / Rafal Blechacz (Klavier)\n05:08 Concerto grosso B-Dur, op.6 Nr.11 Arcangelo Corelli / Beyer; Gli Incogniti; Beyer\n05:18 Sonate für Klarinette und Klavier D-Dur Arnold Bax (1883-1953) / Michael Collins\n05:32 Sinfonie Nr.27 G-Dur, Hob I:27 Joseph Haydn / Heidelberger Sinfoniker; Fey\n05:46 Vision im Gebirge für Violine und Orchester Ole Bull (1810-1880) / Arve Tellefsen (Violine); Trondheim Symphony Orchestra; Aadland, Eivind\n05:54 Singin' the Blues (till my daddy comes home) Con Conrad (1892-1963) / George Gershwin (Klavier)\n05:57 L'embarquement pour Cythere. Musette-Walzer, PWV 149 Francis Poulenc (1899-1963) / Klavierduo Roge Collard", *bc.Description, "ouch: Description")
+	assert.Equal(t, "Ernst von Gemmingen: Violinkonzert Nr. 1 A-Dur (Kolja Lessing, Violine; Münchner Rundfunkorchester: Ulf Schirmer)", *bc.Description, "ouch: Description")
 	assert.NotNil(t, bc.Image, "ouch: Image")
-	assert.Equal(t, "https://www.br-klassik.de/programm/radio/dirigentenhaende102~_h-558_v-img__16__9__xl_w-994_-e1d284d92729d9396a907e303225e0f2d9fa53b4.jpg?version=f1b6f", bc.Image.String(), "ouch: Image")
+	assert.Equal(t, "https://www.br-klassik.de/programm/radio/logo106~_h-558_v-img__16__9__xl_w-994_-e1d284d92729d9396a907e303225e0f2d9fa53b4.jpg?version=78f3c", bc.Image.String(), "ouch: Image")
+}
+
+func TestParseBroadcast_866264(t *testing.T) {
+	{
+		t0, _ := time.Parse(time.RFC3339, "2016-11-27T23:05:00+01:00")
+		assert.Equal(t, "2016-11-27T23:05:00+01:00", t0.Format(time.RFC3339), "oha")
+	}
+	f, err := os.Open("testdata/2016-11-27T2305-b4-ausstrahlung-866264.html")
+	assert.NotNil(t, f, "ouch")
+	assert.Nil(t, err, "ouch")
+
+	s := Station("b4")
+
+	t0 := broadcastURL{
+		BroadcastURL: r.BroadcastURL{
+			TimeURL: r.TimeURL{
+				Time:    time.Date(2016, time.November, 27, 23, 5, 0, 0, localLoc),
+				Source:  *r.MustParseURL("https://www.br-klassik.de/programm/radio/ausstrahlung-866264.html"),
+				Station: r.Station(*s),
+			},
+			Title: "Musik der Welt",
+		},
+		Image: r.MustParseURL("https://www.br-klassik.de/pierre-dominique-ponnelle-102~_h-558_v-img__16__9__xl_w-994_-e1d284d92729d9396a907e303225e0f2d9fa53b4.jpg?version=1c52e"),
+	}
+	bc, err := t0.parseBroadcastReader(f, nil)
+	assert.Nil(t, err, "ouch")
+	assert.Equal(t, "b4", bc.Station.Identifier, "ouch: Station.Identifier")
+	assert.Equal(t, "Musik der Welt", bc.Title, "ouch: Title")
+	assert.Equal(t, "https://www.br-klassik.de/programm/radio/ausstrahlung-866264.html", bc.Source.String(), "ouch: Source")
+	assert.NotNil(t, bc.Language, "ouch: Language")
+	assert.Equal(t, "de", *bc.Language, "ouch: Language")
+	assert.Equal(t, t0.Title, bc.Title, "ouch: Title")
+	assert.Equal(t, "Aus dem Studio Franken:", *bc.TitleSeries, "ouch: TitleSeries")
+	assert.Equal(t, "Minsk, Ufa, Taschkent", *bc.TitleEpisode, "ouch: TitleEpisode")
+	assert.Equal(t, "2016-11-27T23:05:00+01:00", bc.Time.Format(time.RFC3339), "ouch: Time")
+	assert.Equal(t, "2016-11-28T00:00:00+01:00", bc.DtEnd.Format(time.RFC3339), "ouch: DtEnd")
+	assert.Equal(t, "https://www.br-klassik.de/themen/jazz-und-weltmusik/musik-der-welt-102.html", bc.Subject.String(), "ouch: Subject")
+	assert.Equal(t, "2016-11-24T09:15:20+01:00", bc.Modified.Format(time.RFC3339), "ouch: Modified")
+	assert.Equal(t, "Bayerischer Rundfunk", *bc.Author, "ouch: Author")
+	assert.NotNil(t, bc.Description, "ouch: Description")
+	assert.Equal(t, "Die musikalischen Reisen des Komponisten und Dirigenten Pierre-Dominique Ponnelle\nVon Thorsten Preuß", *bc.Description, "ouch: Description")
+	assert.NotNil(t, bc.Image, "ouch: Image")
+	assert.Equal(t, "https://www.br-klassik.de/pierre-dominique-ponnelle-102~_h-558_v-img__16__9__xl_w-994_-e1d284d92729d9396a907e303225e0f2d9fa53b4.jpg?version=1c52e", bc.Image.String(), "ouch: Image")
 }

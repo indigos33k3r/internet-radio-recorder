@@ -9,13 +9,13 @@ cd "$(dirname "${0}")"
 # Linux armv6l
 
 PROG_NAME="scrape"
-VERSION="0.2.5"
+VERSION="0.2.6"
 
 rm "${PROG_NAME}"-*-"${VERSION}" 2>/dev/null
 
 # cd ../scrape
-go get github.com/yhat/scrape
-go get github.com/stretchr/testify
+go get -u github.com/yhat/scrape
+go get -u github.com/stretchr/testify
 
 CWD="$(pwd)"
 cd ..

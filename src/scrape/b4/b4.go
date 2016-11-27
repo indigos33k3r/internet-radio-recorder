@@ -244,29 +244,36 @@ func (bcu *broadcastURL) parseBroadcastNode(root *html.Node) (bc r.Broadcast, er
 		s := "de"
 		bc.Language = &s
 	}
-	for i, h1 := range scrape.FindAll(root, func(n *html.Node) bool { return atom.H1 == n.DataAtom }) {
+	for i, main := range scrape.FindAll(root, func(n *html.Node) bool { return atom.Div == n.DataAtom && "br-main-text" == scrape.Attr(n, "class") }) {
 		if 1 < i {
-			err = errors.New("unexpected 2nd <h1> ")
+			err = errors.New("unexpected 2nd <div class='br-main-text'> ")
 			return
 		}
-		bc.Title = r.TextChildrenNoClimb(h1)
-		for ii, h2 := range scrape.FindAll(h1.Parent, func(n *html.Node) bool { return atom.H2 == n.DataAtom }) {
-			if 1 < ii {
+		for i1, h2 := range scrape.FindAll(main, func(n *html.Node) bool { return atom.H2 == n.DataAtom }) {
+			if 1 < i1 {
 				err = errors.New("unexpected 2nd <h2> ")
 				return
 			}
-			s := scrape.Text(h2)
-			bc.TitleEpisode = &s
-		}
-		for ii, h3 := range scrape.FindAll(h1.Parent, func(n *html.Node) bool { return atom.H3 == n.DataAtom }) {
-			if 1 < ii {
-				err = errors.New("unexpected 2nd <h3> ")
-				return
+			for i4, em := range scrape.FindAll(h2, func(n *html.Node) bool { return atom.Em == n.DataAtom }) {
+				if 1 < i4 {
+					err = errors.New("unexpected 2nd <em> ")
+					return
+				}
+				bc.Title = scrape.Text(em)
+				em.Parent.RemoveChild(em)
 			}
-			s := scrape.Text(h3)
+			s := scrape.Text(h2)
 			bc.TitleSeries = &s
+
+			for i2, h3 := range scrape.FindAll(main, func(n *html.Node) bool { return atom.H3 == n.DataAtom }) {
+				if 1 < i2 {
+					err = errors.New("unexpected 2nd <h3> ")
+					return
+				}
+				s := scrape.Text(h3)
+				bc.TitleEpisode = &s
+			}
 		}
-		// h1.Parent.Delete
 	}
 
 	// Description
@@ -297,6 +304,7 @@ func (bcu *broadcastURL) parseBroadcastNode(root *html.Node) (bc r.Broadcast, er
 	for idx, h3 := range scrape.FindAll(root, func(n *html.Node) bool {
 		return atom.H3 == n.DataAtom && "Weitere Informationen" == scrape.Text(n)
 	}) {
+		// fmt.Fprintf(os.Stderr, "GET %s\n", "uhu")
 		if idx != 0 {
 			err = errors.New("There was more than 1 <h3>Weitere Informationen")
 			return
