@@ -21,6 +21,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -86,11 +87,15 @@ func tagMp3File(mp3FilePath string, bc broadcast) error {
 			return err
 		}
 		defer resp.Body.Close()
+		b, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
 		tag.AddAttachedPicture(id3v2.PictureFrame{
 			Encoding: id3v2.ENUTF8,
 			MimeType: "image/jpeg",
 			// Description: "Front cover",
-			Picture:     resp.Body,
+			Picture:     b,
 			PictureType: id3v2.PTFrontCover,
 		})
 	}
