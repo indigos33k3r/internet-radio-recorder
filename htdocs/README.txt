@@ -18,6 +18,7 @@ CREDITS
     - http://jquery.com/ (MIT License)
     - http://momentjs.com/ (MIT License)
     - https://github.com/henix/slt2 (MIT License)
+    - https://github.com/bogem/id3v2
 
 
 COMMON TASKS
