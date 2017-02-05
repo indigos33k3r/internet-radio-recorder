@@ -68,7 +68,7 @@ ul#whatsonnow li a {
   -o-text-overflow: ellipsis;
   white-space: nowrap;
 }
-ul#whatsonnow span.station {
+*.station.title {
   text-transform:capitalize;
   font-variant: small-caps;
 }

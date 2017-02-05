@@ -1,24 +1,29 @@
 // sadly embedding this into broadcast2html.xslt doesn't work for Opera -
 // the 'if( now < dtstart )' ends up html escaped...
 
-function amendClickableURLs(element) {
-  if( null == element )
-    return;
+function amendClickableURLsInHTML(html) {
   // inspired by http://stackoverflow.com/a/3809435
   // Does not pick up naked domains, because they're hard to distinguish from domains in email addresses (see below).
   // Also requires a 2-4 character TLD, so the new 'hip' domains fail.
-  var pat = /[-_.a-z0-9]{2,256}\.[a-z]{2,4}(?:\/[-a-z0-9:%_\+.~#?&\/=]*)/;
-  var url_pat = new RegExp(/(?:http(s)?:\/\/)?/.source + '(' + pat.source + ')', 'gi');
-  element.innerHTML = element.innerHTML.replace(url_pat, '<a href="http$1://$2" class="magic">$&</a>');
+  var pat = /[-_.a-z0-9]{2,256}\.[a-z]{2,4}(?:\/[a-z0-9:%_\+.~#?&\/=]*)?/;
+  var url_pat = new RegExp(/([\s\(\/])/.source + '(' + /(?:http(s?):\/\/)?/.source + '(' + pat.source + ')' + ')', 'gi');
+  html = html.replace(url_pat, '$1<a href="http$3://$4" class="magic">$2</a>');
 
-  var pat1 = /[-a-zA-Z0-9%_\+.~#\/=]+@[-a-z0-9%_\+.~#?&\/=]{2,256}\.[a-z]{2,4}(?:\?[-a-z0-9:%_\+.~#?&\/=]*)?/;
+  var pat1 = /[-a-z0-9%_\+.~#\/=]+@[-a-z0-9%_\+.~#?&\/=]{2,256}\.[a-z]{2,4}(?:\?[-a-z0-9:%_\+.~#?&\/=]*)?/;
   var mail_pat = new RegExp(/(?:mailto:)?/.source + '(' + pat1.source + ')', 'gi');
-  element.innerHTML = element.innerHTML.replace(mail_pat, '<a href="mailto:$1?subject=' + encodeURI(document.location) + '" class="magic">$&</a>');
+  html = html.replace(mail_pat, '<a href="mailto:$1?subject=' + encodeURI(document.location) + '" class="magic">$&</a>');
+  return html;
+}
+
+function amendClickableURLs(element) {
+  if( null == element )
+    return;
+  element.innerHTML = amendClickableURLsInHTML(element.innerHTML)
 }
 amendClickableURLs(document.getElementById('content'));
 
 // moment.lang("de");
-var canonical_url = ('' + window.location).replace(/\.xml$/,'');
+var canonical_url = ('' + window.location).replace(/(\.xml)?(\.gz)?(#.*)?$/,'');
 $('.canonical-url').text( canonical_url );
 $('.base-url').text( canonical_url.replace(/\/stations\/[^\/]+\/\d{4}\/\d{2}\/\d{2}\/(index|\d{4}%20.+)$/, '') );
 
@@ -34,6 +39,12 @@ else if( now < dtend )
   $( 'html' ).addClass('is_current');
 else
   $( 'html' ).addClass('is_past');
+
+// http://stackoverflow.com/a/12089140
+// change cursor (hover)?
+$('tr[data-href]').on("click", function() {
+  document.location = $(this).data('href');
+});
 
 // display podcast links
 var podasts_json_url = canonical_path + '.json';
