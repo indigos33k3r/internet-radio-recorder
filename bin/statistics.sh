@@ -57,8 +57,8 @@ printf "${fmt}" "recordings"
 } | wc -l
 
 echo "Disk usage..."
-echo " index.xml (day summary, gzip) : $(du -ksc htdocs/stations/*/????/??/??/index.xml.gz | fgrep total | cut -f 1) KiB"
+echo " index.xml (day summary, gzip) : $(du -hsc htdocs/stations/*/????/??/??/index.xml.gz | fgrep total | cut -f 1)"
 # echo " non-index.xml (single broadcasts): $(ls -f htdocs/stations/*/????/??/??/index.xml | cut -d / -f 1-6 | xargs du -ksc --exclude index.xml --exclude='*.json' | fgrep total | cut -f 1) KiB"
-echo " broadcasts                    : $(du -ksc htdocs/stations | tail -n 1 | cut -f 1) KiB"
-echo " broadcasts, no index          : $(du -ksc --exclude 'index.xml.gz'                    htdocs/stations/*/???? | tail -n 1 | cut -f 1) KiB"
-echo " broadcasts, no index, no json : $(du -ksc --exclude 'index.xml.gz' --exclude='*.json' htdocs/stations/*/???? | tail -n 1 | cut -f 1) KiB"
+echo " broadcasts                    : $(du -hsc htdocs/stations | tail -n 1 | cut -f 1)"
+echo " broadcasts, no index          : $(du -hsc --exclude 'index.xml.gz'                    htdocs/stations/*/???? | tail -n 1 | cut -f 1)"
+echo " broadcasts, no index, no json : $(du -hsc --exclude 'index.xml.gz' --exclude='*.json' htdocs/stations/*/???? | tail -n 1 | cut -f 1)"

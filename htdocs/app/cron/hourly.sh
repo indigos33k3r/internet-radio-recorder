@@ -28,7 +28,7 @@ stderr_log="log/${me}.stderr.log"
 start_time="$(/bin/date +'%s')"
 echo "Start  $(/bin/date +'%FT%T')" | tee -a "${stderr_log}" 1>> "${stdout_log}"
 
-version="0.2.5"
+version="0.2.6"
 cmd="../bin/scrape-$(uname -s)-$(uname -m)-${version}"
 
 [ -x "${cmd}" ] || { echo "Executable ${cmd} not found." 1>&2 && exit 1 ; }

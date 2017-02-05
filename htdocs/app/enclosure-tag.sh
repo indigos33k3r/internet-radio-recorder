@@ -28,3 +28,4 @@ cmd="../bin/enclosure-tag-$(uname -s)-$(uname -m)-${version}"
 [ -x "${cmd}" ] || { echo "Executable ${cmd} not found." 1>&2 && exit 1 ; }
 
 "${cmd}" "$@"
+chmod a+r "$@"

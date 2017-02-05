@@ -1,8 +1,9 @@
 User-agent: *
 Allow: /stations/
+Allow: /enclosures/
 Disallow: /app/
 Disallow: /assets/
-Disallow: /enclosures/
+# Disallow: /enclosures/ # password protected
 Disallow: /log/
 Disallow: /podcasts/
 Disallow: /rdf/
