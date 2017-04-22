@@ -119,9 +119,10 @@ end
 function Enclosure:purge(dry_run)
   if 'mp3' ~= self.state then return false,'not mp3' end
   -- TODO: check ALL podcasts if we're really to be deleted. Membership is quick but count expensive.
-  -- io.stderr:write('purge ', self.id, "\n")
+  io.stderr:write('purge ', self.id, "\n")
   if dry_run then return true,'dry_run' end
-  os.remove( self:filename('mp3') )
+  local ok,msg = os.remove( self:filename('mp3') )
+  if not ok then io.stderr:write('error: ', msg, "\n") end
   return io.write_if_changed(self:filename('purged'), '')
 end
 

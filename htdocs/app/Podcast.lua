@@ -172,5 +172,5 @@ function Podcast:save_ics(tmin,tmax)
   local ics_file = table.concat{'podcasts', '/', assert(self.id), '/', 'broadcasts', '.ics'}
   local ics_new = slt2.render(assert(self:template_ics()), {self=self, broadcasts=self:broadcasts(nil,tmin,tmax)})
   return io.write_if_changed(ics_file, ics_new)
-
 end
+
