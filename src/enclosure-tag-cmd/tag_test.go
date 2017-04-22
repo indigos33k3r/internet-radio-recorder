@@ -76,7 +76,7 @@ func TestUnmodified(t *testing.T) {
 	assert.Equal(t, "", tag.Artist(), "artist")
 	assert.Equal(t, "", tag.Title(), "title")
 	assert.Equal(t, "", tag.Album(), "album")
-	assert.Equal(t, "20131125\x00", tag.Year(), "year")
+	assert.Equal(t, "", tag.Year(), "year")
 }
 
 func TestSetArtist(t *testing.T) {
@@ -116,7 +116,7 @@ func TestSetFull(t *testing.T) {
 		tag, err := id3v2.Open("testdata/tmp.mp3")
 		assert.Nil(t, err, "")
 		assert.Equal(t, "", tag.Artist(), "artist")
-		assert.Equal(t, uint8(3), tag.Version(), "artist")
+		assert.Equal(t, uint8(4), tag.Version(), "artist")
 		err = tag.Close()
 		assert.Nil(t, err, "")
 	}
@@ -153,7 +153,7 @@ func TestSetFull(t *testing.T) {
 
 		artwork, err := ioutil.ReadFile("testdata/image.jpg")
 		assert.Nil(t, err, "")
-		assert.Equal(t, int(35828), len(artwork), "size")
+		assert.Equal(t, int(110343), len(artwork), "size")
 		tag.AddAttachedPicture(id3v2.PictureFrame{
 			Encoding:    id3v2.ENUTF8,
 			MimeType:    "image/jpeg",
@@ -181,5 +181,5 @@ func TestSetFull(t *testing.T) {
 	}
 
 	fi, _ := os.Stat("testdata/tmp.mp3")
-	assert.Equal(t, int64(122397), fi.Size(), "size")
+	assert.Equal(t, int64(4671582), fi.Size(), "size")
 }
