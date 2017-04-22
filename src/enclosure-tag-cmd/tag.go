@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2016 Marcus Rohrmoser, http://purl.mro.name/recorder
+// Copyright (c) 2015-2017 Marcus Rohrmoser, http://purl.mro.name/recorder
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -50,11 +50,11 @@ func tagMp3File(mp3FilePath string, bc broadcast) error {
 	}
 	defer tag.Close()
 
-	tag.SetTitle(bc.title)
+	tag.DeleteAllFrames()
+	tag.SetVersion(4)
 	tag.SetArtist("Station " + station)
-	if "" != bc.title_series {
-		tag.SetAlbum(bc.title_series)
-	}
+	tag.SetTitle(bc.title)
+	tag.SetAlbum(bc.title_series)
 	tag.SetGenre("Radio")
 	tag.SetYear(strconv.Itoa(bc.format_timestart.Year()))
 
@@ -70,15 +70,15 @@ func tagMp3File(mp3FilePath string, bc broadcast) error {
 
 	tag.AddCommentFrame(id3v2.CommentFrame{
 		Encoding: id3v2.ENUTF8,
-		Language: bc.language, // validate language?
+		Language: "deu", // validate language?
 		Text:     txt,
 	})
 
 	tag.AddUnsynchronisedLyricsFrame(id3v2.UnsynchronisedLyricsFrame{
-		Encoding:          id3v2.ENUTF8,
-		Language:          bc.language, // validate language?
-		ContentDescriptor: "Content descriptor",
-		Lyrics:            txt,
+		Encoding: id3v2.ENUTF8,
+		Language: "deu", // validate language?
+		// ContentDescriptor: "Content descriptor",
+		Lyrics: txt,
 	})
 
 	if "" != bc.image.String() {
@@ -99,5 +99,6 @@ func tagMp3File(mp3FilePath string, bc broadcast) error {
 			PictureType: id3v2.PTFrontCover,
 		})
 	}
+
 	return tag.Save()
 }

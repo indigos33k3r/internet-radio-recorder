@@ -9,7 +9,7 @@ cd "$(dirname "${0}")"
 # Linux armv6l
 
 PROG_NAME="enclosure-tag"
-VERSION="0.0.1"
+VERSION="0.0.2"
 
 rm "${PROG_NAME}"-*-"${VERSION}" 2>/dev/null
 

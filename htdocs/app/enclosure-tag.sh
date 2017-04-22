@@ -22,7 +22,7 @@
 cd "$(dirname "${0}")"/..
 me="$(basename "${0}")"
 
-version="0.0.1"
+version="0.0.2"
 cmd="../bin/enclosure-tag-$(uname -s)-$(uname -m)-${version}"
 
 [ -x "${cmd}" ] || { echo "Executable ${cmd} not found." 1>&2 && exit 1 ; }
