@@ -252,7 +252,7 @@
           <tt>$ <a href="http://librdf.org/raptor/rapper.html">rapper</a> -i grddl -o rdfxml-abbrev '<span class="canonical-url">&lt;url from address bar&gt;</span>'</tt><br class="br"/>
           <tt>$ <a href="http://xmlsoft.org/XSLT/xsltproc.html">xsltproc</a> --stringparam canonical_url '<span class="canonical-url">&lt;url from address bar&gt;</span>' '<span class="base-url">&lt;url from address bar&gt;/../../../../../..</span>/assets/2013/broadcast2rdf.xslt' '<span class="canonical-url">&lt;url from address bar&gt;</span>.xml'</tt>
         </p>
-        <script type="text/javascript" src="../../../../../assets/jquery-3.1.0.min.js"/>
+        <!-- script type="text/javascript" src="../../../../../assets/jquery-3.1.0.min.js"/ -->
         <script type="text/javascript" src="../../../../../assets/moment-2.14.1.min.js"/><!-- http://momentjs.com/ -->
         <script type="text/javascript" src="../../../../../assets/lang/de.js"/><!-- https://github.com/timrwood/moment/blob/develop/min/lang/de.js -->
         <script type="text/javascript" src="../../../../../assets/broadcast2html.js" />
@@ -489,12 +489,7 @@ br.br { display:inline; }
         <script type="text/javascript" src="../../../../../assets/broadcast2html.js" />
         <script type="text/javascript">
 // <![CDATA[
-
-// deprecated. Expand time-links
-$('ol > li > h4 > a[href^="../../../../../app/now.lua?t="]').attr('href', function(i, value) {
-  var tMatch = value.match(/\?t=(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2})?P\+?(-?\d+)D$/);
-  return '../../../' + moment(tMatch[1]).add(tMatch[2], 'days').format('YYYY/MM/DD/[index#T]HHmm');
-});
+console.log('rec:broadcasts');
 
 $('.detect-urls').html(function(i, value) { return amendClickableURLsInHTML(value); });
 

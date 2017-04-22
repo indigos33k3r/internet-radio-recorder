@@ -24,135 +24,167 @@ amendClickableURLs(document.getElementById('content'));
 
 // moment.lang("de");
 var canonical_url = ('' + window.location).replace(/(\.xml)?(\.gz)?(#.*)?$/,'');
-$('.canonical-url').text( canonical_url );
-$('.base-url').text( canonical_url.replace(/\/stations\/[^\/]+\/\d{4}\/\d{2}\/\d{2}\/(index|\d{4}%20.+)$/, '') );
+{
+  var x = document.querySelectorAll('.canonical-url');
+  for(var i = x.length - 1; i >= 0; i--)
+    x[i].textContent = canonical_url;
+}
+{
+  var x = document.querySelectorAll('.base-url');
+  for(var i = x.length - 1; i >= 0; i--)
+    x[i].textContent = canonical_url.replace(/\/stations\/[^\/]+\/\d{4}\/\d{2}\/\d{2}\/(index|\d{4}%20.+)$/, '');
+}
 
 var canonical_path = window.location.pathname.replace(/\.xml$/,'');
 
-var dtstart = moment( $("meta[name='DC.format.timestart']").attr('content') );
-var dtend = moment( $("meta[name='DC.format.timeend']").attr('content') );
+var dtstart = moment( document.querySelectorAll("meta[name='DC.format.timestart']")[0].getAttribute('content') );
+var dtend = moment( document.querySelectorAll("meta[name='DC.format.timeend']")[0].getAttribute('content') );
 var now = moment();
 
-if( now < dtstart )
-  $( 'html' ).addClass('is_future');
-else if( now < dtend )
-  $( 'html' ).addClass('is_current');
-else
-  $( 'html' ).addClass('is_past');
-
-// http://stackoverflow.com/a/12089140
-// change cursor (hover)?
-$('tr[data-href]').on("click", function() {
-  document.location = $(this).data('href');
-});
-
-// display podcast links
-var podasts_json_url = canonical_path + '.json';
-jQuery.get({ url: podasts_json_url, cache: true,
-  success: function( data ) {
-    // display mp3/enclosure dir link
-    var enclosure_mp3_url = canonical_path.replace(/\/stations\//,'/enclosures/') + '.mp3';
-    var enclosure_dir_url = enclosure_mp3_url.replace(/[^\/]+$/,'');
-    $( 'a#enclosure_link' ).attr('href', enclosure_dir_url);
-    jQuery.ajax({ url: enclosure_mp3_url, cache: true, type: 'HEAD',
-      success: function() {
-        $( 'html' ).addClass('has_enclosure_mp3');
-        $( 'a#enclosure_link' ).attr('href', enclosure_mp3_url);
-        $( 'a#enclosure_link' ).attr('title', "Download: Rechte Maustaste + 'Speichern unter...'");
-        $( '#enclosure audio source' ).attr('src', enclosure_mp3_url);
-        $( '#enclosure' ).attr('style', 'display:block');
-      },
-    });
-    var has_ad_hoc = false;
-    var names = data.podcasts.map( function(pc) {
-      has_ad_hoc = has_ad_hoc || (pc.name == 'ad_hoc');
-      return '<a href="../../../../../podcasts/' + pc.name + '/">' + pc.name + '</a>';
-    } );
-    $( '#podcasts' ).html( names.join(', ') );
-    if( names.length == 0 ) {
-      ;
-    } else {
-      $( 'p#enclosure' ).attr('style', 'display:block');
-      $( 'html' ).addClass('has_podcast');
-      if( has_ad_hoc ) {
-        $( '#ad_hoc_action' ).attr('name', 'remove');
-        $( '#ad_hoc_submit' ).attr('value', 'Nicht Aufnehmen');
-      } else {
-        $( '#ad_hoc_submit' ).attr('style', 'display:none');
-      }
-    }
-  },
-  dataType: 'json',
- });
-
-// make date time display human readable
-// $( '.moment_date_time' ).text( moment( $(this).attr('title') ).format('ddd D[.] MMM YYYY, HH:mm') );
-// $( '.moment_date' ).text( moment( $(this).attr('title') ).format('ddd D[.] MMM YYYY') );
-// $( '.moment_time' ).text( moment( $(this).attr('title') ).format('HH:mm') );
-function timeFromTitle(e, fmt) {
-  var je = $(e);
-  je.text(moment(je.attr('title')).format(fmt));
+{
+  var clz = 'is_past';
+  if( now < dtstart )
+    clz = 'is_future';
+  else if( now < dtend )
+    clz = 'is_current';
+  document.getElementsByTagName('html')[0].classList.add(clz);
 }
-$( '.moment_date_time' ).each(function(idx,e){timeFromTitle(e, 'ddd D[.] MMM YYYY HH:mm');});
-$( '.moment_date' ).each(function(idx,e){timeFromTitle(e, 'ddd D[.] MMM YYYY');});
-$( '.moment_time' ).each(function(idx,e){timeFromTitle(e, 'HH:mm');});
 
-// rewrite today/tomorrow links
-$( '#prev_week' ).attr('href', '../../../' + moment(dtstart).subtract(7, 'days').format() );
-$( '#yesterday' ).attr('href', '../../../' + moment(dtstart).subtract(1, 'days').format() );
-$( '#tomorrow'  ).attr('href', '../../../' + moment(dtstart).add(1, 'days').format() );
-$( '#next_week' ).attr('href', '../../../' + moment(dtstart).add(7, 'days').format() );
+console.log('display podcast links');
+var podasts_json_url = canonical_path + '.json';
+var httpRequest = new XMLHttpRequest();
+httpRequest.onreadystatechange = function(data0) {
+  if (httpRequest.readyState == 4) {
+    if (httpRequest.status >= 200 && httpRequest.status < 300) {
+			console.log('display mp3/enclosure dir link');
+			var enclosure_mp3_url = canonical_path.replace(/\/stations\//,'/enclosures/') + '.mp3';
+			var enclosure_dir_url = enclosure_mp3_url.replace(/[^\/]+$/,'');
+			document.getElementById('enclosure_link').setAttribute('href', enclosure_dir_url);
+			// next check the existence of the mp3:
+			var http1 = new XMLHttpRequest();
+			http1.onreadystatechange = function(data1) {
+				if (http1.readyState == 4) {
+					if (http1.status >= 200 && http1.status < 300) {
+						console.log('Yikes, there is a mp3!');
+						document.getElementsByTagName('html')[0].classList.add('has_enclosure_mp3');
+						document.getElementById('enclosure_link').setAttribute('href', enclosure_mp3_url);
+						document.getElementById('enclosure_link').setAttribute('title', "Download: Rechte Maustaste + 'Speichern unter...'");
+						// document.querySelectorAll('#enclosure audio source')[0].setAttribute('src', enclosure_mp3_url);
+						document.getElementById('enclosure').setAttribute('style', 'display:block');
+					}
+				}
+			}
+			http1.open('HEAD', enclosure_mp3_url);
+			http1.send(null);
+
+			// and also care about the other (recording etc.) buttons
+			var data = JSON.parse(httpRequest.responseText);
+			var has_ad_hoc = false;
+			var names = data.podcasts.map( function(pc) {
+				has_ad_hoc = has_ad_hoc || (pc.name == 'ad_hoc');
+				return '<a href="../../../../../podcasts/' + pc.name + '/">' + pc.name + '</a>';
+			});
+			document.getElementById('podcasts').innerHTML = names.join(', ');
+			if( names.length == 0 ) {
+				;
+			} else {
+				// $( 'p#enclosure' ).attr('style', 'display:block');
+				document.getElementsByTagName('html')[0].classList.add('has_podcast');
+				if( has_ad_hoc ) {
+					document.getElementById('ad_hoc_action').setAttribute('name', 'remove');
+					document.getElementById('ad_hoc_submit').setAttribute('value', 'Nicht Aufnehmen');
+				} else {
+					document.getElementById('ad_hoc_submit').setAttribute('style', 'display:none');
+				}
+			}
+		}
+  }
+}
+httpRequest.open('GET', podasts_json_url);
+httpRequest.send(null);
+
+console.log('make date time human readable');
+function timeFromTitle(selector, fmt) {
+  var elems = document.querySelectorAll(selector);
+  for(var i = elems.length - 1; i >= 0; i--)
+    elems[i].textContent = moment( elems[i].getAttribute('title') ).format(fmt);
+}
+timeFromTitle('.moment_date_time', 'ddd D[.] MMM YYYY HH:mm');
+timeFromTitle('.moment_date', 'ddd D[.] MMM YYYY');
+timeFromTitle('.moment_time', 'HH:mm');
+
+console.log('rewrite today/tomorrow links');
+document.getElementById('prev_week').setAttribute('href', '../../../' + moment(dtstart).subtract(7, 'days').format() );
+document.getElementById('yesterday').setAttribute('href', '../../../' + moment(dtstart).subtract(1, 'days').format() );
+document.getElementById('tomorrow' ).setAttribute('href', '../../../' + moment(dtstart).add(1, 'days').format() );
+document.getElementById('next_week').setAttribute('href', '../../../' + moment(dtstart).add(7, 'days').format() );
 
 // todo: mark current station
 // step 1: what is the current station?
 // step 2: iterate all ul#whatsonnow li and mark the according on with class is_current
 
 function finishAlldayCurrentEntry(a) {
-  a.removeClass('is_past').addClass('is_current').append( jQuery('<span/>').text('jetzt') );
-  // pastBC.append('<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="150" height="150"><rect width="90" height="90" x="30" y="30" style="fill:#0000ff;fill-opacity:0.75;stroke:#000000"/></svg>');
+  // a.removeClass('is_past').addClass('is_current').append( jQuery('<span/>').text('jetzt') );
+   a.classList.remove('is_past');
+   a.classList.add('is_current');
+   var span = document.createElement('span');
+   span.textContent = 'jetzt';
+   a.appendChild(span);
 }
 
-// add all day broadcasts
-jQuery.get({ url: '.', type: 'GET', cache: true,
-  success: function(xmlBody) {
+console.log('add other broadcasts of the day (same station)');
+var http2 = new XMLHttpRequest();
+http2.onload = function() {
+  // console.log('GET ' + http2.responseURL + ' ' + http2.status);
+  if (http2.status >= 200 && http2.status < 400) {
+    var parent = document.getElementById('allday');
+    parent.removeChild(parent.firstChild);
+
     var hasRecording = false;
     var pastBC = null;
-    var allLinks = $(xmlBody).find('a').map( function() {
-      var me = $(this);
-      if( '../' == me.attr('href') )                    // ignore parent link
-        return null;
-      if( hasRecording )                                // previous entry was a .json recording marker
-        me.addClass('has_podcast');
-      if( hasRecording = me.attr('href').search(/\.json$/i) >= 0 ) // remember and swallow .json
-        return null;
-      var txt = me.text().replace(/\.xml$/, '');
-      var ma = txt.match(/^(\d{2})(\d{2})\s+(.*?)$/);   // extract time and title
+    var allA = new DOMParser().parseFromString(http2.responseText, 'text/html').getElementsByTagName('a');
+    for(var i = 0; i < allA.length; i++) {
+      var src = allA[i];
+      var href = src.getAttribute('href');
+      var me = document.createElement('a');
+      me.textContent = src.textContent;
+      var li = document.createElement('li');
+      li.appendChild(me);
+
+      // console.log(i + ' ' + href);
+      if( '../' === href )                  // ignore parent link
+        continue;
+      if( hasRecording )                                        // previous entry was a .json recording marker
+        me.classList.add('has_podcast');
+      if( hasRecording = href.endsWith('.json') ) // remember and swallow .json
+        continue;
+      var txt = me.textContent.replace(/\.xml$/i, '');
+      var ma = txt.match(/^(\d{2})(\d{2})\s+(.*?)$/);           // extract time and title
       if( ma ) {
         var t0 = dtstart.hours(ma[1]).minutes(ma[2]).seconds(0); // assumes same day
-        me.attr('title', t0.format());
-        me.text( t0.format('HH:mm') + ' ' + ma[3] );
+        me.getAttribute('title', t0.format());
+        me.textContent = t0.format('HH:mm') + ' ' + ma[3];
         // set past/current/future class
         if( now < t0 ) {
           if(pastBC) {
             finishAlldayCurrentEntry(pastBC);
             pastBC = null;
           }
-          me.addClass('is_future');
+          me.classList.add('is_future');
         } else {
           pastBC = me;
-          me.addClass('is_past');
+          me.classList.add('is_past');
         }
       } else {
-        me.text(txt);                                   // index usually.
+        me.textContent = txt;                                 // index usually.
       }
-      me.attr('href', me.attr('href').replace(/\.xml$/, '') );  // make canonical url
-      return this;
-    });
+      me.setAttribute('href', href.replace(/\.xml$/i, '') );  // make canonical url
+      parent.appendChild(li);
+    }
     if( pastBC && now < dtstart.hours(24).minutes(0).seconds(0) )
-      finishAlldayCurrentEntry(pastBC);
-    $( '#allday' ).html( allLinks );
-    $( '#allday a' ).wrap('<li>');
-    $( '#allday' ).show();
-  },
-  dataType: 'xml',
-});
+      finishAlldayCurrentEntry(pastBC)
+    parent.setAttribute('style', 'display:block');
+  }
+}
+http2.open('GET', '.');
+http2.send();
