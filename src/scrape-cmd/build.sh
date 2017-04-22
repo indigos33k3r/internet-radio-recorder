@@ -9,7 +9,7 @@ cd "$(dirname "${0}")"
 # Linux armv6l
 
 PROG_NAME="scrape"
-VERSION="0.2.6"
+VERSION="0.2.7"
 
 rm "${PROG_NAME}"-*-"${VERSION}" 2>/dev/null
 
