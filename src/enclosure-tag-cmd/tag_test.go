@@ -69,7 +69,7 @@ func prepareMp3Copy() {
 
 func TestUnmodified(t *testing.T) {
 	prepareMp3Copy()
-	tag, err := id3v2.Open("testdata/tmp.mp3")
+	tag, err := id3v2.Open("testdata/tmp.mp3", id3v2.Options{Parse: false})
 	assert.Nil(t, err, "")
 	defer tag.Close()
 
@@ -83,7 +83,7 @@ func TestSetArtist(t *testing.T) {
 	prepareMp3Copy()
 	{
 		// be paranoid an test initial emptyness
-		tag, err := id3v2.Open("testdata/tmp.mp3")
+		tag, err := id3v2.Open("testdata/tmp.mp3", id3v2.Options{Parse: false})
 		assert.Nil(t, err, "")
 		assert.Equal(t, "", tag.Artist(), "artist")
 		err = tag.Close()
@@ -91,7 +91,7 @@ func TestSetArtist(t *testing.T) {
 	}
 
 	{
-		tag, err := id3v2.Open("testdata/tmp.mp3")
+		tag, err := id3v2.Open("testdata/tmp.mp3", id3v2.Options{Parse: false})
 		assert.Nil(t, err, "")
 		tag.SetArtist("New 🚀 artist")
 		err = tag.Save()
@@ -101,7 +101,7 @@ func TestSetArtist(t *testing.T) {
 	}
 
 	{
-		tag, err := id3v2.Open("testdata/tmp.mp3")
+		tag, err := id3v2.Open("testdata/tmp.mp3", id3v2.Options{Parse: true})
 		assert.Nil(t, err, "")
 		assert.Equal(t, "New 🚀 artist", tag.Artist(), "artist")
 		err = tag.Close()
@@ -113,7 +113,7 @@ func TestSetFull(t *testing.T) {
 	prepareMp3Copy()
 	{
 		// be paranoid and test initial emptyness
-		tag, err := id3v2.Open("testdata/tmp.mp3")
+		tag, err := id3v2.Open("testdata/tmp.mp3", id3v2.Options{Parse: false})
 		assert.Nil(t, err, "")
 		assert.Equal(t, "", tag.Artist(), "artist")
 		assert.Equal(t, uint8(4), tag.Version(), "artist")
@@ -122,7 +122,7 @@ func TestSetFull(t *testing.T) {
 	}
 
 	{
-		tag, err := id3v2.Open("testdata/tmp.mp3")
+		tag, err := id3v2.Open("testdata/tmp.mp3", id3v2.Options{Parse: true})
 		assert.Nil(t, err, "")
 		// tag.DeleteAllFrames()
 		tag.SetVersion(4)
@@ -169,7 +169,7 @@ func TestSetFull(t *testing.T) {
 	}
 
 	{
-		tag, err := id3v2.Open("testdata/tmp.mp3")
+		tag, err := id3v2.Open("testdata/tmp.mp3", id3v2.Options{Parse: true})
 		assert.Nil(t, err, "")
 		assert.Equal(t, "http://radiofabrik.at", tag.Artist(), "artist")
 		assert.Equal(t, "8 NACH 8 - DAS ENDE DER NACHT. Morgenmagazin mit Robert Schromm live aus dem Außenstudio Bad Reichenhall.", tag.Title(), "title")

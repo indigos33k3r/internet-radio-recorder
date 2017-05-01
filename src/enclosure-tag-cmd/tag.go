@@ -44,7 +44,7 @@ func tagMp3File(mp3FilePath string, bc broadcast) error {
 		return tagError{reason: "Couldn't find station in mp3 file name '" + mp3FilePath + "'"}
 	}
 
-	tag, err := id3v2.Open(mp3FilePath)
+	tag, err := id3v2.Open(mp3FilePath, id3v2.Options{Parse: false})
 	if nil != err {
 		return err
 	}
