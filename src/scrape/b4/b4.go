@@ -16,10 +16,11 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // MIT License http://opensource.org/licenses/MIT
-//
+
 // Scrape http://br-klassik.de program schedule + broadcast pages.
 //
 // import "purl.mro.name/recorder/radio/scrape/b4"
+
 package b4
 
 import (
@@ -141,7 +142,8 @@ func (rangeURL *calItemRangeURL) parseCalendarItemsReader(read io.Reader, cr0 *r
 	return
 }
 
-/////////////////////////////////////////////////////////////////////////////
+/// Time and what it's about.
+///
 /// datetime from JSON response
 /// https://www.br-klassik.de/programm/radio/radiosendungen-100~calendarItems.jsp?rows=800&from=2015-11-30T04:59:59&to=2015-11-30T06:00:00
 type Time time.Time

@@ -42,12 +42,12 @@ func copy(src, dst string) (int64, error) {
 	}
 	defer srcFile.Close()
 
-	srcFile_stat, err := srcFile.Stat()
+	srcFileStat, err := srcFile.Stat()
 	if err != nil {
 		return 0, err
 	}
 
-	if !srcFile_stat.Mode().IsRegular() {
+	if !srcFileStat.Mode().IsRegular() {
 		return 0, fmt.Errorf("%s is not a regular file", src)
 	}
 

@@ -16,10 +16,11 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // MIT License http://opensource.org/licenses/MIT
-//
+
 // Scrape http://br.de program schedule + broadcast pages.
 //
 // import "purl.mro.name/recorder/radio/scrape/br"
+
 package br
 
 import (

@@ -16,14 +16,14 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // MIT License http://opensource.org/licenses/MIT
-//
+
 // Generic stuff useful for scraping radio broadcast station program
 // websites.
 //
 // Most important are the two interfaces 'Scraper' and 'Broadcaster'.
 //
 // import "purl.mro.name/recorder/radio/scrape"
-//
+
 package scrape
 
 import (

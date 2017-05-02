@@ -16,10 +16,11 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // MIT License http://opensource.org/licenses/MIT
-//
+
 // Scrape http://bayern3.de program.
 //
 // import "purl.mro.name/recorder/radio/scrape/b3"
+
 package b3
 
 import (

@@ -16,11 +16,11 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // MIT License http://opensource.org/licenses/MIT
-//
+
 // HTML helpers.
 //
 // import "purl.mro.name/recorder/radio/scrape"
-//
+
 package scrape
 
 import (
