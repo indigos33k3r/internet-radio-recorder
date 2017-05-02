@@ -16,7 +16,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // MIT License http://opensource.org/licenses/MIT
-
+//
 // Scrape http://br.de program schedule + broadcast pages.
 //
 // import "purl.mro.name/recorder/radio/scrape/br"
@@ -155,9 +155,9 @@ type timeURL r.TimeURL
 
 // Scrape slice of broadcastURL - all per-day broadcast entries of the day url
 func (day *timeURL) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error) {
-	broadcast_urls, err := day.parseBroadcastURLs()
+	broadcastUrls, err := day.parseBroadcastURLs()
 	if nil == err {
-		for _, b := range broadcast_urls {
+		for _, b := range broadcastUrls {
 			bb := *b
 			jobs = append(jobs, &bb)
 		}
@@ -182,7 +182,7 @@ func (day *timeURL) Matches(nows []time.Time) (ok bool) {
 func (day *timeURL) parseBroadcastURLsNode(root *html.Node) (ret []*broadcastURL, err error) {
 	const closeDownHour int = 5
 	for _, h4 := range scrape.FindAll(root, func(n *html.Node) bool { return atom.H4 == n.DataAtom }) {
-		year, month, day_, err := timeForH4(scrape.Text(h4), &day.Time)
+		year, month, day2, err := timeForH4(scrape.Text(h4), &day.Time)
 		if nil != err {
 			panic(err)
 		}
@@ -201,7 +201,7 @@ func (day *timeURL) parseBroadcastURLsNode(root *html.Node) (ret []*broadcastURL
 			// fmt.Printf("%s %s\n", b.r.TimeURL.String(), b.Title)
 			bcu := broadcastURL(r.BroadcastURL{
 				TimeURL: r.TimeURL{
-					Time:    time.Date(year, month, day_+dayOffset, hour, r.MustParseInt(m[2]), 0, 0, localLoc),
+					Time:    time.Date(year, month, day2+dayOffset, hour, r.MustParseInt(m[2]), 0, 0, localLoc),
 					Source:  *day.Source.ResolveReference(ur),
 					Station: day.Station,
 				},
@@ -237,8 +237,8 @@ func (day *timeURL) parseBroadcastURLs() (ret []*broadcastURL, err error) {
 /// Just wrap BroadcastURL into a distinct, local type.
 type broadcastURL r.BroadcastURL
 
-func (b *broadcastURL) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error) {
-	bcs, err := b.parseBroadcastsFromURL()
+func (bcu *broadcastURL) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error) {
+	bcs, err := bcu.parseBroadcastsFromURL()
 	if nil == err {
 		for _, bc := range bcs {
 			results = append(results, bc)
@@ -248,8 +248,8 @@ func (b *broadcastURL) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err 
 }
 
 // 1h future interval
-func (b *broadcastURL) Matches(nows []time.Time) (ok bool) {
-	start := &b.Time
+func (bcu *broadcastURL) Matches(nows []time.Time) (ok bool) {
+	start := &bcu.Time
 	if nil == nows || nil == start {
 		return false
 	}

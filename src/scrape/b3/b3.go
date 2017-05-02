@@ -16,7 +16,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // MIT License http://opensource.org/licenses/MIT
-
+//
 // Scrape http://bayern3.de program.
 //
 // import "purl.mro.name/recorder/radio/scrape/b3"
@@ -75,12 +75,12 @@ func (s *station) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error
 /// Just wrap TimeURL into a distinct, local type - a Scraper, naturally
 type calItemRangeURL r.TimeURL
 
-func (url *calItemRangeURL) Matches(nows []time.Time) (ok bool) {
+func (bcu *calItemRangeURL) Matches(nows []time.Time) (ok bool) {
 	return true
 }
 
-func (url *calItemRangeURL) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error) {
-	bcs, err := url.parseBroadcasts()
+func (bcu *calItemRangeURL) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error) {
+	bcs, err := bcu.parseBroadcasts()
 	if nil == err {
 		for _, bc := range bcs {
 			results = append(results, bc)
@@ -105,7 +105,7 @@ func init() {
 /// Parse broadcasts
 /////////////////////////////////////////////////////////////////////////////
 
-type B3Programm struct {
+type b3Programm struct {
 	Broadcasts []struct {
 		Headline            string
 		SubTitle            string
@@ -119,7 +119,7 @@ type B3Programm struct {
 	}
 }
 
-func (bcu *calItemRangeURL) parseBroadcastsFromData(programm B3Programm) (bcs []r.Broadcast, err error) {
+func (bcu *calItemRangeURL) parseBroadcastsFromData(programm b3Programm) (bcs []r.Broadcast, err error) {
 	language := "de"
 	author := "Bayerischer Rundfunk"
 	empty := ""
@@ -142,10 +142,10 @@ func (bcu *calItemRangeURL) parseBroadcastsFromData(programm B3Programm) (bcs []
 				return nil
 			}
 			if strings.HasPrefix(s, "BAYERN 3 - ") {
-				s = s[len("BAYERN 3 - "):len(s)]
+				s = s[len("BAYERN 3 - "):]
 			}
 			if strings.HasPrefix(s, "BAYERN 3 ") {
-				s = s[len("BAYERN 3 "):len(s)]
+				s = s[len("BAYERN 3 "):]
 			}
 			return &s
 		}
@@ -175,7 +175,7 @@ func (bcu *calItemRangeURL) parseBroadcastsFromData(programm B3Programm) (bcs []
 
 func (url *calItemRangeURL) parseBroadcastsReader(read io.Reader, cr0 *r.CountingReader) (bcs []r.Broadcast, err error) {
 	cr := r.NewCountingReader(read)
-	var f B3Programm
+	var f b3Programm
 	err = json.NewDecoder(cr).Decode(&f)
 	r.ReportLoad("🐦", cr0, cr, url.Source)
 	if nil != err {

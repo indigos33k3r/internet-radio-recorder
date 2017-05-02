@@ -41,8 +41,8 @@ func main() {
 	defer close(jobs)
 	defer close(results)
 
-	var wg_jobs sync.WaitGroup
-	var wg_results sync.WaitGroup
+	var wgJobs sync.WaitGroup
+	var wgResults sync.WaitGroup
 
 	nows := scrape.IncrementalNows(time.Now())
 
@@ -53,7 +53,7 @@ func main() {
 		for jobb := range jobs {
 			job := jobb
 			go func() {
-				defer wg_jobs.Done()
+				defer wgJobs.Done()
 				// fmt.Fprintf(os.Stderr, "jobs process %p %s\n", job, job)
 				scrapers, bcs, err := job.Scrape()
 				if nil != err {
@@ -61,13 +61,13 @@ func main() {
 				}
 				for _, s := range scrapers {
 					if s.Matches(nows) {
-						wg_jobs.Add(1)
+						wgJobs.Add(1)
 						// fmt.Fprintf(os.Stderr, "jobs queue   %p %s\n", s, s)
 						jobs <- s
 					}
 				}
 				for _, b := range bcs {
-					wg_results.Add(1)
+					wgResults.Add(1)
 					results <- b
 				}
 			}()
@@ -78,7 +78,7 @@ func main() {
 	go func() {
 		for bc := range results {
 			func() {
-				defer wg_results.Done()
+				defer wgResults.Done()
 				bc.WriteAsLuaTable(os.Stdout)
 			}()
 		}
@@ -87,26 +87,26 @@ func main() {
 	{
 		// seed all the radio stations to scrape
 		for _, s := range []string{"b1", "b2", "b5", "b+", "brheimat", "puls"} {
-			wg_jobs.Add(1)
+			wgJobs.Add(1)
 			jobs <- br.Station(s)
 		}
-		wg_jobs.Add(1)
+		wgJobs.Add(1)
 		jobs <- b3.Station("b3")
-		wg_jobs.Add(1)
+		wgJobs.Add(1)
 		jobs <- b4.Station("b4")
 
-		wg_jobs.Add(1)
+		wgJobs.Add(1)
 		jobs <- radiofabrik.Station("radiofabrik")
-		wg_jobs.Add(1)
+		wgJobs.Add(1)
 		jobs <- m945.Station("m945")
 		for _, s := range []string{"dlf", "drk"} {
-			wg_jobs.Add(1)
+			wgJobs.Add(1)
 			jobs <- dlf.Station(s)
 		}
-		wg_jobs.Add(1)
+		wgJobs.Add(1)
 		jobs <- wdr.Station("wdr5")
 	}
 
-	wg_jobs.Wait()
-	wg_results.Wait()
+	wgJobs.Wait()
+	wgResults.Wait()
 }

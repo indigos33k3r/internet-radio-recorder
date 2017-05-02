@@ -1,4 +1,5 @@
 Build Status: https://travis-ci.org/mro/internet-radio-recorder/
+Go Report Card: https://goreportcard.com/report/github.com/mro/internet-radio-recorder
 
 A internet radio recorder. Turns broadcasts of e.g. http://br.de/radio/, http://m945.de/ or http://dlf.de/ into RSS feeds with mp3 enclosures.
 

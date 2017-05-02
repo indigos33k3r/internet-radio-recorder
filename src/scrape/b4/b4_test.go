@@ -94,7 +94,7 @@ func TestParseCalendarItems(t *testing.T) {
 	assert.NotNil(t, f, "ouch")
 	assert.Nil(t, err, "ouch")
 
-	cis, err := u.parseCalendarItemsReader(f, nil)
+	cis, _ := u.parseCalendarItemsReader(f, nil)
 	assert.Equal(t, 2, len(cis), "Nov")
 	{
 		item := cis[0]

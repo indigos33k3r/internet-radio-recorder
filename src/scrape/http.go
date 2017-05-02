@@ -16,7 +16,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // MIT License http://opensource.org/licenses/MIT
-
+//
 // Generic stuff useful for scraping radio broadcast station program
 // websites.
 //

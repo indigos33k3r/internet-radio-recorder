@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2016 Marcus Rohrmoser, http://purl.mro.name/recorder
+// Copyright (c) 2016-2017 Marcus Rohrmoser, http://purl.mro.name/recorder
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -16,7 +16,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // MIT License http://opensource.org/licenses/MIT
-
+//
 // Scrape wdr schedule.
 //
 // import "purl.mro.name/recorder/radio/scrape/wdr"
@@ -123,7 +123,7 @@ func init() {
 /// Parse broadcasts
 /////////////////////////////////////////////////////////////////////////////
 
-type WdrProgramm struct {
+type wdrProgramm struct {
 	Sendungen []struct {
 		Start      int64
 		Ende       int64
@@ -132,8 +132,8 @@ type WdrProgramm struct {
 	}
 }
 
-func (day *timeURL) parseBroadcastsFromJsonData(programm WdrProgramm) (ret []*broadcast, err error) {
-	lang_de := "de"
+func (day *timeURL) parseBroadcastsFromJsonData(programm wdrProgramm) (ret []*broadcast, err error) {
+	langDe := "de"
 	publisher := "Westdeutscher Rundfunk"
 	empty := ""
 	for _, b := range programm.Sendungen {
@@ -146,7 +146,7 @@ func (day *timeURL) parseBroadcastsFromJsonData(programm WdrProgramm) (ret []*br
 				},
 				Title: b.HauptTitel,
 			},
-			Language:    &lang_de,
+			Language:    &langDe,
 			Publisher:   &publisher,
 			Description: &empty,
 		}
@@ -162,7 +162,7 @@ func (day *timeURL) parseBroadcastsFromJsonData(programm WdrProgramm) (ret []*br
 
 func (day *timeURL) parseBroadcastsFromJsonReader(read io.Reader, cr0 *r.CountingReader) (ret []*broadcast, err error) {
 	cr := r.NewCountingReader(read)
-	var f WdrProgramm
+	var f wdrProgramm
 	err = json.NewDecoder(cr).Decode(&f)
 	r.ReportLoad("🐦", cr0, cr, day.Source)
 	if nil != err {
@@ -269,8 +269,8 @@ func (bc *broadcast) parseBroadcastFromHtmlNode(root *html.Node) (ret []*r.Broad
 			bc.Description = &description
 		}
 	}
-	bc_ := r.Broadcast(*bc)
-	ret = append(ret, &bc_)
+	bc2 := r.Broadcast(*bc)
+	ret = append(ret, &bc2)
 	return
 }
 

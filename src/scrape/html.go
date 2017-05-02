@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2016 Marcus Rohrmoser, http://purl.mro.name/recorder
+// Copyright (c) 2016-2017 Marcus Rohrmoser, http://purl.mro.name/recorder
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -16,7 +16,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // MIT License http://opensource.org/licenses/MIT
-
+//
 // HTML helpers.
 //
 // import "purl.mro.name/recorder/radio/scrape"
@@ -83,8 +83,7 @@ func NormaliseWhiteSpace(s string) string {
 	return strings.Map(func(r rune) rune {
 		if unicode.IsSpace(r) {
 			return rune(32)
-		} else {
-			return r
 		}
+		return r
 	}, s)
 }

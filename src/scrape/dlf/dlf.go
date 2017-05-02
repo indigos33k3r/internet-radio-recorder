@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2016 Marcus Rohrmoser, http://purl.mro.name/recorder
+// Copyright (c) 2015-2017 Marcus Rohrmoser, http://purl.mro.name/recorder
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -107,7 +107,7 @@ func (day timeURL) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err erro
 }
 
 var (
-	lang_de string = "de"
+	langDe string = "de"
 )
 
 func (day *timeURL) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast, err error) {
@@ -127,7 +127,7 @@ func (day *timeURL) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast
 		}
 
 		// some defaults
-		bc.Language = &lang_de
+		bc.Language = &langDe
 		{
 			publisher := "http://www.deutschlandfunk.de/"
 			if "drk" == day.Station.Identifier {
@@ -137,13 +137,13 @@ func (day *timeURL) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast
 		}
 		// set start time
 		{
-			a_id := scrape.Attr(at, "name")
-			if "" == a_id {
+			aID := scrape.Attr(at, "name")
+			if "" == aID {
 				continue
 			}
-			bc.Source.Fragment = a_id
-			hour := r.MustParseInt(a_id[0:2])
-			minute := r.MustParseInt(a_id[2:4])
+			bc.Source.Fragment = aID
+			hour := r.MustParseInt(aID[0:2])
+			minute := r.MustParseInt(aID[2:4])
 			if 24 < hour || 60 < minute {
 				continue
 			}
@@ -172,15 +172,15 @@ func (day *timeURL) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast
 			}
 			// fmt.Fprintf(os.Stderr, " '%s'\n", scrape.Text(h3))
 
-			for idx, h3_a := range scrape.FindAll(h3, func(n *html.Node) bool {
+			for idx, h3A := range scrape.FindAll(h3, func(n *html.Node) bool {
 				return atom.A == n.DataAtom
 			}) {
 				if idx != 0 {
 					err = errors.New("There was more than 1 <tr><td class='description'><h3><a>")
 					return
 				}
-				bc.Title = scrape.Text(h3_a)
-				u, _ := url.Parse(scrape.Attr(h3_a, "href"))
+				bc.Title = scrape.Text(h3A)
+				u, _ := url.Parse(scrape.Attr(h3A, "href"))
 				bc.Subject = day.Source.ResolveReference(u)
 			}
 			bc.Title = strings.TrimSpace(bc.Title)

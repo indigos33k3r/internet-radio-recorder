@@ -91,6 +91,7 @@ func TestParseCalendarForDayURLs(t *testing.T) {
 
 	b2 := Station("b2")
 	tus, err := b2.parseDayURLsReader(f, nil)
+	assert.Nil(t, err, "ouch")
 	assert.Equal(t, 37, len(tus), "ouch")
 	assert.Equal(t, "b2", tus[0].Station.Identifier, "ouch: ")
 	assert.Equal(t, "2015-08-23 05:00:00 +0200 CEST", tus[0].Time.String(), "ouch: ")
@@ -111,6 +112,7 @@ func TestParseScheduleForBroadcasts(t *testing.T) {
 	}
 
 	a, err := u.parseBroadcastURLsReader(f, nil)
+	assert.Nil(t, err, "ouch")
 	assert.Equal(t, 129, len(a), "ouch: len")
 	assert.Equal(t, "b2", a[0].TimeURL.Station.Identifier, "ouch: ")
 	assert.Equal(t, "2015-10-20T05:00:00+02:00", a[0].Time.Format(time.RFC3339), "ouch: ")
@@ -338,6 +340,7 @@ func TestParsePulseProgram(t *testing.T) {
 	s := Station("puls")
 
 	a, err := s.parseDayURLsReader(f, nil)
+	assert.Nil(t, err, "ouch")
 	assert.Equal(t, 25, len(a), "ouch: len")
 	assert.Equal(t, "puls", a[0].Station.Identifier, "ouch: ")
 	assert.Equal(t, "2015-09-27T07:00:00+02:00", a[0].Time.Format(time.RFC3339), "ouch: ")

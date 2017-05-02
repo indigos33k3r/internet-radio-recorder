@@ -42,6 +42,7 @@ func TestTextWithBrFromNodeSet_001(t *testing.T) {
 	assert.Nil(t, err, "ouch")
 	root, err := html.Parse(f)
 	assert.NotNil(t, root, "ouch")
+	assert.Nil(t, err, "ouch")
 	nodes := scrape.FindAll(root, func(n *html.Node) bool { return atom.Div == n.DataAtom })
 
 	txt := TextWithBrFromNodeSet(nodes)

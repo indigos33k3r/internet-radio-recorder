@@ -16,7 +16,7 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 // MIT License http://opensource.org/licenses/MIT
-
+//
 // Scrape http://br-klassik.de program schedule + broadcast pages.
 //
 // import "purl.mro.name/recorder/radio/scrape/b4"
@@ -100,8 +100,8 @@ func (s *station) calendarItemRangeURLForTime(t time.Time) (ret *calItemRangeURL
 type calItemRangeURL r.TimeURL
 
 // Fetch calendarItems in given interval (via json)
-func (day *calItemRangeURL) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error) {
-	calendarItems, err := day.parseCalendarItems()
+func (rangeURL *calItemRangeURL) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error) {
+	calendarItems, err := rangeURL.parseCalendarItems()
 	if nil != err {
 		return
 	}
@@ -114,7 +114,7 @@ func (day *calItemRangeURL) Scrape() (jobs []r.Scraper, results []r.Broadcaster,
 	return
 }
 
-func (day *calItemRangeURL) Matches(nows []time.Time) (ok bool) {
+func (rangeURL *calItemRangeURL) Matches(nows []time.Time) (ok bool) {
 	return true
 }
 
@@ -135,7 +135,7 @@ func (rangeURL *calItemRangeURL) parseCalendarItemsReader(read io.Reader, cr0 *r
 	if nil != err {
 		return
 	}
-	for i, _ := range cis {
+	for i := range cis {
 		cis[i].Station = &rangeURL.Station
 	}
 	return
@@ -212,12 +212,12 @@ type broadcastURL struct {
 	Image *url.URL
 }
 
-func (b *broadcastURL) Matches(nows []time.Time) (ok bool) {
+func (bcu *broadcastURL) Matches(nows []time.Time) (ok bool) {
 	return true
 }
 
-func (b *broadcastURL) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error) {
-	bc, err := b.parseBroadcast()
+func (bcu *broadcastURL) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err error) {
+	bc, err := bcu.parseBroadcast()
 	if nil == err {
 		results = append(results, bc)
 	}

@@ -99,7 +99,7 @@ func (day timeURL) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err erro
 }
 
 var (
-	lang_de   string = "de"
+	langDe   string = "de"
 	publisher string = "http://www.m945.de/"
 )
 
@@ -114,16 +114,16 @@ func (day *timeURL) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast
 			},
 		}
 		// some defaults
-		bc.Language = &lang_de
+		bc.Language = &langDe
 		bc.Publisher = &publisher
 		// set start time
 		{
-			div_t := strings.TrimSpace(scrape.Text(tim))
-			if 5 != len(div_t) {
+			divT := strings.TrimSpace(scrape.Text(tim))
+			if 5 != len(divT) {
 				continue
 			}
-			hour := r.MustParseInt(div_t[0:2])
-			minute := r.MustParseInt(div_t[3:5])
+			hour := r.MustParseInt(divT[0:2])
+			minute := r.MustParseInt(divT[3:5])
 			bc.Time = time.Date(day.Year(), day.Month(), day.Day(), hour, minute, 0, 0, day.TimeZone)
 			if index > 0 {
 				ret[index-1].DtEnd = &bc.Time
@@ -140,9 +140,9 @@ func (day *timeURL) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast
 				bc.Subject = day.Source.ResolveReference(u)
 			}
 
-			desc_node := tit.Parent
-			desc_node.RemoveChild(tit)
-			description := r.TextWithBrFromNodeSet([]*html.Node{desc_node})
+			descNode := tit.Parent
+			descNode.RemoveChild(tit)
+			description := r.TextWithBrFromNodeSet([]*html.Node{descNode})
 			bc.Description = &description
 			// fmt.Fprintf(os.Stderr, "\n")
 		}

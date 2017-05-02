@@ -104,7 +104,7 @@ func (day timeURL) Scrape() (jobs []r.Scraper, results []r.Broadcaster, err erro
 }
 
 var (
-	lang_de   string = "de"
+	langDe   string = "de"
 	publisher string = "http://www.radiofabrik.at/"
 )
 
@@ -121,10 +121,10 @@ func (day *timeURL) parseBroadcastsFromNode(root *html.Node) (ret []*r.Broadcast
 			},
 		}
 		// some defaults
-		bc.Language = &lang_de
+		bc.Language = &langDe
 		bc.Publisher = &publisher
-		empty_str := ""
-		bc.Description = &empty_str
+		emptyStr := ""
+		bc.Description = &emptyStr
 		// set start time
 		{
 			hhmm := scrape.Text(at)
