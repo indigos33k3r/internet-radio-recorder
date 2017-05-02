@@ -42,12 +42,12 @@ func TestBroadcastFromXmlFileName(t *testing.T) {
 	assert.Equal(t, "b2/2016/08/25/1805 Bayern 2-radioMusik", td.identifier, "aha")
 	assert.Equal(t, "de", td.language, "aha")
 	assert.Equal(t, "/app/pbmi2003-recmod2012/", td.scheme, "aha")
-	assert.Equal(t, "anspruchsvoll - entspannt - weltoffen", td.title_episode, "aha")
-	assert.Equal(t, "", td.title_series, "aha")
+	assert.Equal(t, "anspruchsvoll - entspannt - weltoffen", td.titleEpisode, "aha")
+	assert.Equal(t, "", td.titleSeries, "aha")
 	assert.Equal(t, "http://www.br.de/radio/bayern2/musik/bayern2-radiomusik/index.html", td.subject, "aha")
-	assert.Equal(t, "2016-08-25T18:05:00+02:00", td.format_timestart.Format(time.RFC3339), "aha")
-	assert.Equal(t, "2016-08-25T18:30:00+02:00", td.format_timeend.Format(time.RFC3339), "aha")
-	assert.Equal(t, int16(1500), td.format_duration, "aha")
+	assert.Equal(t, "2016-08-25T18:05:00+02:00", td.formatTimeStart.Format(time.RFC3339), "aha")
+	assert.Equal(t, "2016-08-25T18:30:00+02:00", td.formatTimeEnd.Format(time.RFC3339), "aha")
+	assert.Equal(t, int16(1500), td.formatDuration, "aha")
 	assert.Equal(t, "http://www.br.de/radio/bayern2/musik/bayern2-radiomusik/rebekka-bakken-102~_v-img__16__9__m_-4423061158a17f4152aef84861ed0243214ae6e7.jpg?version=64958", td.image.String(), "aha")
 	assert.Equal(t, "anspruchsvoll - entspannt - weltoffen\nMit Riegler Hias feat. D'Hundskrippln, Rebekka Bakken, Randy Newman und vielen mehr\nModeration: Thomas Mehringer", td.description, "aha")
 	assert.Equal(t, "Bayerischer Rundfunk", td.author, "aha")
@@ -58,7 +58,7 @@ func TestXmlEncoding(t *testing.T) {
 	x := broadcastXml{
 		Language: "de",
 		Meta: []xmlEntry{
-			xmlEntry{
+			{
 				Name:    "Foo",
 				Content: "bar",
 			},

@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2016 Marcus Rohrmoser, http://purl.mro.name/recorder
+// Copyright (c) 2016-2017 Marcus Rohrmoser, http://purl.mro.name/recorder
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -173,19 +173,19 @@ func (bcu *calItemRangeURL) parseBroadcastsFromData(programm b3Programm) (bcs []
 	return
 }
 
-func (url *calItemRangeURL) parseBroadcastsReader(read io.Reader, cr0 *r.CountingReader) (bcs []r.Broadcast, err error) {
+func (bcu *calItemRangeURL) parseBroadcastsReader(read io.Reader, cr0 *r.CountingReader) (bcs []r.Broadcast, err error) {
 	cr := r.NewCountingReader(read)
 	var f b3Programm
 	err = json.NewDecoder(cr).Decode(&f)
-	r.ReportLoad("🐦", cr0, cr, url.Source)
+	r.ReportLoad("🐦", cr0, cr, bcu.Source)
 	if nil != err {
 		return
 	}
-	return url.parseBroadcastsFromData(f)
+	return bcu.parseBroadcastsFromData(f)
 }
 
-func (url *calItemRangeURL) parseBroadcasts() (bc []r.Broadcast, err error) {
-	return r.GenericParseBroadcastFromURL(url.Source, func(r io.Reader, cr *r.CountingReader) ([]r.Broadcast, error) {
-		return url.parseBroadcastsReader(r, cr)
+func (bcu *calItemRangeURL) parseBroadcasts() (bc []r.Broadcast, err error) {
+	return r.GenericParseBroadcastFromURL(bcu.Source, func(r io.Reader, cr *r.CountingReader) ([]r.Broadcast, error) {
+		return bcu.parseBroadcastsReader(r, cr)
 	})
 }

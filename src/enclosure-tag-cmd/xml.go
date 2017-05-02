@@ -33,12 +33,12 @@ type broadcast struct {
 	identifier       string
 	language         string
 	scheme           string
-	title_episode    string
-	title_series     string
+	titleEpisode    string
+	titleSeries     string
 	subject          string
-	format_timestart time.Time
-	format_timeend   time.Time
-	format_duration  int16
+	formatTimeStart time.Time
+	formatTimeEnd   time.Time
+	formatDuration  int16
 	image            url.URL
 	description      string
 	author           string
@@ -73,9 +73,9 @@ func broadcastFromXmlReader(xmlFile io.Reader) (broadcast, error) {
 		case "DC.language":
 			t.language = row.Content
 		case "DC.title.episode":
-			t.title_episode = row.Content
+			t.titleEpisode = row.Content
 		case "DC.title.series":
-			t.title_series = row.Content
+			t.titleSeries = row.Content
 		case "DC.subject":
 			t.subject = row.Content
 		case "DC.format.timestart":
@@ -83,19 +83,19 @@ func broadcastFromXmlReader(xmlFile io.Reader) (broadcast, error) {
 			if nil != err {
 				return t, err
 			}
-			t.format_timestart = tt
+			t.formatTimeStart = tt
 		case "DC.format.timeend":
 			tt, err := time.Parse(time.RFC3339, row.Content)
 			if nil != err {
 				return t, err
 			}
-			t.format_timeend = tt
+			t.formatTimeEnd = tt
 		case "DC.format.duration":
 			i, err := strconv.Atoi(row.Content)
 			if nil != err {
 				return t, err
 			}
-			t.format_duration = int16(i)
+			t.formatDuration = int16(i)
 		case "DC.image":
 			u, err := url.Parse(row.Content)
 			if nil != err {

@@ -54,17 +54,17 @@ func tagMp3File(mp3FilePath string, bc broadcast) error {
 	tag.SetVersion(4)
 	tag.SetArtist("Station " + station)
 	tag.SetTitle(bc.title)
-	tag.SetAlbum(bc.title_series)
+	tag.SetAlbum(bc.titleSeries)
 	tag.SetGenre("Radio")
-	tag.SetYear(strconv.Itoa(bc.format_timestart.Year()))
+	tag.SetYear(strconv.Itoa(bc.formatTimeStart.Year()))
 
 	txt := bc.identifier + "\n"
 	txt += bc.source.String() + "\n\n"
-	if "" != bc.title_series {
-		txt += bc.title_series + "\n\n"
+	if "" != bc.titleSeries {
+		txt += bc.titleSeries + "\n\n"
 	}
-	if "" != bc.title_episode {
-		txt += bc.title_episode + "\n\n"
+	if "" != bc.titleEpisode {
+		txt += bc.titleEpisode + "\n\n"
 	}
 	txt += bc.description
 

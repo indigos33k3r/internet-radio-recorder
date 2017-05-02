@@ -36,27 +36,27 @@ import (
 )
 
 func copy(src, dst string) (int64, error) {
-	src_file, err := os.Open(src)
+	srcFile, err := os.Open(src)
 	if err != nil {
 		return 0, err
 	}
-	defer src_file.Close()
+	defer srcFile.Close()
 
-	src_file_stat, err := src_file.Stat()
+	srcFile_stat, err := srcFile.Stat()
 	if err != nil {
 		return 0, err
 	}
 
-	if !src_file_stat.Mode().IsRegular() {
+	if !srcFile_stat.Mode().IsRegular() {
 		return 0, fmt.Errorf("%s is not a regular file", src)
 	}
 
-	dst_file, err := os.Create(dst)
+	dstFile, err := os.Create(dst)
 	if err != nil {
 		return 0, err
 	}
-	defer dst_file.Close()
-	return io.Copy(dst_file, src_file)
+	defer dstFile.Close()
+	return io.Copy(dstFile, srcFile)
 }
 
 func prepareMp3Copy() {

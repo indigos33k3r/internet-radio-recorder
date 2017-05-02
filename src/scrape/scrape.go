@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2016 Marcus Rohrmoser, http://purl.mro.name/recorder
+// Copyright (c) 2015-2017 Marcus Rohrmoser, http://purl.mro.name/recorder
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -85,14 +85,14 @@ func (b Broadcast) WriteAsLuaTable(w io.Writer) (err error) {
 	fp("DC_title_series", b.TitleSeries)
 	fp("DC_title_episode", b.TitleEpisode)
 	fpu("DC_subject", b.Subject)
-	ft("DC_format_timestart", b.Time)
+	ft("DC_formatTimeStart", b.Time)
 	if nil != b.DtEnd {
-		ft("DC_format_timeend", *b.DtEnd)
+		ft("DC_formatTimeEnd", *b.DtEnd)
 		dt := b.DtEnd.Sub(b.Time) / time.Second
 		if dt < 0 {
 			panic("dt < 0 for " + b.Source.String())
 		}
-		f("DC_format_duration", strconv.FormatInt(int64(dt), 10))
+		f("DC_formatDuration", strconv.FormatInt(int64(dt), 10))
 	}
 	fpu("DC_image", b.Image)
 	fp("DC_description", b.Description)
