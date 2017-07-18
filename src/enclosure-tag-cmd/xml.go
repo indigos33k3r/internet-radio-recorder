@@ -29,21 +29,21 @@ import (
 )
 
 type broadcast struct {
-	title            string
-	identifier       string
-	language         string
-	scheme           string
+	title           string
+	identifier      string
+	language        string
+	scheme          string
 	titleEpisode    string
 	titleSeries     string
-	subject          string
+	subject         string
 	formatTimeStart time.Time
 	formatTimeEnd   time.Time
 	formatDuration  int16
-	image            url.URL
-	description      string
-	author           string
-	publisher        string
-	source           url.URL
+	image           url.URL
+	description     string
+	author          string
+	publisher       string
+	source          url.URL
 }
 
 func broadcastFromXmlFileName(xmlFileName string) (broadcast, error) {
