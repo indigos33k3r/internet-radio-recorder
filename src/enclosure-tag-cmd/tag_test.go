@@ -130,7 +130,7 @@ func TestSetFull(t *testing.T) {
 		tag.SetTitle("8 NACH 8 - DAS ENDE DER NACHT. Morgenmagazin mit Robert Schromm live aus dem Außenstudio Bad Reichenhall.")
 		tag.SetAlbum("Album 🐳")
 		tag.AddFrame(id3v2.V24CommonIDs["Composer"], id3v2.TextFrame{
-			Encoding: id3v2.ENUTF8,
+			Encoding: id3v2.EncodingUTF8,
 			Text:     "Composer 🌦",
 		})
 
@@ -138,14 +138,14 @@ func TestSetFull(t *testing.T) {
 		tag.SetYear("2016")
 
 		tag.AddCommentFrame(id3v2.CommentFrame{
-			Encoding: id3v2.ENUTF8,
+			Encoding: id3v2.EncodingUTF8,
 			Language: "deu",
 			// Description: "Description: Die dritte Person\nVon Gerhard Baumrucker\nMit Helmut Stange, Mathias Eysen, Christoph Lindert, Angelika Hartung-Atzorn, Christian Marschall und anderen\nRegie: Wolf Euba\nBR 1987\n\nInspektor Dorian von der Verkehrspolizei ist sich sicher: Die Staatsanwaltschaft wird das Verfahren gegen Kajetan Straub wegen fahrlässiger Tötung eines Fußgängers innerhalb der nächsten vier Wochen einstellen. Alkoholtest negativ. Zustand des Fahrzeugs einwandfrei. Nach den Erkenntnissen der Spurensicherung hat Kajetan Straub aus einer Geschwindigkeit von höchstens 30 km/h eine Vollbremsung bewirkt. Der Fall ist völlig klar!\n\nStraub ist sich da nicht so sicher: Kein Zweifel, dieser Watzlawek Wenzel ist ihm vor das Auto gelaufen. Doch als sich Straub nach und nach den Ablauf dieses schrecklichen Unfalls ins Gedächtnis ruft, glaubt er sich daran zu erinnern, dass er an jener verhängnisvollen Straßenkreuzung einen Schatten wahrgenommen hatte. Inspektor Dorian ist verblüfft, Kajetan Straub ist überzeugt: Das war kein Unfall! Der Schatten hinter dem Alleebaum muss das Opfer vor seinen PKW geschubst haben! Aber wer ist die dritte Person?\n\nGerhard Baumrucker, geb. 1929 in Prag, gest. 1992 in München, Autor und Übersetzer. Drehbücher, Prosa, Kriminalromane und Theatertexte. 1980/81 Edgar-Wallace-Preis für den Roman \"Die Weise von Liebe und Mord\". Weitere Kriminalromane u.a. \"Tödliches Rendezvous\" (1965), \"Schwabinger Nächte\" (1969), \"Drei Namen\" (1983). Weitere Hörspiele: \"Acapulco\" (WDR 1986), \"Nächstes Jahr in Acapulco\" (WDR 1986).",
 			Text: "Text: Die dritte Person\nVon Gerhard Baumrucker\nMit Helmut Stange, Mathias Eysen, Christoph Lindert, Angelika Hartung-Atzorn, Christian Marschall und anderen\nRegie: Wolf Euba\nBR 1987\n\nInspektor Dorian von der Verkehrspolizei ist sich sicher: Die Staatsanwaltschaft wird das Verfahren gegen Kajetan Straub wegen fahrlässiger Tötung eines Fußgängers innerhalb der nächsten vier Wochen einstellen. Alkoholtest negativ. Zustand des Fahrzeugs einwandfrei. Nach den Erkenntnissen der Spurensicherung hat Kajetan Straub aus einer Geschwindigkeit von höchstens 30 km/h eine Vollbremsung bewirkt. Der Fall ist völlig klar!\n\nStraub ist sich da nicht so sicher: Kein Zweifel, dieser Watzlawek Wenzel ist ihm vor das Auto gelaufen. Doch als sich Straub nach und nach den Ablauf dieses schrecklichen Unfalls ins Gedächtnis ruft, glaubt er sich daran zu erinnern, dass er an jener verhängnisvollen Straßenkreuzung einen Schatten wahrgenommen hatte. Inspektor Dorian ist verblüfft, Kajetan Straub ist überzeugt: Das war kein Unfall! Der Schatten hinter dem Alleebaum muss das Opfer vor seinen PKW geschubst haben! Aber wer ist die dritte Person?\n\nGerhard Baumrucker, geb. 1929 in Prag, gest. 1992 in München, Autor und Übersetzer. Drehbücher, Prosa, Kriminalromane und Theatertexte. 1980/81 Edgar-Wallace-Preis für den Roman \"Die Weise von Liebe und Mord\". Weitere Kriminalromane u.a. \"Tödliches Rendezvous\" (1965), \"Schwabinger Nächte\" (1969), \"Drei Namen\" (1983). Weitere Hörspiele: \"Acapulco\" (WDR 1986), \"Nächstes Jahr in Acapulco\" (WDR 1986).",
 		})
 
 		tag.AddUnsynchronisedLyricsFrame(id3v2.UnsynchronisedLyricsFrame{
-			Encoding: id3v2.ENUTF8,
+			Encoding: id3v2.EncodingUTF8,
 			Language: "deu",
 			// ContentDescriptor: "Content descriptor",
 			Lyrics: "Die dritte Person\nVon Gerhard Baumrucker\nMit Helmut Stange, Mathias Eysen, Christoph Lindert, Angelika Hartung-Atzorn, Christian Marschall und anderen\nRegie: Wolf Euba\nBR 1987\n\nInspektor Dorian von der Verkehrspolizei ist sich sicher: Die Staatsanwaltschaft wird das Verfahren gegen Kajetan Straub wegen fahrlässiger Tötung eines Fußgängers innerhalb der nächsten vier Wochen einstellen. Alkoholtest negativ. Zustand des Fahrzeugs einwandfrei. Nach den Erkenntnissen der Spurensicherung hat Kajetan Straub aus einer Geschwindigkeit von höchstens 30 km/h eine Vollbremsung bewirkt. Der Fall ist völlig klar!\n\nStraub ist sich da nicht so sicher: Kein Zweifel, dieser Watzlawek Wenzel ist ihm vor das Auto gelaufen. Doch als sich Straub nach und nach den Ablauf dieses schrecklichen Unfalls ins Gedächtnis ruft, glaubt er sich daran zu erinnern, dass er an jener verhängnisvollen Straßenkreuzung einen Schatten wahrgenommen hatte. Inspektor Dorian ist verblüfft, Kajetan Straub ist überzeugt: Das war kein Unfall! Der Schatten hinter dem Alleebaum muss das Opfer vor seinen PKW geschubst haben! Aber wer ist die dritte Person?\n\nGerhard Baumrucker, geb. 1929 in Prag, gest. 1992 in München, Autor und Übersetzer. Drehbücher, Prosa, Kriminalromane und Theatertexte. 1980/81 Edgar-Wallace-Preis für den Roman \"Die Weise von Liebe und Mord\". Weitere Kriminalromane u.a. \"Tödliches Rendezvous\" (1965), \"Schwabinger Nächte\" (1969), \"Drei Namen\" (1983). Weitere Hörspiele: \"Acapulco\" (WDR 1986), \"Nächstes Jahr in Acapulco\" (WDR 1986).",
@@ -155,7 +155,7 @@ func TestSetFull(t *testing.T) {
 		assert.Nil(t, err, "")
 		assert.Equal(t, int(110343), len(artwork), "size")
 		tag.AddAttachedPicture(id3v2.PictureFrame{
-			Encoding:    id3v2.ENUTF8,
+			Encoding:    id3v2.EncodingUTF8,
 			MimeType:    "image/jpeg",
 			Description: "Front cover",
 			Picture:     artwork,

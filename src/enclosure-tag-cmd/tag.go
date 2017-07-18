@@ -69,13 +69,13 @@ func tagMp3File(mp3FilePath string, bc broadcast) error {
 	txt += bc.description
 
 	tag.AddCommentFrame(id3v2.CommentFrame{
-		Encoding: id3v2.ENUTF8,
+		Encoding: id3v2.EncodingUTF8,
 		Language: "deu", // validate language?
 		Text:     txt,
 	})
 
 	tag.AddUnsynchronisedLyricsFrame(id3v2.UnsynchronisedLyricsFrame{
-		Encoding: id3v2.ENUTF8,
+		Encoding: id3v2.EncodingUTF8,
 		Language: "deu", // validate language?
 		// ContentDescriptor: "Content descriptor",
 		Lyrics: txt,
@@ -92,7 +92,7 @@ func tagMp3File(mp3FilePath string, bc broadcast) error {
 			return err
 		}
 		tag.AddAttachedPicture(id3v2.PictureFrame{
-			Encoding: id3v2.ENUTF8,
+			Encoding: id3v2.EncodingUTF8,
 			MimeType: "image/jpeg",
 			// Description: "Front cover",
 			Picture:     b,
