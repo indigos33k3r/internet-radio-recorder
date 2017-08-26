@@ -181,5 +181,5 @@ func TestSetFull(t *testing.T) {
 	}
 
 	fi, _ := os.Stat("testdata/tmp.mp3")
-	assert.Equal(t, int64(4671582), fi.Size(), "size")
+	assert.Equal(t, int64(4782212), fi.Size(), "size")
 }
