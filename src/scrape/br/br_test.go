@@ -346,3 +346,45 @@ func TestParsePulseProgram(t *testing.T) {
 	assert.Equal(t, "2015-09-27T07:00:00+02:00", a[0].Time.Format(time.RFC3339), "ouch: ")
 	assert.Equal(t, "2015-11-17T07:00:00+01:00", a[17].Time.Format(time.RFC3339), "ouch: ")
 }
+
+func TestParseBroadcast20171207(t *testing.T) {
+	f, err := os.Open("testdata/2017-12-07T2105-b2-sendung.html")
+	assert.NotNil(t, f, "ouch")
+	assert.Nil(t, err, "ouch")
+
+	s := Station("b2")
+	t0 := broadcastURL{
+		TimeURL: r.TimeURL{
+			Time:    time.Date(2017, time.December, 7, 21, 5, 0, 0, localLoc),
+			Source:  *r.MustParseURL("http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-1232266.html"),
+			Station: r.Station(*s),
+		},
+		Title: "radioTexte am Donnerstag",
+	}
+
+	// http://rec.mro.name/stations/b%2b/2015/11/15/0005%20Bayern%20plus%20-%20Meine%20Schlager%20h%C3%B6ren
+	bcs, err := t0.parseBroadcastReader(f, nil)
+	assert.Nil(t, err, "ouch")
+	assert.Equal(t, 1, len(bcs), "ouch")
+	bc := bcs[0]
+	assert.Equal(t, "b2", bc.Station.Identifier, "ouch: Station.Identifier")
+	assert.Equal(t, "radioTexte am Donnerstag", bc.Title, "ouch: Title")
+	assert.Equal(t, "http://www.br.de/radio/bayern2/programmkalender/ausstrahlung-1232266.html", bc.Source.String(), "ouch: Source")
+	assert.NotNil(t, bc.Language, "ouch: Language")
+	assert.Equal(t, "de", *bc.Language, "ouch: Language")
+	assert.Equal(t, t0.Title, bc.Title, "ouch: Title")
+	assert.Nil(t, bc.TitleSeries, "ouch: TitleSeries")
+	assert.Equal(t, "Jonathan Swift: Gullivers Reisen (3/3)", *bc.TitleEpisode, "ouch: TitleEpisode")
+	assert.Equal(t, "2017-12-07T21:05:00+01:00", bc.Time.Format(time.RFC3339), "ouch: Time")
+	assert.Equal(t, "2017-12-07T22:00:00+01:00", bc.DtEnd.Format(time.RFC3339), "ouch: DtEnd")
+	assert.Equal(t, 55*time.Minute, bc.DtEnd.Sub(bc.Time), "ouch: Duration")
+	assert.Equal(t, "http://www.br.de/radio/bayern2/inhalt/lesungen/index.html", bc.Subject.String(), "ouch: Subject")
+	assert.Equal(t, "2017-12-07T21:05:11+01:00", bc.Modified.Format(time.RFC3339), "ouch: Modified")
+	assert.Equal(t, "Bayerischer Rundfunk", *bc.Author, "ouch: Author")
+	assert.NotNil(t, bc.Description, "ouch: Description")
+	assert.Equal(t, "Was wir von ganz kleinen, ganz großen und ganz unbelehrsamen Menschenwesen lernen könnten, beschrieb Jonathan Swift schon 1729 in seiner Satire von Gullivers Reisen. Dreiteilige Lesung mit Jens Wawrczeck.\n\nRedaktion und Moderation: Judith Heitkamp\n\nAusgewählte Beiträge als Podcast und in der Bayern 2 App verfügbar\n\nEin Kinderbuch? Keineswegs! „Gullivers Reisen“ waren von Anfang an eine bissige Auseinandersetzung mit der englischen Gesellschaft des 18. Jahrhunderts. Die winzigen Liliputaner führen einen jahrelangen Krieg über die fast religiöse Frage, an welcher Seite ein gekochtes Ei aufzuschlagen sei, an der stumpfen oder an der spitzen. Die Riesen aus Brobdingnag sind vernünftig genug, Schießpulver für unmoralisch zu halten (Satire!). Und die Pferde aus dem Land der Houyhnhnms geben eindeutig die besseren Menschen ab. Besser jedenfalls als diese widerlichen „Yahoos“ ... wieso kommen die Gulliver nur so bekannt vor?\n\nZum 350. Geburtstag des englischen Satirikers Jonathan Swift (1667 bis 1745) in der klassischen Lesung drei Auszüge aus diesem so oft unterschätzten Text, in der vielgelobten Übersetzung von Christa Schuenke. Zu hören in den radiotexten am Donnerstag am 23. und 30. November und am 7. Dezember 2017 auf Bayern 2. Es liest der Schauspieler Jens Wawreczeck, radioTexte-Hörern auch schon von seiner virtuosen Frankenstein-Interpretation und als Franziska zu Reventlows „Herr Dame“ bekannt. Regie: Irene Schuck. Auf nach Liliput! - die klassische Lesung lichtet die Anker. Redaktion und Moderation: Judith Heitkamp.\n\nwww.br.de/radio/bayern2/inhalt/lesungen\nwww.bayern2.de", *bc.Description, "ouch: Description")
+	assert.Equal(t, "http://www.br.de/radio/bayern2/sendungen/radiotexte/jonathan-swift-gullivers-reisen-102~_v-img__16__9__m_-4423061158a17f4152aef84861ed0243214ae6e7.jpg?version=ab50c", bc.Image.String(), "ouch: Image")
+	assert.Nil(t, bc.Publisher, "Publisher")
+	assert.Nil(t, bc.Creator, "Creator")
+	assert.Nil(t, bc.Copyright, "Copyright")
+}

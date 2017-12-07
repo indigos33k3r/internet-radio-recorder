@@ -85,14 +85,14 @@ func (b Broadcast) WriteAsLuaTable(w io.Writer) (err error) {
 	fp("DC_title_series", b.TitleSeries)
 	fp("DC_title_episode", b.TitleEpisode)
 	fpu("DC_subject", b.Subject)
-	ft("DC_formatTimeStart", b.Time)
+	ft("DC_format_timestart", b.Time)
 	if nil != b.DtEnd {
-		ft("DC_formatTimeEnd", *b.DtEnd)
+		ft("DC_format_timeend", *b.DtEnd)
 		dt := b.DtEnd.Sub(b.Time) / time.Second
 		if dt < 0 {
 			panic("dt < 0 for " + b.Source.String())
 		}
-		f("DC_formatDuration", strconv.FormatInt(int64(dt), 10))
+		f("DC_format_duration", strconv.FormatInt(int64(dt), 10))
 	}
 	fpu("DC_image", b.Image)
 	fp("DC_description", b.Description)

@@ -351,7 +351,7 @@ func (bcu *broadcastURL) parseBroadcastNode(root *html.Node) (bcs []r.Broadcast,
 			bc.Title = r.TextChildrenNoClimb(h1)
 		}
 		{
-			description := r.TextWithBrFromNodeSet(scrape.FindAll(h1.Parent, func(n *html.Node) bool { return atom.P == n.DataAtom && "copytext" == scrape.Attr(n, "class") }))
+			description := r.TextWithBrFromNodeSet(scrape.FindAll(h1.Parent.Parent, func(n *html.Node) bool { return atom.P == n.DataAtom && "copytext" == scrape.Attr(n, "class") }))
 			bc.Description = &description
 		}
 		if nil == bc.Image {
