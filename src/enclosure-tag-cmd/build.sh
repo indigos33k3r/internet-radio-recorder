@@ -13,12 +13,15 @@ VERSION="0.0.2"
 
 rm "${PROG_NAME}"-*-"${VERSION}" 2>/dev/null
 
-curl --output "testdata/artwork.jpg" "http://www.br.de/radio/bayern2/wissen/radiowissen/herodes-festung-100~_v-img__16__9__m_-4423061158a17f4152aef84861ed0243214ae6e7.jpg?version=6f858"
-curl --output "testdata/file.mp3" "https://raw.githubusercontent.com/mikkyang/id3-go/master/test.mp3"
+# curl --output "testdata/artwork.jpg" "http://www.br.de/radio/bayern2/wissen/radiowissen/herodes-festung-100~_v-img__16__9__m_-4423061158a17f4152aef84861ed0243214ae6e7.jpg?version=6f858"
+# curl --output "testdata/file.mp3" "https://raw.githubusercontent.com/mikkyang/id3-go/master/test.mp3"
 
 # cd ../scrape
 go get -u "github.com/bogem/id3v2"
 go get -u "github.com/stretchr/testify"
+
+cp "${GOPATH}/src/github.com/bogem/id3v2/testdata/test.mp3" "./testdata/file.mp3"
+cp "${GOPATH}/src/github.com/bogem/id3v2/testdata/back_cover.jpg" "./testdata/image.jpg"
 
 CWD="$(pwd)"
 cd ..

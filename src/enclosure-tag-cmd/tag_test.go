@@ -153,7 +153,7 @@ func TestSetFull(t *testing.T) {
 
 		artwork, err := ioutil.ReadFile("testdata/image.jpg")
 		assert.Nil(t, err, "")
-		assert.Equal(t, int(110343), len(artwork), "size")
+		assert.Equal(t, int(105455), len(artwork), "size")
 		tag.AddAttachedPicture(id3v2.PictureFrame{
 			Encoding:    id3v2.EncodingUTF8,
 			MimeType:    "image/jpeg",
@@ -181,5 +181,5 @@ func TestSetFull(t *testing.T) {
 	}
 
 	fi, _ := os.Stat("testdata/tmp.mp3")
-	assert.Equal(t, int64(4782212), fi.Size(), "size")
+	assert.Equal(t, int64(4055427), fi.Size(), "size")
 }
